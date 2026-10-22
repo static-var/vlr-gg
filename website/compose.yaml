@@ -1,6 +1,6 @@
 services:
   web:
-    image: nginx:1.30.4-alpine@sha256:dc5069ad14f19660b141b21236140b91656bf89bbc3e2417c70ae650cd66104c
+    image: nginx:1.31.8-alpine@sha256:1ef7ca94d7879df82421428ce13bd1eaa412404953859cf7a5b6512c25e67a60
     restart: unless-stopped
     user: "101:101"
     entrypoint: ["nginx", "-g", "daemon off;"]
