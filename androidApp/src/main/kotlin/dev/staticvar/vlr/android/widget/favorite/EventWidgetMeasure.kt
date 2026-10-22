@@ -36,8 +36,11 @@ internal val EventBesideGap = 10.dp
 internal val EventProgressWidth = 56.dp
 private val EventRowInset = 8.dp
 
+internal val EventLiveSize = 13.dp
+internal val EventLiveGap = 6.dp
+
 internal fun eventProgressBlock(live: Boolean): Dp =
-  12.dp + EventProgressWidth + if (live) FavoriteWidgetDotSize + FavoriteWidgetDotGap else 0.dp
+  12.dp + EventProgressWidth + if (live) EventLiveSize + EventLiveGap else 0.dp
 
 internal class EventWidgetMeasure(
   private val frame: FavoriteWidgetFrame,

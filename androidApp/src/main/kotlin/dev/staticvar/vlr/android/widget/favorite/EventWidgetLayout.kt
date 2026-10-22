@@ -8,9 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.LocalContext
+import androidx.glance.Image
+import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
@@ -27,6 +30,7 @@ import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
 import androidx.glance.text.TextAlign
+import dev.staticvar.vlr.android.R
 import dev.staticvar.vlr.shared.widget.favorite.EventHeaderText
 import dev.staticvar.vlr.shared.widget.favorite.FavoriteWidgetFrame
 import dev.staticvar.vlr.shared.widget.favorite.LogoMark
@@ -107,14 +111,22 @@ private fun EventHeader(
     }
     if (FavoriteWidgetPart.Progress in fit) {
       Spacer(GlanceModifier.width(12.dp))
-      if (header.live && liveLabel != null) FavoriteWidgetDot(liveLabel, FavoriteWidgetDotStyle.Live)
+      if (header.live && liveLabel != null) {
+        Image(
+          ImageProvider(R.drawable.favorite_widget_live),
+          liveLabel,
+          GlanceModifier.size(EventLiveSize),
+          colorFilter = ColorFilter.tint(GlanceTheme.colors.error),
+        )
+        Spacer(GlanceModifier.width(EventLiveGap))
+      }
       Box(
-        GlanceModifier.width(EventProgressWidth).height(6.dp).cornerRadius(3.dp)
+        GlanceModifier.width(EventProgressWidth).height(4.dp).cornerRadius(2.dp)
           .background(GlanceTheme.colors.surfaceVariant),
       ) {
         header.progress?.takeIf { it > 0f }?.let {
           Box(
-            GlanceModifier.width(maxOf(6.dp, EventProgressWidth * it)).height(6.dp).cornerRadius(3.dp)
+            GlanceModifier.width(maxOf(4.dp, EventProgressWidth * it)).height(4.dp).cornerRadius(2.dp)
               .background(GlanceTheme.colors.primary),
           ) {}
         }
