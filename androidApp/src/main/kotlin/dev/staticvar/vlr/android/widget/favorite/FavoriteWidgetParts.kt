@@ -91,54 +91,57 @@ internal fun presentationFor(
   mediumParts: Set<FavoriteWidgetPart> =
     setOf(FavoriteWidgetPart.Form, FavoriteWidgetPart.Context, FavoriteWidgetPart.Pills),
 ): FavoriteWidgetPresentation {
-  val compact = size.height < 158.dp
   val floor = favoriteWidgetHeroFloor(size)
   val requiredLarge = FavoriteWidgetPresentation(true, floor, emptySet(), 0, rowHeight(0), compact = true)
-  val large = height(requiredLarge.fittingWidth(height)) <= size.height
-  val parts = if (large) largeParts else mediumParts
-  val start = favoriteWidgetHeroStart(size, large)
-  val candidates = buildList {
-    var candidate = FavoriteWidgetPresentation(
-      large,
-      start,
-      parts,
-      if (large) rowCount else 0,
-      rowHeight(if (large) rowCount else 0),
-      compact = false,
-    )
-    add(candidate)
-    while (candidate.heroSize > floor) {
-      candidate = candidate.copy(heroSize = maxOf(floor, candidate.heroSize - 2))
+  fun fit(large: Boolean): FavoriteWidgetPresentation {
+    val parts = if (large) largeParts else mediumParts
+    val start = favoriteWidgetHeroStart(size, large)
+    val candidates = buildList {
+      var candidate = FavoriteWidgetPresentation(
+        large,
+        start,
+        parts,
+        if (large) rowCount else 0,
+        rowHeight(if (large) rowCount else 0),
+        compact = false,
+      )
       add(candidate)
-    }
-    candidate = candidate.copy(compact = true)
-    add(candidate)
-    while (candidate.rows > 1) {
-      candidate = candidate.copy(rows = candidate.rows - 1, rowHeight = rowHeight(candidate.rows - 1))
+      while (candidate.heroSize > floor) {
+        candidate = candidate.copy(heroSize = maxOf(floor, candidate.heroSize - 2))
+        add(candidate)
+      }
+      candidate = candidate.copy(compact = true)
       add(candidate)
+      while (candidate.rows > 1) {
+        candidate = candidate.copy(rows = candidate.rows - 1, rowHeight = rowHeight(candidate.rows - 1))
+        add(candidate)
+      }
+      if (candidate.rows > 0) {
+        // Map pills give way to the last list row, then come back if that row still does not fit.
+        if (FavoriteWidgetPart.Pills in candidate) add(candidate.copy(parts = candidate.parts - FavoriteWidgetPart.Pills))
+        candidate = candidate.copy(rows = 0, rowHeight = rowHeight(0))
+        add(candidate)
+      }
+      for (part in FavoriteWidgetPartDropOrder) {
+        if (part !in candidate) continue
+        candidate = candidate.copy(parts = candidate.parts - part)
+        add(candidate)
+      }
+      while (candidate.heroSize > FavoriteWidgetHeroMin) {
+        candidate = candidate.copy(heroSize = candidate.heroSize - 1)
+        add(candidate)
+      }
+      while (candidate.textStep < FavoriteWidgetMaxTextStep) {
+        candidate = candidate.copy(textStep = candidate.textStep + 1, heroSize = candidate.heroSize - 1)
+        add(candidate)
+      }
     }
-    if (candidate.rows > 0) {
-      // Map pills give way to the last list row, then come back if that row still does not fit.
-      if (FavoriteWidgetPart.Pills in candidate) add(candidate.copy(parts = candidate.parts - FavoriteWidgetPart.Pills))
-      candidate = candidate.copy(rows = 0, rowHeight = rowHeight(0))
-      add(candidate)
-    }
-    for (part in FavoriteWidgetPartDropOrder) {
-      if (part !in candidate) continue
-      candidate = candidate.copy(parts = candidate.parts - part)
-      add(candidate)
-    }
-    while (candidate.heroSize > FavoriteWidgetHeroMin) {
-      candidate = candidate.copy(heroSize = candidate.heroSize - 1)
-      add(candidate)
-    }
-    while (candidate.textStep < FavoriteWidgetMaxTextStep) {
-      candidate = candidate.copy(textStep = candidate.textStep + 1, heroSize = candidate.heroSize - 1)
-      add(candidate)
-    }
+    val fitted = candidates.asSequence().map { it.fittingWidth(height) }
+    return fitted.firstOrNull { height(it) <= size.height } ?: fitted.last()
   }
-  val fitted = candidates.asSequence().map { it.fittingWidth(height) }
-  return fitted.firstOrNull { height(it) <= size.height } ?: fitted.last()
+  // A large layout without list rows loses the map pills that only the medium layout shows.
+  val large = height(requiredLarge.fittingWidth(height)) <= size.height
+  return fit(large).takeUnless { large && it.rows == 0 && rowCount > 0 } ?: fit(false)
 }
 
 private val FavoriteWidgetPartDropOrder = listOf(
