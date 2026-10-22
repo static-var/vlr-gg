@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_team_widget_name">Takım</string>
+    <string name="favorite_team_widget_description">Favori takımının sonraki maçı, canlı skoru ve son formu.</string>
+</resources>
