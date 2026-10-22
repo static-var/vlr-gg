@@ -15,10 +15,12 @@ import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
+@Serializable
 internal data class WidgetDay private constructor(val date: LocalDate) : Comparable<WidgetDay> {
   val year: Int get() = date.year
   val month: Int get() = date.month.number
@@ -45,6 +47,7 @@ internal data class WidgetDay private constructor(val date: LocalDate) : Compara
   }
 }
 
+@Serializable
 internal data class EventDates(val start: WidgetDay?, val endInclusive: WidgetDay?)
 
 internal sealed interface Kickoff {
