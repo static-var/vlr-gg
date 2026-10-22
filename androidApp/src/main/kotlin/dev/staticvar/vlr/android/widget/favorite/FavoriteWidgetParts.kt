@@ -18,16 +18,19 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
+import androidx.glance.layout.ColumnScope
 import androidx.glance.layout.ContentScale
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
@@ -38,10 +41,13 @@ import androidx.glance.layout.size
 import androidx.glance.layout.width
 import androidx.glance.semantics.contentDescription
 import androidx.glance.semantics.semantics
+import androidx.glance.text.FontFamily
+import androidx.glance.text.FontWeight
+import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
+import androidx.glance.text.TextStyle
+import androidx.glance.unit.ColorProvider
 import dev.staticvar.vlr.android.R
-import dev.staticvar.vlr.android.widget.PrismTextTone
-import dev.staticvar.vlr.android.widget.PrismWidgetText
 import dev.staticvar.vlr.shared.widget.favorite.LogoMark
 import dev.staticvar.vlr.shared.widget.favorite.PillText
 import dev.staticvar.vlr.shared.widget.favorite.PillTone
@@ -59,7 +65,13 @@ internal data class FavoriteWidgetPresentation(
   val compact: Boolean,
   val textStep: Int = 0,
 ) {
-  val verticalPadding: Dp get() = if (compact) 6.dp else 12.dp
+  val verticalPadding: Dp get() = if (compact) 8.dp else 16.dp
+  val heroGap: Dp get() = if (compact) 6.dp else 12.dp
+  val headerLogo: Dp get() = when {
+    compact -> 28.dp
+    large -> 40.dp
+    else -> 32.dp
+  }
 
   fun textSize(size: Int): Int = size - textStep
 
@@ -77,50 +89,107 @@ internal fun presentationFor(
     setOf(FavoriteWidgetPart.Form, FavoriteWidgetPart.Context, FavoriteWidgetPart.Pills),
 ): FavoriteWidgetPresentation {
   val compact = size.height < 158.dp
-  val heroSize = if (compact) 32 else 40
-  val requiredLarge = FavoriteWidgetPresentation(true, heroSize, emptySet(), 0, rowHeight(0), compact)
-  val large = height(requiredLarge.copy(compact = true)) <= size.height
+  val floor = favoriteWidgetHeroFloor(size)
+  val requiredLarge = FavoriteWidgetPresentation(true, floor, emptySet(), 0, rowHeight(0), compact = true)
+  val large = height(requiredLarge.fittingWidth(height)) <= size.height
   val parts = if (large) largeParts else mediumParts
+  val start = favoriteWidgetHeroStart(size, large)
   val candidates = buildList {
     var candidate = FavoriteWidgetPresentation(
       large,
-      heroSize,
+      start,
       parts,
       if (large) rowCount else 0,
       rowHeight(if (large) rowCount else 0),
       compact = false,
     )
     add(candidate)
+    while (candidate.heroSize > floor) {
+      candidate = candidate.copy(heroSize = maxOf(floor, candidate.heroSize - 2))
+      add(candidate)
+    }
     candidate = candidate.copy(compact = true)
     add(candidate)
     while (candidate.rows > 0) {
       candidate = candidate.copy(rows = candidate.rows - 1, rowHeight = rowHeight(candidate.rows - 1))
       add(candidate)
     }
-    for (part in listOf(
-      FavoriteWidgetPart.RegionalRank,
-      FavoriteWidgetPart.Pills,
-      FavoriteWidgetPart.Context,
-      FavoriteWidgetPart.Form,
-    )) {
+    for (part in FavoriteWidgetPartDropOrder) {
       if (part !in candidate) continue
       candidate = candidate.copy(parts = candidate.parts - part)
       add(candidate)
     }
-    while (candidate.heroSize > 15 + 1) {
+    while (candidate.heroSize > FavoriteWidgetHeroMin) {
       candidate = candidate.copy(heroSize = candidate.heroSize - 1)
       add(candidate)
     }
-    while (candidate.textStep < 7) {
+    while (candidate.textStep < FavoriteWidgetMaxTextStep) {
       candidate = candidate.copy(textStep = candidate.textStep + 1, heroSize = candidate.heroSize - 1)
       add(candidate)
     }
   }
-  return candidates.firstOrNull { height(it) <= size.height } ?: candidates.last()
+  val fitted = candidates.asSequence().map { it.fittingWidth(height) }
+  return fitted.firstOrNull { height(it) <= size.height } ?: fitted.last()
 }
 
+private val FavoriteWidgetPartDropOrder = listOf(
+  FavoriteWidgetPart.RegionalRank,
+  FavoriteWidgetPart.Pills,
+  FavoriteWidgetPart.Context,
+  FavoriteWidgetPart.Form,
+)
+
+private fun FavoriteWidgetPresentation.fittingWidth(
+  height: (FavoriteWidgetPresentation) -> Dp,
+): FavoriteWidgetPresentation {
+  fun FavoriteWidgetPresentation.fits() = height(this) != Dp.Infinity
+  fun FavoriteWidgetPresentation.smallerHero() =
+    (heroSize - 1 downTo FavoriteWidgetHeroMin - textStep).asSequence().map { copy(heroSize = it) }.firstOrNull { it.fits() }
+  if (fits()) return this
+  smallerHero()?.let { return it }
+  var fitted = this
+  val removed = mutableListOf<FavoriteWidgetPart>()
+  for (part in FavoriteWidgetPartDropOrder) {
+    if (fitted.fits()) break
+    if (part !in fitted) continue
+    fitted = fitted.copy(parts = fitted.parts - part)
+    removed += part
+  }
+  if (!fitted.fits()) fitted = fitted.smallerHero() ?: return this
+  for (part in removed.asReversed()) {
+    fitted.copy(parts = fitted.parts + part).takeIf { it.fits() }?.let { fitted = it }
+  }
+  return fitted
+}
+
+private const val FavoriteWidgetHeroMin = 20
+private const val FavoriteWidgetMaxTextStep = 9
+
+internal fun favoriteWidgetHeroFloor(size: DpSize): Int = if (size.height < 158.dp) 32 else 40
+
+internal fun favoriteWidgetHeroStart(size: DpSize, large: Boolean): Int = when {
+  size.height < 158.dp -> favoriteWidgetHeroFloor(size)
+  large -> 56
+  else -> 48
+}
+
+private const val Ellipsis = "…"
+
 internal val LocalFavoriteWidgetTextStep = staticCompositionLocalOf { 0 }
-internal val FavoriteWidgetCaptionGap = 4.dp
+internal val FavoriteWidgetCaptionGap = 6.dp
+internal val FavoriteWidgetCardPadding = 12.dp
+internal val FavoriteWidgetDivider = 1.dp
+
+internal enum class FavoriteWidgetWeight(family: String, style: Int) {
+  Normal("sans-serif", Typeface.NORMAL),
+  Medium("sans-serif-medium", Typeface.NORMAL),
+  Bold("sans-serif", Typeface.BOLD),
+  ;
+
+  val typeface: Typeface = Typeface.create(family, style)
+  val fontFamily = FontFamily(family)
+  val fontWeight = if (style == Typeface.BOLD) FontWeight.Bold else FontWeight.Normal
+}
 
 internal data class FavoriteWidgetHeroMeasure(
   val lead: String,
@@ -138,12 +207,16 @@ internal class FavoriteWidgetTypography(context: Context) {
 
   fun roundedToPixel(size: Dp): Dp = ((size.value * metrics.density).roundToInt() / metrics.density).dp
   fun heroHeight(hero: FavoriteWidgetHeroMeasure, textStep: Int): Dp {
-    fun text(text: String, sp: Int, width: Dp, name: Boolean = false) =
-      height(text, sp - textStep, width, properName = name)
     val gap = if (hero.caption == null) 0.dp else FavoriteWidgetCaptionGap
     val lead = maxOf(
-      text(hero.lead, 13, hero.width - hero.captionWidth - gap, hero.properName),
-      hero.caption?.let { text(it, 12, hero.captionWidth) } ?: 0.dp,
+      height(
+        hero.lead,
+        14 - textStep,
+        hero.width - hero.captionWidth - gap,
+        properName = hero.properName,
+        weight = FavoriteWidgetWeight.Medium,
+      ),
+      hero.caption?.let { height(it, 13 - textStep, hero.captionWidth, weight = FavoriteWidgetWeight.Medium) } ?: 0.dp,
     )
     return maxOf(
       roundedToPixel(hero.minimumHeight),
@@ -153,28 +226,54 @@ internal class FavoriteWidgetTypography(context: Context) {
 
   private fun textPixels(size: Int) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, size.toFloat(), metrics)
 
-  private fun paint(pixels: Float) = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply {
-    typeface = Condensed
+  private fun paint(pixels: Float, weight: FavoriteWidgetWeight) = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply {
+    typeface = weight.typeface
     textSize = pixels
   }
 
-  fun width(text: String, size: Int): Dp {
-    val key = WidthKey(text, textPixels(size))
-    val pixels = widths[key] ?: (paint(key.textPixels).measureText(text) + 2).also { widths.put(key, it) }
+  fun width(text: String, size: Int, weight: FavoriteWidgetWeight = FavoriteWidgetWeight.Normal): Dp {
+    val key = WidthKey(text, textPixels(size), weight)
+    val pixels = widths[key] ?: (paint(key.textPixels, weight).measureText(text) + 2).also { widths.put(key, it) }
     return (ceil(pixels) / metrics.density).dp
   }
 
-  fun column(text: String?, size: Int, available: Dp, share: Float): Dp =
-    if (text == null) 0.dp else minOf(width(text, size), available * share)
+  // TextView sizes its ellipsis with the regular base paint, so weighted text overflows; shorten it here, with
+  // 1dp spare for the layout rounding of sibling widths. TextUtils.ellipsize can also overshoot its width.
+  fun ellipsize(text: String, size: Int, width: Dp, weight: FavoriteWidgetWeight): String {
+    val paint = paint(textPixels(size), weight)
+    val available = (width - 1.dp).value * metrics.density
+    if (paint.measureText(text) <= available) return text
+    var end = text.length
+    while (end > 0 && paint.measureText(text.take(end).trimEnd() + Ellipsis) > available) {
+      end = text.offsetByCodePoints(end, -1)
+    }
+    return text.take(end).trimEnd() + Ellipsis
+  }
 
-  fun height(text: String, size: Int, width: Dp, maxLines: Int = 2, properName: Boolean = false): Dp {
-    if (!properName && maxLines == 1 && width(text, size) > width) return Dp.Infinity
+  fun column(
+    text: String?,
+    size: Int,
+    available: Dp,
+    share: Float,
+    weight: FavoriteWidgetWeight = FavoriteWidgetWeight.Normal,
+  ): Dp = if (text == null) 0.dp else minOf(width(text, size, weight), available * share)
+
+  fun height(
+    text: String,
+    size: Int,
+    width: Dp,
+    maxLines: Int = 2,
+    properName: Boolean = false,
+    weight: FavoriteWidgetWeight = FavoriteWidgetWeight.Normal,
+  ): Dp {
+    if (!properName && maxLines == 1 && width(text, size, weight) > width) return Dp.Infinity
     val key = HeightKey(
       text,
       textPixels(size),
       (width.value * metrics.density).roundToInt().coerceAtLeast(1),
       if (properName) 1 else maxLines,
       properName,
+      weight,
     )
     val pixels = heights[key] ?: measure(key).also { heights.put(key, it) }
     return if (pixels == Int.MAX_VALUE) Dp.Infinity else (pixels / metrics.density).dp
@@ -182,7 +281,7 @@ internal class FavoriteWidgetTypography(context: Context) {
 
   @SuppressLint("InlinedApi") // StaticLayout supports this inlined strategy value from API 23.
   private fun measure(key: HeightKey): Int {
-    val paint = paint(key.textPixels)
+    val paint = paint(key.textPixels, key.weight)
     val layout = StaticLayout.Builder.obtain(key.text, 0, key.text.length, paint, key.widthPixels)
       .setIncludePad(true)
       .setBreakStrategy(LineBreaker.BREAK_STRATEGY_HIGH_QUALITY)
@@ -197,17 +296,17 @@ internal class FavoriteWidgetTypography(context: Context) {
     return if (fits) layout.height else Int.MAX_VALUE
   }
 
-  private data class WidthKey(val text: String, val textPixels: Float)
+  private data class WidthKey(val text: String, val textPixels: Float, val weight: FavoriteWidgetWeight)
   private data class HeightKey(
     val text: String,
     val textPixels: Float,
     val widthPixels: Int,
     val maxLines: Int,
     val properName: Boolean,
+    val weight: FavoriteWidgetWeight,
   )
 
   private companion object {
-    val Condensed: Typeface = Typeface.create("sans-serif-condensed", Typeface.NORMAL)
     val widths = LruCache<WidthKey, Float>(1024)
     val heights = LruCache<HeightKey, Int>(4096)
   }
@@ -217,16 +316,35 @@ internal class FavoriteWidgetTypography(context: Context) {
 internal fun FavoriteWidgetText(
   text: String,
   size: Int,
-  tone: PrismTextTone = PrismTextTone.Content,
+  color: ColorProvider = GlanceTheme.colors.onSurface,
+  weight: FavoriteWidgetWeight = FavoriteWidgetWeight.Normal,
   maxLines: Int = 2,
   modifier: GlanceModifier = GlanceModifier,
   align: TextAlign = TextAlign.Start,
   description: String? = null,
   properName: Boolean = false,
   textStep: Int = LocalFavoriteWidgetTextStep.current,
+  width: Dp? = null,
 ) {
-  PrismWidgetText(text, size - textStep, tone, if (properName) 1 else maxLines, align, description, modifier)
+  Text(
+    text = if (properName && width != null) {
+      FavoriteWidgetTypography(LocalContext.current).ellipsize(text, size - textStep, width, weight)
+    } else {
+      text
+    },
+    modifier = if (description == null) modifier else modifier.semantics { contentDescription = description },
+    maxLines = if (properName) 1 else maxLines,
+    style = TextStyle(
+      color = color,
+      fontSize = (size - textStep).sp,
+      fontWeight = weight.fontWeight,
+      fontFamily = weight.fontFamily,
+      textAlign = align,
+    ),
+  )
 }
+
+internal val FavoriteWidgetSecondary: ColorProvider @Composable get() = GlanceTheme.colors.onSurfaceVariant
 
 @Composable
 internal fun FavoriteWidgetLogo(mark: LogoMark, logos: WidgetBitmaps, size: Dp) {
@@ -244,69 +362,168 @@ internal fun FavoriteWidgetLogo(mark: LogoMark, logos: WidgetBitmaps, size: Dp) 
     }
     Box(
       GlanceModifier.size(size).cornerRadius(size / if (mark == LogoMark.Undecided) 2 else 4)
-        .background(GlanceTheme.colors.secondaryContainer)
+        .background(GlanceTheme.colors.primaryContainer)
         .semantics { contentDescription = description },
       contentAlignment = Alignment.Center,
     ) {
+      val context = LocalContext.current
+      val typography = FavoriteWidgetTypography(context)
+      val largest = (size.value * 0.34f / context.resources.configuration.fontScale).toInt()
+      val textSize = (largest downTo 4).firstOrNull {
+        typography.width(monogram, it, FavoriteWidgetWeight.Medium) <= size - 6.dp
+      } ?: 4
       FavoriteWidgetText(
         monogram,
-        (size.value * 0.34f).toInt(),
-        tone = PrismTextTone.Secondary,
+        textSize,
+        GlanceTheme.colors.onPrimaryContainer,
+        FavoriteWidgetWeight.Medium,
         align = TextAlign.Center,
         modifier = GlanceModifier.width(size - 4.dp),
         properName = true,
+        textStep = 0,
       )
     }
   }
 }
 
+internal enum class FavoriteWidgetDotStyle { Win, Loss, Live, Empty, Played }
+
 @Composable
-internal fun FavoriteWidgetDot(label: String, filled: Boolean, live: Boolean, empty: Boolean = false, size: Dp = 8.dp) {
+internal fun FavoriteWidgetDot(label: String, style: FavoriteWidgetDotStyle) {
   Image(
-    ImageProvider(if (filled) R.drawable.favorite_widget_dot else R.drawable.favorite_widget_ring),
+    ImageProvider(if (style == FavoriteWidgetDotStyle.Loss) R.drawable.favorite_widget_ring else R.drawable.favorite_widget_dot),
     label,
-    GlanceModifier.width(size + 4.dp).height(size).padding(start = 4.dp),
+    GlanceModifier.width(FavoriteWidgetDotSize + FavoriteWidgetDotGap).height(FavoriteWidgetDotSize)
+      .padding(start = FavoriteWidgetDotGap),
     colorFilter = ColorFilter.tint(
-      when {
-        live -> GlanceTheme.colors.primary
-        empty -> GlanceTheme.colors.secondaryContainer
-        else -> GlanceTheme.colors.onSurfaceVariant
+      when (style) {
+        FavoriteWidgetDotStyle.Win -> GlanceTheme.colors.primary
+        FavoriteWidgetDotStyle.Loss -> GlanceTheme.colors.outline
+        FavoriteWidgetDotStyle.Live -> GlanceTheme.colors.error
+        FavoriteWidgetDotStyle.Empty -> GlanceTheme.colors.surfaceVariant
+        FavoriteWidgetDotStyle.Played -> GlanceTheme.colors.onSurfaceVariant
       },
     ),
   )
 }
 
+internal val FavoriteWidgetDotSize = 10.dp
+internal val FavoriteWidgetDotGap = 5.dp
+
+internal val FavoriteWidgetHeaderGap = 12.dp
+
 @Composable
-internal fun FavoriteWidgetEmptyHeader(title: String, subtitle: String?, large: Boolean) {
-  val logoSize = if (large) 40.dp else 28.dp
+internal fun FavoriteWidgetEmptyHeader(title: String, subtitle: String?, logoSize: Dp) {
   Row(verticalAlignment = Alignment.Vertical.CenterVertically) {
-    Box(GlanceModifier.size(logoSize).cornerRadius(7.dp).background(GlanceTheme.colors.secondaryContainer)) {}
-    Spacer(GlanceModifier.width(8.dp))
+    Box(GlanceModifier.size(logoSize).cornerRadius(logoSize / 4).background(GlanceTheme.colors.secondaryContainer)) {}
+    Spacer(GlanceModifier.width(FavoriteWidgetHeaderGap))
     Column(GlanceModifier.defaultWeight()) {
-      FavoriteWidgetText(title, 15)
-      subtitle?.let { FavoriteWidgetText(it, 12, PrismTextTone.Secondary) }
+      FavoriteWidgetText(title, 16, weight = FavoriteWidgetWeight.Medium)
+      subtitle?.let { FavoriteWidgetText(it, 13, FavoriteWidgetSecondary) }
     }
+  }
+}
+
+@Composable
+internal fun ColumnScope.FavoriteWidgetHeroSpacer(presentation: FavoriteWidgetPresentation) {
+  Spacer(GlanceModifier.height(presentation.heroGap))
+  if (presentation.rows == 0) Spacer(GlanceModifier.defaultWeight())
+}
+
+internal val FavoriteWidgetPillGap = 4.dp
+internal val FavoriteWidgetPillPadding = 6.dp
+
+internal fun FavoriteWidgetTypography.pillsHeight(items: List<PillText>, width: Dp, textStep: Int): Dp {
+  val pillWidth = (width - FavoriteWidgetPillGap * (items.size - 1)) / items.size - FavoriteWidgetPillPadding * 2
+  return 8.dp + FavoriteWidgetPillPadding + items.maxOf {
+    height(it.text, 12 - textStep, pillWidth, maxLines = 1, weight = FavoriteWidgetWeight.Medium)
   }
 }
 
 @Composable
 internal fun FavoriteWidgetMapPills(items: List<PillText>) {
-  Row(GlanceModifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.Vertical.CenterVertically) {
+  Row(GlanceModifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.Vertical.CenterVertically) {
     items.forEachIndexed { index, pill ->
-      if (index > 0) Spacer(GlanceModifier.width(3.dp))
+      if (index > 0) Spacer(GlanceModifier.width(FavoriteWidgetPillGap))
+      val (container, content) = when (pill.tone) {
+        PillTone.Live -> GlanceTheme.colors.errorContainer to GlanceTheme.colors.onErrorContainer
+        PillTone.Won -> GlanceTheme.colors.primaryContainer to GlanceTheme.colors.onPrimaryContainer
+        PillTone.Lost, PillTone.Next -> GlanceTheme.colors.surfaceVariant to GlanceTheme.colors.onSurfaceVariant
+      }
       Box(
-        GlanceModifier.defaultWeight().cornerRadius(5.dp).background(GlanceTheme.colors.secondaryContainer)
-          .padding(horizontal = 3.dp, vertical = 2.dp),
+        GlanceModifier.defaultWeight().cornerRadius(8.dp).background(container)
+          .padding(horizontal = FavoriteWidgetPillPadding, vertical = FavoriteWidgetPillPadding / 2),
         contentAlignment = Alignment.Center,
       ) {
-        FavoriteWidgetText(pill.text, 11, pill.tone.textTone(), maxLines = 1)
+        FavoriteWidgetText(pill.text, 12, content, FavoriteWidgetWeight.Medium, maxLines = 1, align = TextAlign.Center)
       }
     }
   }
 }
 
-internal fun PillTone.textTone(): PrismTextTone = when (this) {
-  PillTone.Live -> PrismTextTone.Accent
-  PillTone.Won -> PrismTextTone.Content
-  PillTone.Lost, PillTone.Next -> PrismTextTone.Secondary
+internal val PillTone.color: ColorProvider @Composable get() = when (this) {
+  PillTone.Live -> GlanceTheme.colors.error
+  PillTone.Won -> GlanceTheme.colors.primary
+  PillTone.Lost, PillTone.Next -> GlanceTheme.colors.onSurfaceVariant
+}
+
+internal fun FavoriteWidgetTypography.cardChrome(heading: String, width: Dp, rows: Int, textStep: Int): Dp =
+  FavoriteWidgetCardTop + height(heading, 12 - textStep, width, weight = FavoriteWidgetWeight.Medium) +
+    FavoriteWidgetCardBottom + FavoriteWidgetDivider * (rows - 1)
+
+internal val FavoriteWidgetCardColor: ColorProvider @Composable get() = GlanceTheme.colors.secondaryContainer
+internal val FavoriteWidgetCardOutline: ColorProvider @Composable get() = GlanceTheme.colors.widgetBackground
+internal val FavoriteWidgetCardTop = 10.dp
+internal val FavoriteWidgetCardBottom = 4.dp
+
+@Composable
+internal fun FavoriteWidgetCard(
+  heading: String,
+  modifier: GlanceModifier = GlanceModifier,
+  rows: List<@Composable () -> Unit>,
+) {
+  Column(
+    modifier.fillMaxWidth().cornerRadius(16.dp).background(FavoriteWidgetCardColor)
+      .padding(start = FavoriteWidgetCardPadding, end = FavoriteWidgetCardPadding, bottom = FavoriteWidgetCardBottom),
+  ) {
+    FavoriteWidgetText(
+      heading,
+      12,
+      GlanceTheme.colors.primary,
+      FavoriteWidgetWeight.Medium,
+      modifier = GlanceModifier.padding(top = FavoriteWidgetCardTop),
+    )
+    rows.forEachIndexed { index, row ->
+      if (index > 0) {
+        Box(GlanceModifier.fillMaxWidth().height(FavoriteWidgetDivider).background(FavoriteWidgetCardOutline)) {}
+      }
+      Box(GlanceModifier.fillMaxWidth().defaultWeight(), contentAlignment = Alignment.CenterStart) { row() }
+    }
+  }
+}
+
+@Composable
+internal fun FavoriteWidgetChip(text: String, win: Boolean, size: DpSize) {
+  Box(
+    GlanceModifier.width(size.width).height(size.height).cornerRadius(size.height / 2)
+      .background(if (win) GlanceTheme.colors.primary else FavoriteWidgetCardOutline),
+    contentAlignment = Alignment.Center,
+  ) {
+    FavoriteWidgetText(
+      text,
+      11,
+      if (win) GlanceTheme.colors.onPrimary else GlanceTheme.colors.onSurfaceVariant,
+      FavoriteWidgetWeight.Bold,
+      maxLines = 1,
+      align = TextAlign.Center,
+    )
+  }
+}
+
+internal fun FavoriteWidgetTypography.chipSize(text: String, textStep: Int): DpSize {
+  val width = maxOf(22.dp, width(text, 11 - textStep, FavoriteWidgetWeight.Bold) + 10.dp)
+  return DpSize(
+    width,
+    maxOf(22.dp, height(text, 11 - textStep, width, maxLines = 1, weight = FavoriteWidgetWeight.Bold)),
+  )
 }

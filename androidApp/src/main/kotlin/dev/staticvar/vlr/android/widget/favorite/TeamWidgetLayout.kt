@@ -18,6 +18,7 @@ import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
+import androidx.glance.layout.ColumnScope
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
@@ -26,7 +27,7 @@ import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
-import dev.staticvar.vlr.android.widget.PrismTextTone
+import androidx.glance.text.TextAlign
 import dev.staticvar.vlr.shared.widget.favorite.FavoriteWidgetFrame
 import dev.staticvar.vlr.shared.widget.favorite.FormMark
 import dev.staticvar.vlr.shared.widget.favorite.LogoMark
@@ -34,13 +35,13 @@ import dev.staticvar.vlr.shared.widget.favorite.NeutralFormMark
 import dev.staticvar.vlr.shared.widget.favorite.NeutralTeamHeroText
 import dev.staticvar.vlr.shared.widget.favorite.NeutralTeamHistoryText
 import dev.staticvar.vlr.shared.widget.favorite.PillText
-import dev.staticvar.vlr.shared.widget.favorite.PillTone
 import dev.staticvar.vlr.shared.widget.favorite.ResultTone
 import dev.staticvar.vlr.shared.widget.favorite.TeamDetail
 import dev.staticvar.vlr.shared.widget.favorite.TeamDisplayBody
 import dev.staticvar.vlr.shared.widget.favorite.TeamHeroText
 import dev.staticvar.vlr.shared.widget.favorite.TeamLiveBelow
 import dev.staticvar.vlr.shared.widget.favorite.TeamPresentation
+import dev.staticvar.vlr.shared.widget.favorite.TeamRowText
 
 internal fun teamPresentationFor(
   frame: FavoriteWidgetFrame,
@@ -51,12 +52,18 @@ internal fun teamPresentationFor(
   return presentationFor(size, measure.rowCount, measure::rowHeight, measure::height)
 }
 
+private val FavoriteWidgetPresentation.opponentLogo: Dp get() = if (compact) 40.dp else 52.dp
+private val TeamRowLogo = 24.dp
+private val TeamRowGap = 10.dp
+private val TeamRowInset = 8.dp
+
 internal class TeamWidgetMeasure(
   private val frame: FavoriteWidgetFrame,
   size: DpSize,
   private val typography: FavoriteWidgetTypography,
 ) {
   private val width = size.width - 32.dp
+  private val inner = width - FavoriteWidgetCardPadding * 2
   private val body = (frame as? FavoriteWidgetFrame.Team)?.large?.body
   private val detail = (body as? TeamDisplayBody.Visible)?.detail
   private val history = (body as? TeamDisplayBody.Hidden)?.history
@@ -65,119 +72,124 @@ internal class TeamWidgetMeasure(
     is TeamDetail.History -> detail.rows.size
     null -> history?.rows?.size ?: if (frame is FavoriteWidgetFrame.Team) 0 else 4
   }
-  private fun text(text: String, sp: Int, available: Dp = width, properName: Boolean = false) =
-    typography.height(text, sp, available, properName = properName)
+  private fun text(
+    text: String,
+    sp: Int,
+    available: Dp,
+    properName: Boolean = false,
+    weight: FavoriteWidgetWeight = FavoriteWidgetWeight.Normal,
+  ) = typography.height(text, sp, available, properName = properName, weight = weight)
+
   fun rowHeight(rows: Int): Dp = when (detail) {
     is TeamDetail.Maps -> detail.rows.take(rows).maxOfOrNull { row ->
-      val score = typography.column(row.score, 17, width, .35f)
+      val score = teamMapScoreWidth(typography, row.score, inner, 0)
       maxOf(
-        if (detail.compact) 30.dp else 48.dp,
-        text(row.name, 15, width - score, properName = true) +
-          (row.subtitle?.let { text(it, 12, width - score) } ?: 0.dp),
-        typography.height(row.score, 17, score, maxLines = 1),
+        if (detail.compact) 40.dp else 48.dp,
+        TeamRowInset + maxOf(
+          text(row.name, 15, inner - score - TeamRowGap, true, FavoriteWidgetWeight.Medium) +
+            (row.subtitle?.let { text(it, 13, inner - score - TeamRowGap) } ?: 0.dp),
+          typography.height(row.score, 17, score, maxLines = 1, weight = FavoriteWidgetWeight.Medium),
+        ),
       )
     } ?: 0.dp
 
     is TeamDetail.History -> detail.rows.take(rows).maxOfOrNull { row ->
-      val columns = teamHistoryColumns(typography, row.mark, row.date, row.score, width, 0)
+      val columns = teamHistoryColumns(typography, row, inner, 0)
       maxOf(
-        34.dp,
-        text(row.name, 15, columns.name, properName = true),
-        typography.height(row.mark, 12, columns.mark, maxLines = 1),
-        typography.height(row.score, 17, columns.score, maxLines = 1),
-        text(row.date, 12, columns.date),
+        40.dp,
+        TeamRowInset + maxOf(
+          columns.chip.height,
+          TeamRowLogo,
+          text(row.name, 15, columns.name, properName = true),
+          text(row.date, 12, columns.date),
+          typography.height(row.score, 16, columns.score, maxLines = 1, weight = FavoriteWidgetWeight.Medium),
+        ),
       )
     } ?: 0.dp
 
     null -> history?.rows?.take(rows)?.maxOfOrNull { row ->
-      val date = typography.column(row.date, 12, width, .3f)
-      maxOf(34.dp, text(row.name, 15, width - date - 38.dp, properName = true), text(row.date, 12, date))
-    } ?: 34.dp
+      val date = typography.column(row.date, 12, inner, .3f)
+      maxOf(
+        40.dp,
+        TeamRowInset + maxOf(
+          TeamRowLogo,
+          text(row.name, 15, inner - TeamRowLogo - TeamRowGap * 2 - date, properName = true),
+          text(row.date, 12, date),
+        ),
+      )
+    } ?: 40.dp
   }
+
   fun height(fit: FavoriteWidgetPresentation): Dp {
-    fun text(text: String, sp: Int, available: Dp = width, properName: Boolean = false) =
-      typography.height(text, fit.textSize(sp), available, properName = properName)
-    val logoSize = if (fit.large) 40.dp else 28.dp
+    fun text(
+      text: String,
+      sp: Int,
+      available: Dp = width,
+      properName: Boolean = false,
+      weight: FavoriteWidgetWeight = FavoriteWidgetWeight.Normal,
+    ) = typography.height(text, fit.textSize(sp), available, properName = properName, weight = weight)
+    val logoSize = fit.headerLogo
+    val headerText = width - logoSize - FavoriteWidgetHeaderGap
     val main = when (frame) {
       is FavoriteWidgetFrame.Setup -> {
         val subtitle = frame.text.subtitle.takeIf { FavoriteWidgetPart.Context in fit }
-        val headerWidth = width - logoSize - 8.dp
         val header = maxOf(
           logoSize,
-          text(frame.text.title, 15, headerWidth) +
-            (subtitle?.let { text(it, 12, headerWidth) } ?: 0.dp),
+          text(frame.text.title, 16, headerText, weight = FavoriteWidgetWeight.Medium) +
+            (subtitle?.let { text(it, 13, headerText) } ?: 0.dp),
         )
-        header + 4.dp + text(frame.text.lead, 13) +
+        header + fit.heroGap + text(frame.text.lead, 14, weight = FavoriteWidgetWeight.Medium) +
           typography.height(frame.text.action, fit.heroSize, width, maxLines = 1) +
-          if (FavoriteWidgetPart.Context in fit) text(frame.text.instruction, 12) else 0.dp
+          if (FavoriteWidgetPart.Context in fit) text(frame.text.instruction, 13) else 0.dp
       }
 
-      is FavoriteWidgetFrame.Placeholder -> maxOf(logoSize, text(frame.text.title, 15, width - logoSize - 8.dp)) +
-        4.dp + typography.height(frame.text.value, fit.heroSize, width, maxLines = 1)
+      is FavoriteWidgetFrame.Placeholder ->
+        maxOf(logoSize, text(frame.text.title, 16, headerText, weight = FavoriteWidgetWeight.Medium)) +
+          fit.heroGap + typography.height(frame.text.value, fit.heroSize, width, maxLines = 1)
 
       is FavoriteWidgetFrame.Team -> {
         val content = if (fit.large) frame.large else frame.medium
-        val formCount = if (FavoriteWidgetPart.Form !in fit) {
-          0
-        } else {
-          when (val b = content.body) {
-            is TeamDisplayBody.Visible -> b.form.size
-            is TeamDisplayBody.Hidden -> b.form.size
-          }
-        }
-        val headerWidth = width - logoSize - 8.dp - typography.roundedToPixel(12.dp) * formCount
+        val formCount = if (FavoriteWidgetPart.Form in fit) content.body.formSize else 0
+        val headerWidth =
+          headerText - typography.roundedToPixel(FavoriteWidgetDotSize + FavoriteWidgetDotGap) * formCount
         val rank = if (FavoriteWidgetPart.RegionalRank in fit) content.header.ranking else frame.medium.header.ranking
         val rankHeight =
-          if (rank.isEmpty()) 0.dp else typography.height(rank, fit.textSize(12), headerWidth, maxLines = 1)
-        val header = maxOf(logoSize, text(content.header.title, 15, headerWidth, properName = true) + rankHeight)
-        val visible = (content.body as? TeamDisplayBody.Visible)?.hero
-        val hidden = (content.body as? TeamDisplayBody.Hidden)?.hero
-        val lead = visible?.lead ?: requireNotNull(hidden).lead
-        val heroValue = visible?.value ?: requireNotNull(hidden).value
-        val opponent = visible?.opponent ?: hidden?.opponent
-        val heroWidth = width - if (opponent == null) 0.dp else 52.dp
-        val day = (visible as? TeamHeroText.Upcoming)?.day ?: (hidden as? NeutralTeamHeroText.Upcoming)?.day
-        val live = (visible as? TeamHeroText.Live)?.liveLabel ?: (hidden as? NeutralTeamHeroText.Live)?.liveLabel
-        val labelWidth = typography.column(day ?: live, fit.textSize(12), heroWidth, .45f)
-        val hero = typography.heroHeight(
+          if (rank.isEmpty()) 0.dp else typography.height(rank, fit.textSize(13), headerWidth, maxLines = 1)
+        val header = maxOf(
+          logoSize,
+          text(content.header.title, 16, headerWidth, properName = true, weight = FavoriteWidgetWeight.Medium) +
+            rankHeight,
+        )
+        val hero = teamHero(content.body)
+        val heroWidth = width - if (hero.opponent == null) 0.dp else fit.opponentLogo + 12.dp
+        val labelWidth = typography.column(
+          hero.caption,
+          fit.textSize(13),
+          heroWidth,
+          .45f,
+          FavoriteWidgetWeight.Medium,
+        )
+        val heroHeight = typography.heroHeight(
           FavoriteWidgetHeroMeasure(
-            lead,
-            heroValue,
-            day ?: live,
+            hero.lead,
+            hero.value,
+            hero.caption,
             heroWidth,
             labelWidth,
             fit.heroSize,
-            if (opponent == null) 0.dp else 44.dp,
-            opponent != null,
+            if (hero.opponent == null) 0.dp else fit.opponentLogo,
+            hero.opponent != null,
           ),
           fit.textStep,
         )
-        val context = when (visible) {
-          is TeamHeroText.Upcoming -> visible.context
-          is TeamHeroText.Idle -> visible.context
-          is TeamHeroText.Live -> (visible.below as? TeamLiveBelow.Context)?.text
-          null -> hidden?.context
-        }
-        val pills = ((visible as? TeamHeroText.Live)?.below as? TeamLiveBelow.Pills)?.items
-        val below = if (pills != null && FavoriteWidgetPart.Pills in fit) {
-          8.dp +
-            (
-              pills.maxOfOrNull {
-                typography.height(
-                  it.text,
-                  fit.textSize(11),
-                  (width - (pills.size * 10).dp) / pills.size,
-                  maxLines = 1,
-                )
-              }
-                ?: 0.dp
-              )
-        } else if (context != null && FavoriteWidgetPart.Context in fit) {
-          text(context, 12)
+        val below = if (hero.pills != null && FavoriteWidgetPart.Pills in fit) {
+          typography.pillsHeight(hero.pills, width, fit.textStep)
+        } else if (hero.context != null && FavoriteWidgetPart.Context in fit) {
+          text(hero.context, 13)
         } else {
           0.dp
         }
-        header + 4.dp + hero + below
+        header + fit.heroGap + heroHeight + below
       }
 
       is FavoriteWidgetFrame.Event -> 0.dp
@@ -194,11 +206,52 @@ internal class TeamWidgetMeasure(
       }
     }
     val listHeight = if (fit.rows > 0) {
-      6.dp + text(heading, 12) + rowHeight(fit.rows) * fit.rows
+      fit.heroGap + typography.cardChrome(heading, inner, fit.rows, fit.textStep) + rowHeight(fit.rows) * fit.rows
     } else {
       0.dp
     }
     return fit.verticalPadding * 2 + main + listHeight
+  }
+}
+
+private data class TeamHeroParts(
+  val lead: String,
+  val value: String,
+  val opponent: LogoMark?,
+  val caption: String?,
+  val live: Boolean,
+  val context: String?,
+  val pills: List<PillText>?,
+)
+
+private val TeamDisplayBody.formSize: Int
+  get() = when (this) {
+    is TeamDisplayBody.Visible -> form.size
+    is TeamDisplayBody.Hidden -> form.size
+  }
+
+private fun teamHero(body: TeamDisplayBody): TeamHeroParts = when (body) {
+  is TeamDisplayBody.Visible -> when (val hero = body.hero) {
+    is TeamHeroText.Upcoming -> TeamHeroParts(hero.lead, hero.value, hero.opponent, hero.day, false, hero.context, null)
+    is TeamHeroText.Live -> TeamHeroParts(
+      hero.lead,
+      hero.value,
+      hero.opponent,
+      hero.liveLabel,
+      true,
+      (hero.below as? TeamLiveBelow.Context)?.text,
+      (hero.below as? TeamLiveBelow.Pills)?.items,
+    )
+    is TeamHeroText.Idle -> TeamHeroParts(hero.lead, hero.value, hero.opponent, null, false, hero.context, null)
+  }
+
+  is TeamDisplayBody.Hidden -> when (val hero = body.hero) {
+    is NeutralTeamHeroText.Upcoming ->
+      TeamHeroParts(hero.lead, hero.value, hero.opponent, hero.day, false, hero.context, null)
+    is NeutralTeamHeroText.Live ->
+      TeamHeroParts(hero.lead, hero.value, hero.opponent, hero.liveLabel, true, hero.context, null)
+    is NeutralTeamHeroText.Idle ->
+      TeamHeroParts(hero.lead, hero.value, hero.opponent, null, false, hero.context, null)
   }
 }
 
@@ -214,36 +267,23 @@ internal fun TeamWidgetLayout(frame: FavoriteWidgetFrame, logos: WidgetBitmaps) 
         is FavoriteWidgetFrame.Setup -> {
           FavoriteWidgetEmptyHeader(
             frame.text.title,
-            frame.text.subtitle.takeIf {
-              FavoriteWidgetPart.Context in presentation
-            },
-            large,
+            frame.text.subtitle.takeIf { FavoriteWidgetPart.Context in presentation },
+            presentation.headerLogo,
           )
-          Spacer(GlanceModifier.height(4.dp))
-          FavoriteWidgetText(frame.text.lead, 13, tone = PrismTextTone.Secondary)
-          FavoriteWidgetText(
-            frame.text.action,
-            presentation.heroSize,
-            textStep = 0,
-            maxLines = 1,
-          )
+          FavoriteWidgetHeroSpacer(presentation)
+          FavoriteWidgetText(frame.text.lead, 14, FavoriteWidgetSecondary, FavoriteWidgetWeight.Medium)
+          FavoriteWidgetText(frame.text.action, presentation.heroSize, textStep = 0, maxLines = 1)
           if (FavoriteWidgetPart.Context in presentation) {
-            FavoriteWidgetText(frame.text.instruction, 12, tone = PrismTextTone.Secondary)
+            FavoriteWidgetText(frame.text.instruction, 13, FavoriteWidgetSecondary)
           }
-          if (large) {
-            Spacer(GlanceModifier.defaultWeight())
-            TeamGhostHistory(frame.text.ghost, width, presentation.rows)
-          }
+          TeamGhostHistory(frame.text.ghost, presentation)
         }
 
         is FavoriteWidgetFrame.Placeholder -> {
-          FavoriteWidgetEmptyHeader(frame.text.title, null, large)
-          Spacer(GlanceModifier.height(4.dp))
+          FavoriteWidgetEmptyHeader(frame.text.title, null, presentation.headerLogo)
+          FavoriteWidgetHeroSpacer(presentation)
           FavoriteWidgetText(frame.text.value, presentation.heroSize, textStep = 0, maxLines = 1)
-          if (large) {
-            Spacer(GlanceModifier.defaultWeight())
-            TeamGhostHistory(frame.text.ghost, width, presentation.rows)
-          }
+          TeamGhostHistory(frame.text.ghost, presentation)
         }
 
         is FavoriteWidgetFrame.Team -> TeamPresentationLayout(
@@ -266,40 +306,53 @@ internal fun TeamWidgetLayout(frame: FavoriteWidgetFrame, logos: WidgetBitmaps) 
 }
 
 @Composable
-private fun TeamGhostHistory(heading: String, width: Dp, rowCount: Int) {
-  val rowHeight = 34.dp
-  if (rowCount == 0) return
-  Column {
-    FavoriteWidgetText(heading, 12, PrismTextTone.Secondary)
-    for (barWidth in listOf(118.dp, 84.dp, 140.dp, 96.dp).take(rowCount)) {
-      Row(GlanceModifier.fillMaxWidth().height(rowHeight), verticalAlignment = Alignment.Vertical.CenterVertically) {
-        Box(GlanceModifier.size(22.dp).cornerRadius(6.dp).background(GlanceTheme.colors.secondaryContainer)) {}
-        Spacer(GlanceModifier.width(10.dp))
-        Box(
-          GlanceModifier.width(barWidth).height(10.dp).cornerRadius(5.dp)
-            .background(GlanceTheme.colors.secondaryContainer),
-        ) {}
+private fun ColumnScope.TeamGhostHistory(heading: String, presentation: FavoriteWidgetPresentation) {
+  if (presentation.rows == 0) return
+  Spacer(GlanceModifier.height(presentation.heroGap))
+  FavoriteWidgetCard(
+    heading,
+    GlanceModifier.defaultWeight(),
+    listOf(118.dp, 84.dp, 140.dp, 96.dp).take(presentation.rows).map { barWidth ->
+      @Composable {
+        Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
+          Box(
+            GlanceModifier.size(TeamRowLogo).cornerRadius(6.dp).background(FavoriteWidgetCardOutline),
+          ) {}
+          Spacer(GlanceModifier.width(TeamRowGap))
+          Box(
+            GlanceModifier.width(barWidth).height(10.dp).cornerRadius(5.dp)
+              .background(FavoriteWidgetCardOutline),
+          ) {}
+        }
       }
-    }
-  }
+    },
+  )
 }
 
 @Composable
-private fun TeamPresentationLayout(
+private fun ColumnScope.TeamPresentationLayout(
   value: TeamPresentation,
   logos: WidgetBitmaps,
   width: Dp,
   presentation: FavoriteWidgetPresentation,
 ) {
-  val large = presentation.large
-  val logoSize = if (large) 40.dp else 28.dp
+  val logoSize = presentation.headerLogo
+  val formCount = if (FavoriteWidgetPart.Form in presentation) value.body.formSize else 0
+  val form = FavoriteWidgetTypography(LocalContext.current)
+    .roundedToPixel(FavoriteWidgetDotSize + FavoriteWidgetDotGap) * formCount
   Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
     FavoriteWidgetLogo(value.header.team, logos, logoSize)
-    Spacer(GlanceModifier.width(8.dp))
+    Spacer(GlanceModifier.width(FavoriteWidgetHeaderGap))
     Column(GlanceModifier.defaultWeight()) {
-      FavoriteWidgetText(value.header.title, 15, properName = true)
+      FavoriteWidgetText(
+        value.header.title,
+        16,
+        weight = FavoriteWidgetWeight.Medium,
+        properName = true,
+        width = width - logoSize - FavoriteWidgetHeaderGap - form,
+      )
       if (value.header.ranking.isNotEmpty()) {
-        FavoriteWidgetText(value.header.ranking, 12, PrismTextTone.Secondary, maxLines = 1)
+        FavoriteWidgetText(value.header.ranking, 13, FavoriteWidgetSecondary, maxLines = 1)
       }
     }
     if (FavoriteWidgetPart.Form in presentation) {
@@ -308,285 +361,226 @@ private fun TeamPresentationLayout(
           is TeamDisplayBody.Visible -> body.form.forEach {
             FavoriteWidgetDot(
               it.label,
-              it.mark != FormMark.Loss,
-              it.mark == FormMark.Live,
-              empty =
-              it.mark == FormMark.Empty,
+              when (it.mark) {
+                FormMark.Win -> FavoriteWidgetDotStyle.Win
+                FormMark.Loss -> FavoriteWidgetDotStyle.Loss
+                FormMark.Live -> FavoriteWidgetDotStyle.Live
+                FormMark.Empty -> FavoriteWidgetDotStyle.Empty
+              },
             )
           }
 
           is TeamDisplayBody.Hidden -> body.form.forEach {
-            FavoriteWidgetDot(it.label, true, it.mark == NeutralFormMark.Live)
+            FavoriteWidgetDot(
+              it.label,
+              if (it.mark == NeutralFormMark.Live) FavoriteWidgetDotStyle.Live else FavoriteWidgetDotStyle.Played,
+            )
           }
         }
       }
     }
   }
-  Spacer(GlanceModifier.height(4.dp))
+  val hero = teamHero(value.body)
+  FavoriteWidgetHeroSpacer(presentation)
+  TeamHero(hero, logos, width, presentation)
+  if (hero.pills != null && FavoriteWidgetPart.Pills in presentation) {
+    FavoriteWidgetMapPills(hero.pills)
+  } else if (hero.context != null && FavoriteWidgetPart.Context in presentation) {
+    FavoriteWidgetText(hero.context, 13, FavoriteWidgetSecondary)
+  }
+  if (presentation.rows == 0) return
   when (val body = value.body) {
-    is TeamDisplayBody.Visible -> {
-      TeamVisibleHero(body.hero, logos, width, presentation)
-      body.detail?.let { detail ->
-        val rowCount = presentation.rows
-        if (rowCount > 0) {
-          Spacer(GlanceModifier.height(6.dp))
-          TeamDetailLayout(detail, logos, width, rowCount, presentation.rowHeight)
-        }
-      }
+    is TeamDisplayBody.Visible -> body.detail?.let { detail ->
+      Spacer(GlanceModifier.height(presentation.heroGap))
+      TeamDetailCard(detail, logos, width - FavoriteWidgetCardPadding * 2, presentation.rows)
     }
 
-    is TeamDisplayBody.Hidden -> {
-      TeamHiddenHero(body.hero, logos, width, presentation)
-      body.history?.let {
-        val rowCount = presentation.rows
-        if (rowCount > 0) {
-          Spacer(GlanceModifier.height(6.dp))
-          TeamNeutralHistory(it, logos, width, rowCount, presentation.rowHeight)
-        }
-      }
+    is TeamDisplayBody.Hidden -> body.history?.let {
+      Spacer(GlanceModifier.height(presentation.heroGap))
+      TeamNeutralHistory(it, logos, width - FavoriteWidgetCardPadding * 2, presentation.rows)
     }
   }
 }
 
 @Composable
-private fun TeamVisibleHero(
-  hero: TeamHeroText,
-  logos: WidgetBitmaps,
-  width: Dp,
-  presentation: FavoriteWidgetPresentation,
-) {
-  when (hero) {
-    is TeamHeroText.Upcoming -> {
-      TeamHero(hero.lead, hero.value, hero.opponent, logos, width, presentation.heroSize, day = hero.day)
-      if (FavoriteWidgetPart.Context in
-        presentation
-      ) {
-        FavoriteWidgetText(hero.context, 12, PrismTextTone.Secondary)
-      }
-    }
-
-    is TeamHeroText.Live -> {
-      TeamHero(hero.lead, hero.value, hero.opponent, logos, width, presentation.heroSize, liveLabel = hero.liveLabel)
-      when (val below = hero.below) {
-        is TeamLiveBelow.Pills -> if (FavoriteWidgetPart.Pills in
-          presentation
-        ) {
-          FavoriteWidgetMapPills(below.items)
-        }
-
-        is TeamLiveBelow.Context ->
-          if (FavoriteWidgetPart.Context in
-            presentation
-          ) {
-            FavoriteWidgetText(below.text, 12, PrismTextTone.Secondary)
-          }
-      }
-    }
-
-    is TeamHeroText.Idle -> {
-      TeamHero(hero.lead, hero.value, hero.opponent, logos, width, presentation.heroSize)
-      if (FavoriteWidgetPart.Context in
-        presentation
-      ) {
-        FavoriteWidgetText(hero.context, 12, PrismTextTone.Secondary)
-      }
-    }
-  }
-}
-
-@Composable
-private fun TeamHiddenHero(
-  hero: NeutralTeamHeroText,
-  logos: WidgetBitmaps,
-  width: Dp,
-  presentation: FavoriteWidgetPresentation,
-) {
-  when (hero) {
-    is NeutralTeamHeroText.Upcoming -> TeamHero(
-      hero.lead,
-      hero.value,
-      hero.opponent,
-      logos,
-      width,
-      presentation.heroSize,
-      day = hero.day,
-    )
-
-    is NeutralTeamHeroText.Live -> TeamHero(
-      hero.lead,
-      hero.value,
-      hero.opponent,
-      logos,
-      width,
-      presentation.heroSize,
-      liveLabel = hero.liveLabel,
-    )
-
-    is NeutralTeamHeroText.Idle -> TeamHero(hero.lead, hero.value, hero.opponent, logos, width, presentation.heroSize)
-  }
-  if (FavoriteWidgetPart.Context in presentation) FavoriteWidgetText(hero.context, 12, PrismTextTone.Secondary)
-}
-
-@Composable
-private fun TeamHero(
-  lead: String,
-  value: String,
-  opponent: LogoMark?,
-  logos: WidgetBitmaps,
-  width: Dp,
-  heroSize: Int,
-  day: String? = null,
-  liveLabel: String? = null,
-) {
-  val textWidth = width - if (opponent == null) 0.dp else 52.dp
+private fun TeamHero(hero: TeamHeroParts, logos: WidgetBitmaps, width: Dp, presentation: FavoriteWidgetPresentation) {
+  val textWidth = width - if (hero.opponent == null) 0.dp else presentation.opponentLogo + 12.dp
   val typography = FavoriteWidgetTypography(LocalContext.current)
-  val labelWidth = typography.column(day ?: liveLabel, 12 - LocalFavoriteWidgetTextStep.current, textWidth, .45f)
+  val step = LocalFavoriteWidgetTextStep.current
+  val labelWidth = typography.column(hero.caption, 13 - step, textWidth, .45f, FavoriteWidgetWeight.Medium)
   val rowHeight = typography.heroHeight(
     FavoriteWidgetHeroMeasure(
-      lead,
-      value,
-      day ?: liveLabel,
+      hero.lead,
+      hero.value,
+      hero.caption,
       textWidth,
       labelWidth,
-      heroSize,
-      if (opponent == null) 0.dp else 44.dp,
-      opponent != null,
+      presentation.heroSize,
+      if (hero.opponent == null) 0.dp else presentation.opponentLogo,
+      hero.opponent != null,
     ),
-    LocalFavoriteWidgetTextStep.current,
+    step,
   )
+  val leadWidth = textWidth - if (hero.caption == null) 0.dp else labelWidth + FavoriteWidgetCaptionGap
   Row(GlanceModifier.fillMaxWidth().height(rowHeight), verticalAlignment = Alignment.Vertical.CenterVertically) {
     Column(GlanceModifier.defaultWeight()) {
       Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
         FavoriteWidgetText(
-          lead,
-          13,
-          properName = opponent != null,
+          hero.lead,
+          14,
+          weight = FavoriteWidgetWeight.Medium,
+          properName = hero.opponent != null,
           modifier = GlanceModifier.defaultWeight(),
+          width = leadWidth,
         )
-        day?.let {
+        hero.caption?.let {
           Spacer(GlanceModifier.width(FavoriteWidgetCaptionGap))
           FavoriteWidgetText(
             it,
-            12,
-            PrismTextTone.Secondary,
+            13,
+            if (hero.live) GlanceTheme.colors.error else FavoriteWidgetSecondary,
+            FavoriteWidgetWeight.Medium,
+            description = it.takeIf { hero.live },
             modifier = GlanceModifier.width(labelWidth),
-            align = androidx.glance.text.TextAlign.End,
-          )
-        }
-        liveLabel?.let {
-          Spacer(GlanceModifier.width(FavoriteWidgetCaptionGap))
-          FavoriteWidgetText(
-            it,
-            12,
-            PrismTextTone.Accent,
-            description = it,
-            modifier = GlanceModifier.width(labelWidth),
+            align = if (hero.live) TextAlign.Start else TextAlign.End,
           )
         }
       }
-      FavoriteWidgetText(value, heroSize, textStep = 0)
+      FavoriteWidgetText(hero.value, presentation.heroSize, textStep = 0, maxLines = 1)
     }
-    opponent?.let {
-      Spacer(GlanceModifier.width(8.dp))
-      FavoriteWidgetLogo(it, logos, 44.dp)
+    hero.opponent?.let {
+      Spacer(GlanceModifier.width(12.dp))
+      FavoriteWidgetLogo(it, logos, presentation.opponentLogo)
     }
   }
 }
 
-private data class TeamHistoryColumns(val mark: Dp, val date: Dp, val score: Dp, val name: Dp)
+private fun teamMapScoreWidth(typography: FavoriteWidgetTypography, score: String, width: Dp, textStep: Int): Dp =
+  typography.column(score, 17 - textStep, width, .35f, FavoriteWidgetWeight.Medium)
+
+private data class TeamHistoryColumns(val chip: DpSize, val date: Dp, val score: Dp, val name: Dp)
 
 private fun teamHistoryColumns(
   typography: FavoriteWidgetTypography,
-  mark: String,
-  date: String,
-  score: String,
+  row: TeamRowText,
   width: Dp,
   textStep: Int,
 ): TeamHistoryColumns {
-  val markWidth = typography.column(mark, 12 - textStep, width, .1f)
-  val dateWidth = typography.column(date, 12 - textStep, width, .25f)
-  val scoreWidth = typography.column(score, 17 - textStep, width, .25f)
-  return TeamHistoryColumns(markWidth, dateWidth, scoreWidth, width - markWidth - dateWidth - scoreWidth - 36.dp)
+  val chip = typography.chipSize(row.mark, textStep)
+  val dateWidth = typography.column(row.date, 12 - textStep, width, .25f)
+  val scoreWidth = typography.column(row.score, 16 - textStep, width, .25f, FavoriteWidgetWeight.Medium)
+  return TeamHistoryColumns(
+    chip,
+    dateWidth,
+    scoreWidth,
+    width - chip.width - TeamRowLogo - dateWidth - scoreWidth - TeamRowGap * 2 - 8.dp * 2,
+  )
 }
 
 @Composable
-private fun TeamDetailLayout(detail: TeamDetail, logos: WidgetBitmaps, width: Dp, rowCount: Int, rowHeight: Dp) {
+private fun ColumnScope.TeamDetailCard(detail: TeamDetail, logos: WidgetBitmaps, width: Dp, rowCount: Int) {
   val typography = FavoriteWidgetTypography(LocalContext.current)
   val step = LocalFavoriteWidgetTextStep.current
-  Column {
-    when (detail) {
-      is TeamDetail.Maps -> {
-        FavoriteWidgetText(detail.heading, 12, PrismTextTone.Secondary)
-        detail.rows.take(rowCount).forEach { map ->
-          val score = typography.column(map.score, 17 - step, width, .35f)
-          Row(
-            GlanceModifier.fillMaxWidth().height(rowHeight),
-            verticalAlignment = Alignment.Vertical.CenterVertically,
-          ) {
+  when (detail) {
+    is TeamDetail.Maps -> FavoriteWidgetCard(
+      detail.heading,
+      GlanceModifier.defaultWeight(),
+      detail.rows.take(rowCount).map { map ->
+        @Composable {
+          val score = teamMapScoreWidth(typography, map.score, width, step)
+          Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
             Column(GlanceModifier.defaultWeight()) {
-              FavoriteWidgetText(map.name, 15, properName = true)
-              map.subtitle?.let { FavoriteWidgetText(it, 12, PrismTextTone.Secondary) }
+              FavoriteWidgetText(
+                map.name,
+                15,
+                weight = FavoriteWidgetWeight.Medium,
+                properName = true,
+                width = width - TeamRowGap - score,
+              )
+              map.subtitle?.let { FavoriteWidgetText(it, 13, FavoriteWidgetSecondary) }
             }
-            FavoriteWidgetText(map.score, 17, map.tone.textTone(), maxLines = 1, modifier = GlanceModifier.width(score))
+            Spacer(GlanceModifier.width(TeamRowGap))
+            FavoriteWidgetText(
+              map.score,
+              17,
+              map.tone.color,
+              FavoriteWidgetWeight.Medium,
+              maxLines = 1,
+              modifier = GlanceModifier.width(score),
+              align = TextAlign.End,
+            )
           }
         }
-      }
+      },
+    )
 
-      is TeamDetail.History -> {
-        FavoriteWidgetText(detail.heading, 12, PrismTextTone.Secondary)
-        detail.rows.take(rowCount).forEach { row ->
-          val columns = teamHistoryColumns(typography, row.mark, row.date, row.score, width, step)
-          Row(
-            GlanceModifier.fillMaxWidth().height(rowHeight),
-            verticalAlignment = Alignment.Vertical.CenterVertically,
-          ) {
-            FavoriteWidgetText(
-              row.mark,
-              12,
-              if (row.tone == ResultTone.Win) PrismTextTone.Content else PrismTextTone.Secondary,
-              maxLines = 1,
-              modifier = GlanceModifier.width(columns.mark),
-            )
-            FavoriteWidgetLogo(row.opponent, logos, 22.dp)
-            Spacer(GlanceModifier.width(6.dp))
+    is TeamDetail.History -> FavoriteWidgetCard(
+      detail.heading,
+      GlanceModifier.defaultWeight(),
+      detail.rows.take(rowCount).map { row ->
+        @Composable {
+          val columns = teamHistoryColumns(typography, row, width, step)
+          val win = row.tone == ResultTone.Win
+          Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
+            FavoriteWidgetChip(row.mark, win, columns.chip)
+            Spacer(GlanceModifier.width(TeamRowGap))
+            FavoriteWidgetLogo(row.opponent, logos, TeamRowLogo)
+            Spacer(GlanceModifier.width(TeamRowGap))
             FavoriteWidgetText(row.name, 15, modifier = GlanceModifier.defaultWeight(), properName = true)
-            Spacer(GlanceModifier.width(4.dp))
-            FavoriteWidgetText(row.date, 12, PrismTextTone.Secondary, modifier = GlanceModifier.width(columns.date))
-            Spacer(GlanceModifier.width(4.dp))
+            Spacer(GlanceModifier.width(8.dp))
+            FavoriteWidgetText(
+              row.date,
+              12,
+              FavoriteWidgetSecondary,
+              modifier = GlanceModifier.width(columns.date),
+              align = TextAlign.End,
+            )
+            Spacer(GlanceModifier.width(8.dp))
             FavoriteWidgetText(
               row.score,
-              17,
-              if (row.tone == ResultTone.Win) PrismTextTone.Content else PrismTextTone.Secondary,
+              16,
+              if (win) GlanceTheme.colors.onSurface else FavoriteWidgetSecondary,
+              FavoriteWidgetWeight.Medium,
               maxLines = 1,
               modifier = GlanceModifier.width(columns.score),
+              align = TextAlign.End,
             )
           }
         }
-      }
-    }
+      },
+    )
   }
 }
 
 @Composable
-private fun TeamNeutralHistory(
+private fun ColumnScope.TeamNeutralHistory(
   history: NeutralTeamHistoryText,
   logos: WidgetBitmaps,
   width: Dp,
   rowCount: Int,
-  rowHeight: Dp,
 ) {
   val typography = FavoriteWidgetTypography(LocalContext.current)
-  Column {
-    FavoriteWidgetText(history.heading, 12, PrismTextTone.Secondary)
-    history.rows.take(rowCount).forEach { row ->
-      val date = typography.column(row.date, 12 - LocalFavoriteWidgetTextStep.current, width, .3f)
-      Row(GlanceModifier.fillMaxWidth().height(rowHeight), verticalAlignment = Alignment.Vertical.CenterVertically) {
-        FavoriteWidgetLogo(row.opponent, logos, 22.dp)
-        Spacer(GlanceModifier.width(8.dp))
-        FavoriteWidgetText(row.name, 15, modifier = GlanceModifier.defaultWeight(), properName = true)
-        Spacer(GlanceModifier.width(8.dp))
-        FavoriteWidgetText(row.date, 12, PrismTextTone.Secondary, modifier = GlanceModifier.width(date))
+  val step = LocalFavoriteWidgetTextStep.current
+  FavoriteWidgetCard(
+    history.heading,
+    GlanceModifier.defaultWeight(),
+    history.rows.take(rowCount).map { row ->
+      @Composable {
+        val date = typography.column(row.date, 12 - step, width, .3f)
+        Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
+          FavoriteWidgetLogo(row.opponent, logos, TeamRowLogo)
+          Spacer(GlanceModifier.width(TeamRowGap))
+          FavoriteWidgetText(row.name, 15, modifier = GlanceModifier.defaultWeight(), properName = true)
+          Spacer(GlanceModifier.width(TeamRowGap))
+          FavoriteWidgetText(
+            row.date,
+            12,
+            FavoriteWidgetSecondary,
+            modifier = GlanceModifier.width(date),
+            align = TextAlign.End,
+          )
+        }
       }
-    }
-  }
+    },
+  )
 }
