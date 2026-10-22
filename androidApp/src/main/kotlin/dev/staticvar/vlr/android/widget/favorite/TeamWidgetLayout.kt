@@ -86,9 +86,9 @@ internal class TeamWidgetMeasure(
       maxOf(
         if (detail.compact) 40.dp else 48.dp,
         TeamRowInset + maxOf(
-          text(row.name, 15, inner - score - TeamRowGap, true, FavoriteWidgetWeight.Medium) +
-            (row.subtitle?.let { text(it, 13, inner - score - TeamRowGap) } ?: 0.dp),
-          typography.height(row.score, 17, score, maxLines = 1, weight = FavoriteWidgetWeight.Medium),
+          text(row.name, FavoriteWidgetFont.Row, inner - score - TeamRowGap, true, FavoriteWidgetWeight.Medium) +
+            (row.subtitle?.let { text(it, FavoriteWidgetFont.Body, inner - score - TeamRowGap) } ?: 0.dp),
+          typography.height(row.score, FavoriteWidgetFont.Title, score, maxLines = 1, weight = FavoriteWidgetWeight.Medium),
         ),
       )
     } ?: 0.dp
@@ -100,21 +100,21 @@ internal class TeamWidgetMeasure(
         TeamRowInset + maxOf(
           columns.chip.height,
           TeamRowLogo,
-          text(row.name, 15, columns.name, properName = true),
-          text(row.date, 12, columns.date),
-          typography.height(row.score, 16, columns.score, maxLines = 1, weight = FavoriteWidgetWeight.Medium),
+          text(row.name, FavoriteWidgetFont.Row, columns.name, properName = true),
+          text(row.date, FavoriteWidgetFont.Label, columns.date),
+          typography.height(row.score, FavoriteWidgetFont.Title, columns.score, maxLines = 1, weight = FavoriteWidgetWeight.Medium),
         ),
       )
     } ?: 0.dp
 
     null -> history?.rows?.take(rows)?.maxOfOrNull { row ->
-      val date = typography.column(row.date, 12, inner, .3f)
+      val date = typography.column(row.date, FavoriteWidgetFont.Label, inner, .3f)
       maxOf(
         40.dp,
         TeamRowInset + maxOf(
           TeamRowLogo,
-          text(row.name, 15, inner - TeamRowLogo - TeamRowGap * 2 - date, properName = true),
-          text(row.date, 12, date),
+          text(row.name, FavoriteWidgetFont.Row, inner - TeamRowLogo - TeamRowGap * 2 - date, properName = true),
+          text(row.date, FavoriteWidgetFont.Label, date),
         ),
       )
     } ?: 40.dp
@@ -135,16 +135,16 @@ internal class TeamWidgetMeasure(
         val subtitle = frame.text.subtitle.takeIf { FavoriteWidgetPart.Context in fit }
         val header = maxOf(
           logoSize,
-          text(frame.text.title, 16, headerText, weight = FavoriteWidgetWeight.Medium) +
-            (subtitle?.let { text(it, 13, headerText) } ?: 0.dp),
+          text(frame.text.title, FavoriteWidgetFont.Title, headerText, weight = FavoriteWidgetWeight.Medium) +
+            (subtitle?.let { text(it, FavoriteWidgetFont.Body, headerText) } ?: 0.dp),
         )
-        header + fit.heroGap + text(frame.text.lead, 14, weight = FavoriteWidgetWeight.Medium) +
+        header + fit.heroGap + text(frame.text.lead, FavoriteWidgetFont.Body, weight = FavoriteWidgetWeight.Medium) +
           typography.height(frame.text.action, fit.heroSize, width, maxLines = 1) +
-          if (FavoriteWidgetPart.Context in fit) text(frame.text.instruction, 13) else 0.dp
+          if (FavoriteWidgetPart.Context in fit) text(frame.text.instruction, FavoriteWidgetFont.Body) else 0.dp
       }
 
       is FavoriteWidgetFrame.Placeholder ->
-        maxOf(logoSize, text(frame.text.title, 16, headerText, weight = FavoriteWidgetWeight.Medium)) +
+        maxOf(logoSize, text(frame.text.title, FavoriteWidgetFont.Title, headerText, weight = FavoriteWidgetWeight.Medium)) +
           fit.heroGap + typography.height(frame.text.value, fit.heroSize, width, maxLines = 1)
 
       is FavoriteWidgetFrame.Team -> {
@@ -154,17 +154,17 @@ internal class TeamWidgetMeasure(
           headerText - typography.roundedToPixel(FavoriteWidgetDotSize + FavoriteWidgetDotGap) * formCount
         val rank = if (FavoriteWidgetPart.RegionalRank in fit) content.header.ranking else frame.medium.header.ranking
         val rankHeight =
-          if (rank.isEmpty()) 0.dp else typography.height(rank, fit.textSize(13), headerWidth, maxLines = 1)
+          if (rank.isEmpty()) 0.dp else typography.height(rank, fit.textSize(FavoriteWidgetFont.Body), headerWidth, maxLines = 1)
         val header = maxOf(
           logoSize,
-          text(content.header.title, 16, headerWidth, properName = true, weight = FavoriteWidgetWeight.Medium) +
+          text(content.header.title, FavoriteWidgetFont.Title, headerWidth, properName = true, weight = FavoriteWidgetWeight.Medium) +
             rankHeight,
         )
         val hero = teamHero(content.body)
         val heroWidth = width - if (hero.opponent == null) 0.dp else fit.opponentLogo + 12.dp
         val labelWidth = typography.column(
           hero.caption,
-          fit.textSize(13),
+          fit.textSize(FavoriteWidgetFont.Body),
           heroWidth,
           .45f,
           FavoriteWidgetWeight.Medium,
@@ -185,7 +185,7 @@ internal class TeamWidgetMeasure(
         val below = if (hero.pills != null && FavoriteWidgetPart.Pills in fit) {
           typography.pillsHeight(hero.pills, width, fit.textStep)
         } else if (hero.context != null && FavoriteWidgetPart.Context in fit) {
-          text(hero.context, 13)
+          text(hero.context, FavoriteWidgetFont.Body)
         } else {
           0.dp
         }
@@ -271,10 +271,10 @@ internal fun TeamWidgetLayout(frame: FavoriteWidgetFrame, logos: WidgetBitmaps) 
             presentation.headerLogo,
           )
           FavoriteWidgetHeroSpacer(presentation)
-          FavoriteWidgetText(frame.text.lead, 14, FavoriteWidgetSecondary, FavoriteWidgetWeight.Medium)
+          FavoriteWidgetText(frame.text.lead, FavoriteWidgetFont.Body, FavoriteWidgetSecondary, FavoriteWidgetWeight.Medium)
           FavoriteWidgetText(frame.text.action, presentation.heroSize, textStep = 0, maxLines = 1)
           if (FavoriteWidgetPart.Context in presentation) {
-            FavoriteWidgetText(frame.text.instruction, 13, FavoriteWidgetSecondary)
+            FavoriteWidgetText(frame.text.instruction, FavoriteWidgetFont.Body, FavoriteWidgetSecondary)
           }
           TeamGhostHistory(frame.text.ghost, presentation)
         }
@@ -346,13 +346,13 @@ private fun ColumnScope.TeamPresentationLayout(
     Column(GlanceModifier.defaultWeight()) {
       FavoriteWidgetText(
         value.header.title,
-        16,
+        FavoriteWidgetFont.Title,
         weight = FavoriteWidgetWeight.Medium,
         properName = true,
         width = width - logoSize - FavoriteWidgetHeaderGap - form,
       )
       if (value.header.ranking.isNotEmpty()) {
-        FavoriteWidgetText(value.header.ranking, 13, FavoriteWidgetSecondary, maxLines = 1)
+        FavoriteWidgetText(value.header.ranking, FavoriteWidgetFont.Body, FavoriteWidgetSecondary, maxLines = 1)
       }
     }
     if (FavoriteWidgetPart.Form in presentation) {
@@ -386,7 +386,7 @@ private fun ColumnScope.TeamPresentationLayout(
   if (hero.pills != null && FavoriteWidgetPart.Pills in presentation) {
     FavoriteWidgetMapPills(hero.pills)
   } else if (hero.context != null && FavoriteWidgetPart.Context in presentation) {
-    FavoriteWidgetText(hero.context, 13, FavoriteWidgetSecondary)
+    FavoriteWidgetText(hero.context, FavoriteWidgetFont.Body, FavoriteWidgetSecondary)
   }
   if (presentation.rows == 0) return
   when (val body = value.body) {
@@ -407,7 +407,7 @@ private fun TeamHero(hero: TeamHeroParts, logos: WidgetBitmaps, width: Dp, prese
   val textWidth = width - if (hero.opponent == null) 0.dp else presentation.opponentLogo + 12.dp
   val typography = FavoriteWidgetTypography(LocalContext.current)
   val step = LocalFavoriteWidgetTextStep.current
-  val labelWidth = typography.column(hero.caption, 13 - step, textWidth, .45f, FavoriteWidgetWeight.Medium)
+  val labelWidth = typography.column(hero.caption, FavoriteWidgetFont.Body - step, textWidth, .45f, FavoriteWidgetWeight.Medium)
   val rowHeight = typography.heroHeight(
     FavoriteWidgetHeroMeasure(
       hero.lead,
@@ -427,7 +427,7 @@ private fun TeamHero(hero: TeamHeroParts, logos: WidgetBitmaps, width: Dp, prese
       Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
         FavoriteWidgetText(
           hero.lead,
-          14,
+          FavoriteWidgetFont.Body,
           weight = FavoriteWidgetWeight.Medium,
           properName = hero.opponent != null,
           modifier = GlanceModifier.defaultWeight(),
@@ -437,7 +437,7 @@ private fun TeamHero(hero: TeamHeroParts, logos: WidgetBitmaps, width: Dp, prese
           Spacer(GlanceModifier.width(FavoriteWidgetCaptionGap))
           FavoriteWidgetText(
             it,
-            13,
+            FavoriteWidgetFont.Body,
             if (hero.live) GlanceTheme.colors.error else FavoriteWidgetSecondary,
             FavoriteWidgetWeight.Medium,
             description = it.takeIf { hero.live },
@@ -456,7 +456,7 @@ private fun TeamHero(hero: TeamHeroParts, logos: WidgetBitmaps, width: Dp, prese
 }
 
 private fun teamMapScoreWidth(typography: FavoriteWidgetTypography, score: String, width: Dp, textStep: Int): Dp =
-  typography.column(score, 17 - textStep, width, .35f, FavoriteWidgetWeight.Medium)
+  typography.column(score, FavoriteWidgetFont.Title - textStep, width, .35f, FavoriteWidgetWeight.Medium)
 
 private data class TeamHistoryColumns(val chip: DpSize, val date: Dp, val score: Dp, val name: Dp)
 
@@ -467,8 +467,8 @@ private fun teamHistoryColumns(
   textStep: Int,
 ): TeamHistoryColumns {
   val chip = typography.chipSize(row.mark, textStep)
-  val dateWidth = typography.column(row.date, 12 - textStep, width, .25f)
-  val scoreWidth = typography.column(row.score, 16 - textStep, width, .25f, FavoriteWidgetWeight.Medium)
+  val dateWidth = typography.column(row.date, FavoriteWidgetFont.Label - textStep, width, .25f)
+  val scoreWidth = typography.column(row.score, FavoriteWidgetFont.Title - textStep, width, .25f, FavoriteWidgetWeight.Medium)
   return TeamHistoryColumns(
     chip,
     dateWidth,
@@ -492,17 +492,17 @@ private fun ColumnScope.TeamDetailCard(detail: TeamDetail, logos: WidgetBitmaps,
             Column(GlanceModifier.defaultWeight()) {
               FavoriteWidgetText(
                 map.name,
-                15,
+                FavoriteWidgetFont.Row,
                 weight = FavoriteWidgetWeight.Medium,
                 properName = true,
                 width = width - TeamRowGap - score,
               )
-              map.subtitle?.let { FavoriteWidgetText(it, 13, FavoriteWidgetSecondary) }
+              map.subtitle?.let { FavoriteWidgetText(it, FavoriteWidgetFont.Body, FavoriteWidgetSecondary) }
             }
             Spacer(GlanceModifier.width(TeamRowGap))
             FavoriteWidgetText(
               map.score,
-              17,
+              FavoriteWidgetFont.Title,
               map.tone.color,
               FavoriteWidgetWeight.Medium,
               maxLines = 1,
@@ -526,11 +526,11 @@ private fun ColumnScope.TeamDetailCard(detail: TeamDetail, logos: WidgetBitmaps,
             Spacer(GlanceModifier.width(TeamRowGap))
             FavoriteWidgetLogo(row.opponent, logos, TeamRowLogo)
             Spacer(GlanceModifier.width(TeamRowGap))
-            FavoriteWidgetText(row.name, 15, modifier = GlanceModifier.defaultWeight(), properName = true)
+            FavoriteWidgetText(row.name, FavoriteWidgetFont.Row, modifier = GlanceModifier.defaultWeight(), properName = true)
             Spacer(GlanceModifier.width(8.dp))
             FavoriteWidgetText(
               row.date,
-              12,
+              FavoriteWidgetFont.Label,
               FavoriteWidgetSecondary,
               modifier = GlanceModifier.width(columns.date),
               align = TextAlign.End,
@@ -538,7 +538,7 @@ private fun ColumnScope.TeamDetailCard(detail: TeamDetail, logos: WidgetBitmaps,
             Spacer(GlanceModifier.width(8.dp))
             FavoriteWidgetText(
               row.score,
-              16,
+              FavoriteWidgetFont.Title,
               if (win) GlanceTheme.colors.onSurface else FavoriteWidgetSecondary,
               FavoriteWidgetWeight.Medium,
               maxLines = 1,
@@ -566,15 +566,15 @@ private fun ColumnScope.TeamNeutralHistory(
     GlanceModifier.defaultWeight(),
     history.rows.take(rowCount).map { row ->
       @Composable {
-        val date = typography.column(row.date, 12 - step, width, .3f)
+        val date = typography.column(row.date, FavoriteWidgetFont.Label - step, width, .3f)
         Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
           FavoriteWidgetLogo(row.opponent, logos, TeamRowLogo)
           Spacer(GlanceModifier.width(TeamRowGap))
-          FavoriteWidgetText(row.name, 15, modifier = GlanceModifier.defaultWeight(), properName = true)
+          FavoriteWidgetText(row.name, FavoriteWidgetFont.Row, modifier = GlanceModifier.defaultWeight(), properName = true)
           Spacer(GlanceModifier.width(TeamRowGap))
           FavoriteWidgetText(
             row.date,
-            12,
+            FavoriteWidgetFont.Label,
             FavoriteWidgetSecondary,
             modifier = GlanceModifier.width(date),
             align = TextAlign.End,

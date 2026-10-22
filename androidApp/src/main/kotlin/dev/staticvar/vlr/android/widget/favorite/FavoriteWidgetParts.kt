@@ -162,18 +162,26 @@ private fun FavoriteWidgetPresentation.fittingWidth(
   return fitted
 }
 
-private const val FavoriteWidgetHeroMin = 20
+private const val FavoriteWidgetHeroMin = 18
 private const val FavoriteWidgetMaxTextStep = 9
 
-internal fun favoriteWidgetHeroFloor(size: DpSize): Int = if (size.height < 158.dp) 32 else 40
+internal fun favoriteWidgetHeroFloor(size: DpSize): Int = if (size.height < 158.dp) 28 else 34
 
 internal fun favoriteWidgetHeroStart(size: DpSize, large: Boolean): Int = when {
   size.height < 158.dp -> favoriteWidgetHeroFloor(size)
-  large -> 56
-  else -> 48
+  large -> 44
+  else -> 40
 }
 
 private const val Ellipsis = "…"
+
+// Text sizes in sp before the fit ladder subtracts its text step.
+internal object FavoriteWidgetFont {
+  const val Title = 14
+  const val Row = 13
+  const val Body = 12
+  const val Label = 11
+}
 
 internal val LocalFavoriteWidgetTextStep = staticCompositionLocalOf { 0 }
 internal val FavoriteWidgetCaptionGap = 6.dp
@@ -211,12 +219,12 @@ internal class FavoriteWidgetTypography(context: Context) {
     val lead = maxOf(
       height(
         hero.lead,
-        14 - textStep,
+        FavoriteWidgetFont.Body - textStep,
         hero.width - hero.captionWidth - gap,
         properName = hero.properName,
         weight = FavoriteWidgetWeight.Medium,
       ),
-      hero.caption?.let { height(it, 13 - textStep, hero.captionWidth, weight = FavoriteWidgetWeight.Medium) } ?: 0.dp,
+      hero.caption?.let { height(it, FavoriteWidgetFont.Body - textStep, hero.captionWidth, weight = FavoriteWidgetWeight.Medium) } ?: 0.dp,
     )
     return maxOf(
       roundedToPixel(hero.minimumHeight),
@@ -418,8 +426,8 @@ internal fun FavoriteWidgetEmptyHeader(title: String, subtitle: String?, logoSiz
     Box(GlanceModifier.size(logoSize).cornerRadius(logoSize / 4).background(GlanceTheme.colors.secondaryContainer)) {}
     Spacer(GlanceModifier.width(FavoriteWidgetHeaderGap))
     Column(GlanceModifier.defaultWeight()) {
-      FavoriteWidgetText(title, 16, weight = FavoriteWidgetWeight.Medium)
-      subtitle?.let { FavoriteWidgetText(it, 13, FavoriteWidgetSecondary) }
+      FavoriteWidgetText(title, FavoriteWidgetFont.Title, weight = FavoriteWidgetWeight.Medium)
+      subtitle?.let { FavoriteWidgetText(it, FavoriteWidgetFont.Body, FavoriteWidgetSecondary) }
     }
   }
 }
@@ -436,7 +444,7 @@ internal val FavoriteWidgetPillPadding = 6.dp
 internal fun FavoriteWidgetTypography.pillsHeight(items: List<PillText>, width: Dp, textStep: Int): Dp {
   val pillWidth = (width - FavoriteWidgetPillGap * (items.size - 1)) / items.size - FavoriteWidgetPillPadding * 2
   return 8.dp + FavoriteWidgetPillPadding + items.maxOf {
-    height(it.text, 12 - textStep, pillWidth, maxLines = 1, weight = FavoriteWidgetWeight.Medium)
+    height(it.text, FavoriteWidgetFont.Label - textStep, pillWidth, maxLines = 1, weight = FavoriteWidgetWeight.Medium)
   }
 }
 
@@ -455,7 +463,7 @@ internal fun FavoriteWidgetMapPills(items: List<PillText>) {
           .padding(horizontal = FavoriteWidgetPillPadding, vertical = FavoriteWidgetPillPadding / 2),
         contentAlignment = Alignment.Center,
       ) {
-        FavoriteWidgetText(pill.text, 12, content, FavoriteWidgetWeight.Medium, maxLines = 1, align = TextAlign.Center)
+        FavoriteWidgetText(pill.text, FavoriteWidgetFont.Label, content, FavoriteWidgetWeight.Medium, maxLines = 1, align = TextAlign.Center)
       }
     }
   }
@@ -468,7 +476,7 @@ internal val PillTone.color: ColorProvider @Composable get() = when (this) {
 }
 
 internal fun FavoriteWidgetTypography.cardChrome(heading: String, width: Dp, rows: Int, textStep: Int): Dp =
-  FavoriteWidgetCardTop + height(heading, 12 - textStep, width, weight = FavoriteWidgetWeight.Medium) +
+  FavoriteWidgetCardTop + height(heading, FavoriteWidgetFont.Label - textStep, width, weight = FavoriteWidgetWeight.Medium) +
     FavoriteWidgetCardBottom + FavoriteWidgetDivider * (rows - 1)
 
 internal val FavoriteWidgetCardColor: ColorProvider @Composable get() = GlanceTheme.colors.secondaryContainer
@@ -488,7 +496,7 @@ internal fun FavoriteWidgetCard(
   ) {
     FavoriteWidgetText(
       heading,
-      12,
+      FavoriteWidgetFont.Label,
       GlanceTheme.colors.primary,
       FavoriteWidgetWeight.Medium,
       modifier = GlanceModifier.padding(top = FavoriteWidgetCardTop),
@@ -511,7 +519,7 @@ internal fun FavoriteWidgetChip(text: String, win: Boolean, size: DpSize) {
   ) {
     FavoriteWidgetText(
       text,
-      11,
+      FavoriteWidgetFont.Label,
       if (win) GlanceTheme.colors.onPrimary else GlanceTheme.colors.onSurfaceVariant,
       FavoriteWidgetWeight.Bold,
       maxLines = 1,
@@ -521,9 +529,9 @@ internal fun FavoriteWidgetChip(text: String, win: Boolean, size: DpSize) {
 }
 
 internal fun FavoriteWidgetTypography.chipSize(text: String, textStep: Int): DpSize {
-  val width = maxOf(22.dp, width(text, 11 - textStep, FavoriteWidgetWeight.Bold) + 10.dp)
+  val width = maxOf(22.dp, width(text, FavoriteWidgetFont.Label - textStep, FavoriteWidgetWeight.Bold) + 10.dp)
   return DpSize(
     width,
-    maxOf(22.dp, height(text, 11 - textStep, width, maxLines = 1, weight = FavoriteWidgetWeight.Bold)),
+    maxOf(22.dp, height(text, FavoriteWidgetFont.Label - textStep, width, maxLines = 1, weight = FavoriteWidgetWeight.Bold)),
   )
 }
