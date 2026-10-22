@@ -37,7 +37,7 @@ internal object TeamWidgetText {
     ),
   )
 
-  fun placeholder(key: WidgetKey?, locale: WidgetLocale): FavoriteWidgetFrame.Placeholder =
+  fun placeholder(key: WidgetKey?, locale: WidgetLocale, entityId: String): FavoriteWidgetFrame.Placeholder =
     FavoriteWidgetFrame.Placeholder(
       key,
       PlaceholderText(
@@ -45,7 +45,7 @@ internal object TeamWidgetText {
         locale.text(WidgetTextKey.LoadingTeam),
         locale.text(WidgetTextKey.TeamGhost),
       ),
-      WidgetTap.App,
+      WidgetTap.Team(entityId),
     )
 
   fun frame(

@@ -32,7 +32,7 @@ internal object TeamWidgetProgram {
     }
     val fetchAt = record.fetchAfter
     val frame = if (content == null) {
-      TeamWidgetText.placeholder(key, locale)
+      TeamWidgetText.placeholder(key, locale, key.entityId)
     } else {
       TeamWidgetText.frame(key, content, source.spoilersHidden, now, zone, locale)
     }

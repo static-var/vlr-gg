@@ -170,14 +170,24 @@ enum TeamWidgetSetup: Equatable {
 enum TeamWidgetEntryContent: Equatable {
     case needsTeam(TeamWidgetSetup)
     case content(TeamWidgetContent)
-    case placeholder
+    case placeholder(teamID: String?)
 
     static func make(_ content: TeamWidgetContent?, teamID: String?, clientID: String, source: UpcomingMatchesSnapshot?) -> Self {
         guard let source, !source.favoriteTeams.isEmpty else { return .needsTeam(.noFavorites) }
         guard let teamID, source.clientId == clientID,
               source.favoriteTeams.contains(where: { $0.id == teamID }) else { return .needsTeam(.chooseTeam) }
-        guard let content else { return .placeholder }
+        guard let content else { return .placeholder(teamID: teamID) }
         return .content(source.spoilersHidden ? content.redacted() : content)
+    }
+}
+
+extension TeamWidgetEntryContent {
+    var widgetURL: URL {
+        switch self {
+        case .content(let content): content.widgetURL
+        case .placeholder(let id): id.map { VLRWidgetContract.detailsURL(kind: "team", id: $0) } ?? VLRWidgetContract.appURL
+        case .needsTeam: VLRWidgetContract.appURL
+        }
     }
 }
 

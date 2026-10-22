@@ -35,7 +35,7 @@ final class TeamWidgetTests: XCTestCase {
             return .content(value)
         }
         let cases: [(TeamWidgetEntryContent, TimeInterval?)] = [
-            (.needsTeam(.chooseTeam), nil), (.needsTeam(.noFavorites), nil), (.placeholder, 900), (.content(live), 900), (.content(live.redacted()), 900),
+            (.needsTeam(.chooseTeam), nil), (.needsTeam(.noFavorites), nil), (.placeholder(teamID: "2"), 900), (.content(live), 900), (.content(live.redacted()), 900),
             (upcoming(-1), 300), (upcoming(0), 300), (upcoming(60), 60), (upcoming(86_400), 1_800),
             (upcoming(86_401), 7_200), (upcoming(nil), 7_200), (.content(idle), 7_200), (.content(idle.redacted()), 7_200),
         ]
@@ -201,13 +201,15 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(idle.redacted().heroURL, idle.heroURL)
         upcoming.state = .idle(nil)
         XCTAssertEqual(upcoming.heroURL, teamURL)
+        XCTAssertEqual(TeamWidgetEntryContent.placeholder(teamID: "2").widgetURL, teamURL)
+        XCTAssertEqual(TeamWidgetEntryContent.placeholder(teamID: nil).widgetURL, VLRWidgetContract.appURL)
     }
 
     @MainActor
     func testPlaceholderRendersRedactedSampleInBothFamilies() throws {
         let directory = try renderDirectory()
         for (name, family, height) in [("medium", WidgetFamily.systemMedium, CGFloat(158)), ("large", .systemLarge, 354)] {
-            let view = TeamWidgetView(entry: .init(date: now, content: .placeholder), familyOverride: family)
+            let view = TeamWidgetView(entry: .init(date: now, content: .placeholder(teamID: nil)), familyOverride: family)
                 .frame(width: 338, height: height)
                 .background(PrismWidgetPalette.background(for: .light))
                 .environment(\.colorScheme, .light).environment(\.locale, locale).environment(\.timeZone, zone)

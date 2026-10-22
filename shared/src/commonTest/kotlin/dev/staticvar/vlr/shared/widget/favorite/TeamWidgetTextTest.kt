@@ -378,9 +378,9 @@ internal class TeamWidgetTextTest {
       empty.text,
     )
     assertEquals(WidgetTap.App, empty.tap)
-    val placeholder = TeamWidgetText.placeholder(key, locale)
+    val placeholder = TeamWidgetText.placeholder(key, locale, key.entityId)
     assertEquals(PlaceholderText("Team", "Loading team…", "Recent results show here"), placeholder.text)
-    assertEquals(WidgetTap.App, placeholder.tap)
+    assertEquals(WidgetTap.Team(key.entityId), placeholder.tap)
   }
 
   @Test

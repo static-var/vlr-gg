@@ -9,7 +9,7 @@ struct TeamWidgetEntry: TimelineEntry {
 @available(iOS 17.0, *)
 struct TeamWidgetProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> TeamWidgetEntry {
-        TeamWidgetEntry(date: .now, content: .placeholder)
+        TeamWidgetEntry(date: .now, content: .placeholder(teamID: nil))
     }
 
     func snapshot(for configuration: TeamWidgetIntent, in context: Context) async -> TeamWidgetEntry {
@@ -91,13 +91,8 @@ struct TeamWidgetView: View {
         }
         .foregroundStyle(palette.ink)
         .padding(16)
-        .widgetURL(widgetURL)
+        .widgetURL(entry.content.widgetURL)
         .containerBackground(PrismWidgetPalette.background(for: colorScheme), for: .widget)
-    }
-
-    private var widgetURL: URL {
-        if case .content(let content) = entry.content { return content.widgetURL }
-        return VLRWidgetContract.appURL
     }
 
     private func needsTeam(_ setup: TeamWidgetSetup) -> some View {
