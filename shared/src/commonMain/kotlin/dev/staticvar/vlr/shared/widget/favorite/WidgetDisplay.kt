@@ -9,8 +9,10 @@ enum class ResultTone { Win, Loss }
 enum class PillTone { Won, Lost, Live, Next }
 
 sealed interface WidgetTap {
-  data class Match(val id: String) : WidgetTap
-  data class Event(val id: String) : WidgetTap
+  sealed interface Entity : WidgetTap
+  data class Match(val id: String) : Entity
+  data class Event(val id: String) : Entity
+  data class Team(val id: String) : Entity
   data object Chooser : WidgetTap
   data object App : WidgetTap
 }
@@ -88,6 +90,7 @@ sealed interface TeamHeroText {
   val lead: String
   val value: String
   val opponent: LogoMark?
+  val tap: WidgetTap.Entity?
 
   data class Upcoming(
     override val lead: String,
@@ -95,6 +98,7 @@ sealed interface TeamHeroText {
     val context: String,
     override val opponent: LogoMark,
     val day: String?,
+    override val tap: WidgetTap.Entity?,
   ) : TeamHeroText
 
   data class Live(
@@ -103,6 +107,7 @@ sealed interface TeamHeroText {
     override val opponent: LogoMark?,
     val liveLabel: String,
     val below: TeamLiveBelow,
+    override val tap: WidgetTap.Entity?,
   ) : TeamHeroText
 
   data class Idle(
@@ -110,6 +115,7 @@ sealed interface TeamHeroText {
     override val value: String,
     val context: String,
     override val opponent: LogoMark?,
+    override val tap: WidgetTap.Entity?,
   ) : TeamHeroText
 }
 
@@ -123,6 +129,7 @@ sealed interface NeutralTeamHeroText {
   val value: String
   val context: String
   val opponent: LogoMark?
+  val tap: WidgetTap.Entity?
 
   data class Upcoming(
     override val lead: String,
@@ -130,6 +137,7 @@ sealed interface NeutralTeamHeroText {
     override val context: String,
     override val opponent: LogoMark,
     val day: String?,
+    override val tap: WidgetTap.Entity?,
   ) : NeutralTeamHeroText
 
   data class Live(
@@ -138,6 +146,7 @@ sealed interface NeutralTeamHeroText {
     override val context: String,
     override val opponent: LogoMark?,
     val liveLabel: String,
+    override val tap: WidgetTap.Entity?,
   ) : NeutralTeamHeroText
 
   data class Idle(
@@ -145,6 +154,7 @@ sealed interface NeutralTeamHeroText {
     override val value: String,
     override val context: String,
     override val opponent: LogoMark?,
+    override val tap: WidgetTap.Entity?,
   ) : NeutralTeamHeroText
 }
 
@@ -153,7 +163,7 @@ sealed interface TeamDetail {
   data class History(val heading: String, val rows: List<TeamRowText>) : TeamDetail
 }
 
-data class MapRowText(val name: String, val subtitle: String?, val score: String, val tone: PillTone)
+data class MapRowText(val name: String, val subtitle: String?, val score: String, val tone: PillTone, val tap: WidgetTap.Entity?)
 data class TeamRowText(
   val opponent: LogoMark.Named,
   val name: String,
@@ -161,9 +171,10 @@ data class TeamRowText(
   val mark: String,
   val score: String,
   val tone: ResultTone,
+  val tap: WidgetTap.Entity?,
 )
 
-data class NeutralTeamRowText(val opponent: LogoMark.Named, val name: String, val date: String)
+data class NeutralTeamRowText(val opponent: LogoMark.Named, val name: String, val date: String, val tap: WidgetTap.Entity?)
 data class NeutralTeamHistoryText(val heading: String, val rows: List<NeutralTeamRowText>)
 
 data class LogoPair(val left: LogoMark, val right: LogoMark)
@@ -187,6 +198,7 @@ data class ScheduledEventText(
   val time: String,
   val context: String,
   val pair: LogoPair,
+  val tap: WidgetTap.Entity?,
 )
 data class GapText(val lead: String, val value: String, val context: String)
 data class EndedText(val lead: String, val date: String, val context: String)
@@ -196,6 +208,7 @@ data class NeutralLiveText(
   val context: String,
   val liveLabel: String,
   val pair: LogoPair,
+  val tap: WidgetTap.Entity?,
 )
 data class LiveEventText(
   val lead: String,
@@ -205,12 +218,18 @@ data class LiveEventText(
   val beside: StageText,
   val pills: List<PillText>,
   val pair: LogoPair,
+  val tap: WidgetTap.Entity?,
 )
-data class VictoryText(val lead: String, val score: String, val context: String, val pair: LogoPair)
+data class VictoryText(val lead: String, val score: String, val context: String, val pair: LogoPair, val tap: WidgetTap.Entity?)
 
 sealed interface FinishedEventText {
-  data class Champion(val label: String, val name: String, val context: String, val logo: LogoMark.Named) :
-    FinishedEventText
+  data class Champion(
+    val label: String,
+    val name: String,
+    val context: String,
+    val logo: LogoMark.Named,
+    val tap: WidgetTap.Entity?,
+  ) : FinishedEventText
   data class Unconfirmed(val ended: EndedText) : FinishedEventText
 }
 
@@ -242,6 +261,7 @@ data class MatchRowText(
   val rightScore: String?,
   val loser: LoserSide?,
   val live: Boolean,
+  val tap: WidgetTap.Entity?,
 )
 data class NeutralRowText(
   val day: String,
@@ -252,6 +272,7 @@ data class NeutralRowText(
   val rightName: String,
   val round: String,
   val live: Boolean,
+  val tap: WidgetTap.Entity?,
 )
 data class MatchListText(val heading: String, val rows: List<MatchRowText>)
 data class NeutralListText(val heading: String, val rows: List<NeutralRowText>)
@@ -261,8 +282,9 @@ data class GroupRowText(
   val record: String,
   val maps: String,
   val favorite: Boolean,
+  val tap: WidgetTap.Entity?,
 )
-data class PrizeRowText(val position: String, val team: LogoMark.Named, val amount: String)
+data class PrizeRowText(val position: String, val team: LogoMark.Named, val amount: String, val tap: WidgetTap.Entity?)
 
 sealed interface UpcomingListText {
   data class Matches(val value: MatchListText) : UpcomingListText

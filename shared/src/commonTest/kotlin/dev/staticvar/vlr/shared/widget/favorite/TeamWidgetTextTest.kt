@@ -49,7 +49,9 @@ internal class TeamWidgetTextTest {
     assertEquals("Recent", recent.heading)
     assertEquals(listOf("Paper Rex", "DRX", "G2 Esports", "FNATIC"), recent.rows.map { it.name })
     assertEquals(listOf("2–1", "2–0", "1–2", "2–1"), recent.rows.map { it.score })
-    assertEquals(WidgetTap.Match("100"), frame.tap)
+    assertEquals(listOf("1", "2", "3", "4").map(WidgetTap::Match), recent.rows.map { it.tap })
+    assertEquals(WidgetTap.Match("100"), frame.heroTap())
+    assertEquals(WidgetTap.Team("2"), frame.tap)
   }
 
   @Test
@@ -120,7 +122,7 @@ internal class TeamWidgetTextTest {
       val detail = assertIs<TeamDetail.History>(assertIs<TeamDisplayBody.Visible>(frame.large.body).detail)
       assertEquals("Before that", detail.heading)
       assertEquals(listOf("DRX", "G2 Esports", "FNATIC", "LOUD"), detail.rows.map { it.name })
-      assertEquals(WidgetTap.App, frame.tap)
+      assertEquals(WidgetTap.Team("2"), frame.tap)
     }
   }
 
@@ -170,7 +172,7 @@ internal class TeamWidgetTextTest {
     )
     val large = assertIs<TeamHeroText.Live>(assertIs<TeamDisplayBody.Visible>(frame.large.body).hero)
     assertEquals(TeamLiveBelow.Context("Masters London · Upper final · Bo3"), large.below)
-    assertEquals(WidgetTap.Match("100"), frame.tap)
+    assertEquals(WidgetTap.Match("100"), frame.heroTap())
     val detail = assertIs<TeamDetail.Maps>(assertIs<TeamDisplayBody.Visible>(frame.large.body).detail)
     assertEquals("Maps", detail.heading)
     assertEquals(false, detail.compact)
@@ -265,7 +267,7 @@ internal class TeamWidgetTextTest {
     assertEquals("Recent", history.heading)
     assertEquals(listOf("Paper Rex", "DRX", "G2 Esports", "FNATIC"), history.rows.map { it.name })
     assertEquals(listOf("Oct 15", "Oct 12", "Oct 9", "Oct 5"), history.rows.map { it.date })
-    assertEquals(WidgetTap.Match("100"), frame.tap)
+    assertEquals(WidgetTap.Match("100"), frame.heroTap())
   }
 
   @Test
@@ -280,7 +282,7 @@ internal class TeamWidgetTextTest {
     val history = assertIs<TeamDisplayBody.Hidden>(frame.large.body).history!!
     assertEquals("Before that", history.heading)
     assertEquals(listOf("DRX", "G2 Esports", "FNATIC", "LOUD"), history.rows.map { it.name })
-    assertEquals(WidgetTap.App, frame.tap)
+    assertEquals(WidgetTap.Team("2"), frame.tap)
   }
 
   @Test
@@ -294,7 +296,7 @@ internal class TeamWidgetTextTest {
       assertEquals("Masters London · Upper final · Bo3", hero.context)
     }
     assertEquals("Recent", assertIs<TeamDisplayBody.Hidden>(frame.large.body).history!!.heading)
-    assertEquals(WidgetTap.Match("100"), frame.tap)
+    assertEquals(WidgetTap.Match("100"), frame.heroTap())
   }
 
   @Test
@@ -416,4 +418,9 @@ internal class TeamWidgetTextTest {
 
   private fun result(id: String, day: String, name: String, result: ResultKind, score: WidgetScore): TeamResult =
     TeamResult(id, LocalDate.parse(day), WidgetTeam(id, name, logo = "history-$id"), result, score)
+}
+
+internal fun FavoriteWidgetFrame.heroTap(): WidgetTap.Entity? = when (val body = assertIs<FavoriteWidgetFrame.Team>(this).medium.body) {
+  is TeamDisplayBody.Visible -> body.hero.tap
+  is TeamDisplayBody.Hidden -> body.hero.tap
 }

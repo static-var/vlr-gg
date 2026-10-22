@@ -148,7 +148,7 @@ class FavoriteWidgetLogoLoaderTest {
   private fun frame(sources: List<String>): FavoriteWidgetFrame {
     val presentation = TeamPresentation(
       TeamHeaderText(LogoMark.Named("Team", "TEAM", null, "TEA"), "Team", ""),
-      TeamDisplayBody.Visible(TeamHeroText.Idle("", "", "", null), emptyList(), null),
+      TeamDisplayBody.Visible(TeamHeroText.Idle("", "", "", null, null), emptyList(), null),
     )
     return FavoriteWidgetFrame.Team(
       requireNotNull(WidgetKey.parse(WidgetKind.Team, "team", "client")),

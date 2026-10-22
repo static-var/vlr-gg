@@ -18,6 +18,8 @@ internal fun dotJoin(vararg values: String?): String =
 internal fun logoMark(value: WidgetTeam): LogoMark.Named =
   LogoMark.Named(value.name, value.tag, value.logo, (value.tag ?: value.name.firstCodePoints(3).trimEnd()).uppercase())
 
+internal fun teamTap(value: WidgetTeam): WidgetTap.Entity? = value.id?.takeIf(String::isNotBlank)?.let(WidgetTap::Team)
+
 internal fun pillTone(value: WidgetMapStatus): PillTone = when (value) {
   WidgetMapStatus.Won -> PillTone.Won
   WidgetMapStatus.Lost -> PillTone.Lost

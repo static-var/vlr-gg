@@ -56,11 +56,7 @@ internal object TeamWidgetText {
     zone: TimeZone,
     locale: WidgetLocale,
   ): FavoriteWidgetFrame.Team {
-    val tap = when (val state = content.state) {
-      is TeamState.Upcoming -> WidgetTap.Match(state.fixture.id)
-      is TeamState.Live -> WidgetTap.Match(state.fixture.id)
-      is TeamState.Idle -> WidgetTap.App
-    }
+    val tap = teamTap(content.header.team) ?: WidgetTap.App
     if (hidden) {
       val neutral = TeamWidgetRules.hide(content)
       return FavoriteWidgetFrame.Team(
@@ -104,7 +100,7 @@ internal object TeamWidgetText {
   ): TeamPresentation {
     val rows = if (large) {
       TeamWidgetRules.history(content).map {
-        NeutralTeamRowText(logoMark(it.opponent), it.opponent.name, dayText(it.day, locale))
+        NeutralTeamRowText(logoMark(it.opponent), it.opponent.name, dayText(it.day, locale), WidgetTap.Match(it.id))
       }
     } else {
       emptyList()
@@ -170,6 +166,7 @@ internal object TeamWidgetText {
         opponent = state.fixture.opponent?.let(::logoMark),
         liveLabel = locale.text(WidgetTextKey.Live),
         below = if (pills.isEmpty()) TeamLiveBelow.Context(context(state.fixture)) else TeamLiveBelow.Pills(pills),
+        tap = WidgetTap.Match(state.fixture.id),
       )
     }
 
@@ -188,6 +185,7 @@ internal object TeamWidgetText {
         value = it.score?.text ?: "–",
         context = dotJoin(dayText(it.day, locale), locale.text(WidgetTextKey.NoMatchScheduled)),
         opponent = logoMark(it.opponent),
+        tap = WidgetTap.Match(it.id),
       )
     } ?: emptyHero(locale)
   }
@@ -195,7 +193,7 @@ internal object TeamWidgetText {
   private fun hero(state: HiddenTeamState, now: Instant, zone: TimeZone, locale: WidgetLocale): NeutralTeamHeroText =
     when (state) {
       is HiddenTeamState.Upcoming -> upcoming(state.fixture, now, zone, locale).let {
-        NeutralTeamHeroText.Upcoming(it.lead, it.value, it.context, it.opponent, day = it.day)
+        NeutralTeamHeroText.Upcoming(it.lead, it.value, it.context, it.opponent, day = it.day, tap = it.tap)
       }
 
       is HiddenTeamState.Live -> NeutralTeamHeroText.Live(
@@ -204,6 +202,7 @@ internal object TeamWidgetText {
         context = dotJoin(locale.text(WidgetTextKey.ScoresHidden), state.fixture.format?.label),
         liveLabel = locale.text(WidgetTextKey.Live),
         opponent = state.fixture.opponent?.let(::logoMark),
+        tap = WidgetTap.Match(state.fixture.id),
       )
 
       is HiddenTeamState.Idle -> state.latest?.let {
@@ -212,8 +211,9 @@ internal object TeamWidgetText {
           dayText(it.day, locale),
           locale.text(WidgetTextKey.HiddenNoMatchScheduled),
           logoMark(it.opponent),
+          WidgetTap.Match(it.id),
         )
-      } ?: emptyHero(locale).let { NeutralTeamHeroText.Idle(it.lead, it.value, it.context, null) }
+      } ?: emptyHero(locale).let { NeutralTeamHeroText.Idle(it.lead, it.value, it.context, null, null) }
     }
 
   private fun upcoming(
@@ -236,12 +236,14 @@ internal object TeamWidgetText {
         context(fixture)
       },
       opponent = fixture.opponent?.let(::logoMark) ?: LogoMark.Undecided,
+      tap = WidgetTap.Match(fixture.id),
     )
   }
 
   private fun detail(content: TeamContent, locale: WidgetLocale): TeamDetail? {
-    val maps = (content.state as? TeamState.Live)?.maps.orEmpty()
-    if (maps.isNotEmpty()) {
+    val live = content.state as? TeamState.Live
+    val maps = live?.maps.orEmpty()
+    if (live != null && maps.isNotEmpty()) {
       val compact = maps.size > 3
       return TeamDetail.Maps(
         locale.text(WidgetTextKey.Maps),
@@ -251,6 +253,7 @@ internal object TeamWidgetText {
             if (compact) null else WidgetSeriesRules.mapSubtitle(it, locale),
             WidgetSeriesRules.mapScoreText(it, locale),
             pillTone(it.status),
+            WidgetTap.Match(live.fixture.id),
           )
         },
         compact,
@@ -264,6 +267,7 @@ internal object TeamWidgetText {
         locale.text(if (it.result == ResultKind.Win) WidgetTextKey.WinMark else WidgetTextKey.LossMark),
         it.score?.text ?: "–",
         if (it.result == ResultKind.Win) ResultTone.Win else ResultTone.Loss,
+        WidgetTap.Match(it.id),
       )
     }
     return rows.takeIf { it.isNotEmpty() }?.let {
@@ -278,6 +282,7 @@ internal object TeamWidgetText {
     locale.text(WidgetTextKey.SeasonStartsSoon),
     locale.text(WidgetTextKey.NoMatches),
     locale.text(WidgetTextKey.MatchNotListed),
+    null,
     null,
   )
 

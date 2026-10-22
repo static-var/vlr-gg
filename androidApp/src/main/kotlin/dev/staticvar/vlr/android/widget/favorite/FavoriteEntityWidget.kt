@@ -88,12 +88,17 @@ internal fun WidgetTap.intent(context: Context, appWidgetId: Int): Intent = when
 
   WidgetTap.App -> Intent(context, MainActivity::class.java)
 
-  is WidgetTap.Match -> entityIntent(context, "match", id)
-
-  is WidgetTap.Event -> entityIntent(context, "event", id)
+  is WidgetTap.Entity -> intent(context)
 }
 
-private fun entityIntent(context: Context, path: String, id: String) = Intent(context, MainActivity::class.java).apply {
-  data = Uri.Builder().scheme("https").authority("valesports.app").appendPath(path).appendPath(id).build()
-  flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+internal fun WidgetTap.Entity.intent(context: Context): Intent {
+  val (path, id) = when (this) {
+    is WidgetTap.Match -> "match" to id
+    is WidgetTap.Event -> "event" to id
+    is WidgetTap.Team -> "team" to id
+  }
+  return Intent(context, MainActivity::class.java).apply {
+    data = Uri.Builder().scheme("https").authority("valesports.app").appendPath(path).appendPath(id).build()
+    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+  }
 }
