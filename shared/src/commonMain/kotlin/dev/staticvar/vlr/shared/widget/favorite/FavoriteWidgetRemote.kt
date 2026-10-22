@@ -12,8 +12,10 @@ import io.ktor.http.encodeURLPathPart
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlin.time.Instant
 
 internal class FavoriteWidgetRemote(private val client: HttpClient, private val json: Json) {
   suspend fun team(key: WidgetKey): TeamContent = coroutineScope {
@@ -38,6 +40,20 @@ internal class FavoriteWidgetRemote(private val client: HttpClient, private val 
       }
     }
     TeamWidgetRules.content(profile.copy(team = profile.team.copy(id = key.entityId)), preview, details)
+  }
+
+  suspend fun event(key: WidgetKey, favorites: Set<String>, now: Instant, zone: TimeZone): EventData {
+    val profile = WidgetWireDecoders.event(at(ApiPaths.event(key.entityId.encodeURLPathPart())), key.entityId, now)
+    val data = EventWidgetMapper.normalize(profile)
+    val matchId = EventWidgetRules.detailMatchId(data, favorites, now, zone) ?: return data
+    val details = try {
+      WidgetWireDecoders.details(at(ApiPaths.match(matchId.encodeURLPathPart())))
+    } catch (cancelled: CancellationException) {
+      throw cancelled
+    } catch (_: Exception) {
+      null
+    }
+    return EventWidgetMapper.enrich(data, matchId, details)
   }
 
   private suspend fun at(path: String): JsonElement {

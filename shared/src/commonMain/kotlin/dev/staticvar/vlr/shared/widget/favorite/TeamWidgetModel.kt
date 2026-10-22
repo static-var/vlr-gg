@@ -80,7 +80,7 @@ internal data class TeamContent(
   val form: List<FormMark>,
   val history: List<TeamResult>,
   val state: TeamState,
-)
+) : FavoriteWidgetContent
 
 internal sealed interface HiddenTeamState {
   data class Upcoming(val fixture: TeamFixture) : HiddenTeamState

@@ -28,14 +28,20 @@ class FavoriteWidgetEngine internal constructor(
   fun project(request: WidgetRequest, stored: StoredWidgetRecord?, locale: WidgetLocale): WidgetProjection =
     when (val gate = request.gate()) {
       is WidgetGate.Setup -> WidgetProjection(
-        TeamWidgetText.setup(gate.reason, locale),
+        when (gate.kind) {
+          WidgetKind.Team -> TeamWidgetText.setup(gate.reason, locale)
+          WidgetKind.Event -> EventWidgetText.setup(gate.reason, locale)
+        },
         null,
         0,
         WidgetSchedule(null, null),
       )
 
       is WidgetGate.MissingClient -> WidgetProjection(
-        TeamWidgetText.placeholder(null, locale),
+        when (gate.kind) {
+          WidgetKind.Team -> TeamWidgetText.placeholder(null, locale)
+          WidgetKind.Event -> EventWidgetText.placeholder(null, locale, gate.entityId)
+        },
         null,
         0,
         WidgetSchedule(null, null),
@@ -45,24 +51,35 @@ class FavoriteWidgetEngine internal constructor(
         val record = WidgetCacheCodec.decode(stored, gate.key)
         if (record == null) {
           WidgetProjection(
-            TeamWidgetText.placeholder(gate.key, locale),
+            when (gate.key.kind) {
+              WidgetKind.Team -> TeamWidgetText.placeholder(gate.key, locale)
+              WidgetKind.Event -> EventWidgetText.placeholder(gate.key, locale, gate.key.entityId)
+            },
             gate.key,
             0,
             WidgetSchedule(null, request.now),
           )
         } else {
-          val cached = record.value as? CachedValue.Team
-          val fallback = record.origin == RecordOrigin.CachedFallback || request.now >= record.fetchAfter
-          val content = cached?.let {
-            if (fallback) TeamWidgetRules.expire(it.value, it.fetchedAt, request.now) else it.value
+          val projected = when (gate.key.kind) {
+            WidgetKind.Team -> TeamWidgetProgram.project(
+              gate.key,
+              gate.source,
+              record,
+              request.now,
+              request.timeZone,
+              locale,
+            )
+
+            WidgetKind.Event -> EventWidgetProgram.project(
+              gate.key,
+              gate.source,
+              record,
+              request.now,
+              request.timeZone,
+              locale,
+            )
           }
-          val renderAt = cached?.let {
-            TeamWidgetRules.renderAt(it.value, it.fetchedAt, fallback, request.now, request.timeZone, record.fetchAfter)
-          }
-          val frame = if (content == null) TeamWidgetText.placeholder(gate.key, locale) else {
-            TeamWidgetText.frame(gate.key, content, gate.source.spoilersHidden, request.now, request.timeZone, locale)
-          }
-          WidgetProjection(frame, gate.key, record.revision, WidgetSchedule(renderAt, record.fetchAfter))
+          WidgetProjection(projected.frame, gate.key, record.revision, projected.schedule)
         }
       }
     }
@@ -75,8 +92,11 @@ class FavoriteWidgetEngine internal constructor(
     }
     val key = gate.key
     val previous = WidgetCacheCodec.decode(stored, key)
-    val fetched = try {
-      remote.team(key)
+    val fetched: FavoriteWidgetContent? = try {
+      when (key.kind) {
+        WidgetKind.Team -> remote.team(key)
+        WidgetKind.Event -> remote.event(key, gate.source.favorites.teamIds.toSet(), request.now, request.timeZone)
+      }
     } catch (cancelled: CancellationException) {
       throw cancelled
     } catch (_: Exception) {
@@ -84,17 +104,21 @@ class FavoriteWidgetEngine internal constructor(
     }
     currentCoroutineContext().ensureActive()
     val attemptedAt = clock.now()
-    val value = fetched?.let { CachedValue.Team(it, attemptedAt) } ?: previous?.value ?: CachedValue.NoData
-    val origin = if (fetched == null) RecordOrigin.CachedFallback else RecordOrigin.Fresh
-    val content = (value as? CachedValue.Team)?.let {
-      if (origin == RecordOrigin.CachedFallback) TeamWidgetRules.expire(it.value, it.fetchedAt, attemptedAt) else it.value
+    val value = when (fetched) {
+      is TeamContent -> CachedValue.Team(fetched, attemptedAt)
+      is EventData -> CachedValue.Event(fetched, attemptedAt)
+      null -> previous?.value ?: CachedValue.NoData
     }
+    val origin = if (fetched == null) RecordOrigin.CachedFallback else RecordOrigin.Fresh
     val record = WidgetCacheRecord(
       version = WidgetCacheCodec.VERSION,
       key = key,
       revision = (previous?.revision ?: 0) + 1,
       attemptedAt = attemptedAt,
-      fetchAfter = TeamWidgetRules.refreshAt(content, attemptedAt),
+      fetchAfter = when (key.kind) {
+        WidgetKind.Team -> TeamWidgetProgram.fetchAfter(value, origin, attemptedAt)
+        WidgetKind.Event -> EventWidgetProgram.fetchAfter(value, gate.source, attemptedAt, request.timeZone)
+      },
       origin = origin,
       value = value,
     )
@@ -115,7 +139,10 @@ private fun WidgetRequest.gate(): WidgetGate {
     is WidgetSelection.Chosen -> selected.kind
   }
   val current = source ?: return WidgetGate.Setup(kind, SetupReason.NoFavorites)
-  val favorites = current.favoriteTeams.map { it.id }.toSet()
+  val favorites = when (kind) {
+    WidgetKind.Team -> current.favoriteTeams.map { it.id }.toSet()
+    WidgetKind.Event -> current.favoriteEvents.map { it.id }.toSet()
+  }
   if (favorites.isEmpty()) return WidgetGate.Setup(kind, SetupReason.NoFavorites)
   return when (val selected = selection) {
     is WidgetSelection.None -> WidgetGate.Setup(kind, SetupReason.Choose)

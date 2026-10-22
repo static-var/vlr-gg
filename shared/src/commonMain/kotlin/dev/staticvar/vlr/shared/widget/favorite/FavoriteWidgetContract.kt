@@ -20,6 +20,8 @@ enum class WidgetKind {
   @SerialName("Team")
   Team,
 
+  @SerialName("Event")
+  Event,
 }
 
 @Serializable(with = WidgetKeySerializer::class)

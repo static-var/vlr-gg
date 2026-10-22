@@ -435,6 +435,26 @@ internal class WidgetWireDecodersTest {
   }
 
   @Test
+  fun eventMatchWithOnlyAnIsoTimeTakesItsDayFromThatTime() {
+    val event = WidgetWireDecoders.event(
+      json(
+        """{"id":"test","title":"Title","matches":[
+        {"id":"b","date":"2026-10-22","time":"12:00:00","status":"upcoming","teams":[{"name":"C"},{"name":"D"}]},
+        {"id":"a","date":"","time":"2026-10-21T12:00:00Z","status":"upcoming","teams":[{"name":"A"},{"name":"B"}]}]}""",
+      ),
+      "test",
+      reference,
+    )
+    val match = event.matches.single { it.id == "a" }
+    assertEquals(WidgetDay.parse("2026-10-21"), match.day)
+    assertEquals(Instant.parse("2026-10-21T12:00:00Z"), match.start)
+    assertEquals(
+      listOf("a", "b"),
+      EventWidgetMapper.normalize(event).matches.sortedWith(EventWidgetRules.chronological).map { it.fixture.id },
+    )
+  }
+
+  @Test
   fun eventParticipantBadScoreDoesNotDiscardItsMatch() {
     val event = WidgetWireDecoders.event(
       json(

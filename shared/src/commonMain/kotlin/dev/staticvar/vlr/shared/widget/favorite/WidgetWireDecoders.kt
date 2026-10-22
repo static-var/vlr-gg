@@ -181,7 +181,7 @@ internal object WidgetWireDecoders {
     val time = value.tolerant("time", ::string).orEmpty()
     return RemoteEventMatch(
       id = value.tolerant("id", ::string).orEmpty(),
-      day = WidgetDay.parse(date),
+      day = WidgetDay.parse(date) ?: time.trim().takeIf { 'T' in it }?.let { WidgetDay.parse(it.take(10)) },
       start = WidgetTemporalRules.matchStart(date, time),
       phase = matchPhase(value.tolerant("status", ::string)),
       teams = value.tolerant("teams") { participants ->
@@ -211,14 +211,8 @@ internal object WidgetWireDecoders {
     )
   }
 
-  private fun eventMatchDays(matches: List<RemoteEventMatch>): List<LocalDate> {
-    val seen = mutableSetOf<String>()
-    return matches.mapNotNull { match ->
-      val id = meaningfulText(match.id) ?: return@mapNotNull null
-      if (!seen.add(id) || match.teams.size > 2) return@mapNotNull null
-      match.day?.date
-    }
-  }
+  private fun eventMatchDays(matches: List<RemoteEventMatch>): List<LocalDate> =
+    EventWidgetMapper.filterMatches(matches).mapNotNull { it.day?.date }
 
   private fun previewPhase(value: String?): RemoteMatchPhase = when (value?.lowercase()) {
     "upcoming" -> RemoteMatchPhase.Upcoming
