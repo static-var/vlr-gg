@@ -80,9 +80,15 @@ class FavoriteWidgetEnvironmentReceiver : BroadcastReceiver() {
 
 internal fun requestFavoriteWidgetUpdate(context: Context) {
   FavoriteWidgetRuntime.invalidate()
-  WorkManager.getInstance(context).enqueueUniqueWork(
+  val work = WorkManager.getInstance(context)
+  work.enqueueUniqueWork(
     "favorite-entity-widgets-reconcile-now",
     ExistingWorkPolicy.REPLACE,
     OneTimeWorkRequestBuilder<FavoriteEntityReconcileWorker>().addTag(FavoriteWidgetScheduler.RuntimeTag).build(),
+  )
+  work.enqueueUniqueWork(
+    "favorite-entity-widgets-previews",
+    ExistingWorkPolicy.KEEP,
+    OneTimeWorkRequestBuilder<FavoriteWidgetPreviewWorker>().build(),
   )
 }
