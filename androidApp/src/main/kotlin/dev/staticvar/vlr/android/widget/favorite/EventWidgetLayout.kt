@@ -52,10 +52,10 @@ internal fun EventWidgetLayout(frame: FavoriteWidgetFrame, logos: WidgetBitmaps)
             fit.headerLogo,
           )
           FavoriteWidgetHeroSpacer(fit)
-          FavoriteWidgetText(frame.text.lead, 14, FavoriteWidgetSecondary, FavoriteWidgetWeight.Medium)
+          FavoriteWidgetText(frame.text.lead, FavoriteWidgetFont.Body, FavoriteWidgetSecondary, FavoriteWidgetWeight.Medium)
           FavoriteWidgetText(frame.text.action, fit.heroSize, textStep = 0, maxLines = 1)
           if (FavoriteWidgetPart.Context in fit) {
-            FavoriteWidgetText(frame.text.instruction, 13, FavoriteWidgetSecondary)
+            FavoriteWidgetText(frame.text.instruction, FavoriteWidgetFont.Body, FavoriteWidgetSecondary)
           }
         }
 
@@ -100,13 +100,13 @@ private fun EventHeader(
     Column(GlanceModifier.defaultWeight()) {
       FavoriteWidgetText(
         header.title,
-        16,
+        FavoriteWidgetFont.Title,
         weight = FavoriteWidgetWeight.Medium,
         properName = true,
         width = width - logo - FavoriteWidgetHeaderGap - progress,
       )
       if (FavoriteWidgetPart.Subtitle in fit) {
-        FavoriteWidgetText(header.subtitle, 13, FavoriteWidgetSecondary, maxLines = 1)
+        FavoriteWidgetText(header.subtitle, FavoriteWidgetFont.Body, FavoriteWidgetSecondary, maxLines = 1)
       }
     }
     if (FavoriteWidgetPart.Progress in fit) {
@@ -157,7 +157,7 @@ private fun EventHero(
       Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
         FavoriteWidgetText(
           hero.lead,
-          14,
+          FavoriteWidgetFont.Body,
           weight = FavoriteWidgetWeight.Medium,
           properName = hero.pair != null,
           modifier = GlanceModifier.defaultWeight(),
@@ -167,7 +167,7 @@ private fun EventHero(
           Spacer(GlanceModifier.width(FavoriteWidgetCaptionGap))
           FavoriteWidgetText(
             it,
-            13,
+            FavoriteWidgetFont.Body,
             FavoriteWidgetSecondary,
             modifier = GlanceModifier.width(captions.day),
             align = TextAlign.End,
@@ -177,7 +177,7 @@ private fun EventHero(
           Spacer(GlanceModifier.width(FavoriteWidgetCaptionGap))
           FavoriteWidgetText(
             it,
-            13,
+            FavoriteWidgetFont.Body,
             GlanceTheme.colors.error,
             FavoriteWidgetWeight.Medium,
             modifier = GlanceModifier.width(captions.live),
@@ -189,7 +189,7 @@ private fun EventHero(
             Spacer(GlanceModifier.width(FavoriteWidgetCaptionGap))
             FavoriteWidgetText(
               it,
-              13,
+              FavoriteWidgetFont.Body,
               FavoriteWidgetSecondary,
               modifier = GlanceModifier.width(captions.other),
               align = TextAlign.End,
@@ -208,15 +208,15 @@ private fun EventHero(
         )
         beside?.let {
           Column(GlanceModifier.width(textWidth - valueWidth).padding(start = EventBesideGap)) {
-            FavoriteWidgetText(it.stage, 13, weight = FavoriteWidgetWeight.Medium)
-            it.format?.let { format -> FavoriteWidgetText(format, 13, FavoriteWidgetSecondary) }
+            FavoriteWidgetText(it.stage, FavoriteWidgetFont.Body, weight = FavoriteWidgetWeight.Medium)
+            it.format?.let { format -> FavoriteWidgetText(format, FavoriteWidgetFont.Body, FavoriteWidgetSecondary) }
           }
         }
       }
       if (below) {
         FavoriteWidgetMapPills(hero.pills)
       } else {
-        context?.let { FavoriteWidgetText(it, 13, FavoriteWidgetSecondary) }
+        context?.let { FavoriteWidgetText(it, FavoriteWidgetFont.Body, FavoriteWidgetSecondary) }
       }
     }
     if (hero.pair != null) {
@@ -249,7 +249,7 @@ private fun ColumnScope.EventList(list: EventWidgetList, logos: WidgetBitmaps, w
         Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
           FavoriteWidgetText(
             row.rank,
-            13,
+            FavoriteWidgetFont.Body,
             FavoriteWidgetSecondary,
             maxLines = 1,
             modifier = GlanceModifier.width(columns.rank),
@@ -259,7 +259,7 @@ private fun ColumnScope.EventList(list: EventWidgetList, logos: WidgetBitmaps, w
           Spacer(GlanceModifier.width(10.dp))
           FavoriteWidgetText(
             row.team.name,
-            15,
+            FavoriteWidgetFont.Row,
             if (row.favorite) GlanceTheme.colors.primary else GlanceTheme.colors.onSurface,
             if (row.favorite) FavoriteWidgetWeight.Medium else FavoriteWidgetWeight.Normal,
             modifier = GlanceModifier.defaultWeight(),
@@ -269,7 +269,7 @@ private fun ColumnScope.EventList(list: EventWidgetList, logos: WidgetBitmaps, w
           Spacer(GlanceModifier.width(8.dp))
           FavoriteWidgetText(
             row.record,
-            15,
+            FavoriteWidgetFont.Row,
             weight = FavoriteWidgetWeight.Medium,
             maxLines = 1,
             modifier = GlanceModifier.width(columns.record),
@@ -278,7 +278,7 @@ private fun ColumnScope.EventList(list: EventWidgetList, logos: WidgetBitmaps, w
           Spacer(GlanceModifier.width(10.dp))
           FavoriteWidgetText(
             row.maps,
-            13,
+            FavoriteWidgetFont.Body,
             FavoriteWidgetSecondary,
             maxLines = 1,
             modifier = GlanceModifier.width(columns.maps),
@@ -294,7 +294,7 @@ private fun ColumnScope.EventList(list: EventWidgetList, logos: WidgetBitmaps, w
         Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
           FavoriteWidgetText(
             row.position,
-            13,
+            FavoriteWidgetFont.Body,
             FavoriteWidgetSecondary,
             maxLines = 1,
             modifier = GlanceModifier.width(columns.position),
@@ -302,11 +302,11 @@ private fun ColumnScope.EventList(list: EventWidgetList, logos: WidgetBitmaps, w
           Spacer(GlanceModifier.width(10.dp))
           FavoriteWidgetLogo(row.team, logos, EventRowLogo)
           Spacer(GlanceModifier.width(10.dp))
-          FavoriteWidgetText(row.team.name, 15, modifier = GlanceModifier.defaultWeight(), properName = true)
+          FavoriteWidgetText(row.team.name, FavoriteWidgetFont.Row, modifier = GlanceModifier.defaultWeight(), properName = true)
           Spacer(GlanceModifier.width(8.dp))
           FavoriteWidgetText(
             row.amount,
-            15,
+            FavoriteWidgetFont.Row,
             weight = FavoriteWidgetWeight.Medium,
             maxLines = 1,
             modifier = GlanceModifier.width(columns.amount),
@@ -343,11 +343,11 @@ private fun EventMatchRow(row: EventWidgetMatch, logos: WidgetBitmaps, width: Dp
     Column(GlanceModifier.width(columns.time)) {
       FavoriteWidgetText(
         row.day,
-        12,
+        FavoriteWidgetFont.Label,
         if (row.live) GlanceTheme.colors.error else FavoriteWidgetSecondary,
         if (row.live) FavoriteWidgetWeight.Medium else FavoriteWidgetWeight.Normal,
       )
-      FavoriteWidgetText(row.time, 14, weight = FavoriteWidgetWeight.Medium, maxLines = 1)
+      FavoriteWidgetText(row.time, FavoriteWidgetFont.Body, weight = FavoriteWidgetWeight.Medium, maxLines = 1)
     }
     Spacer(GlanceModifier.width(10.dp))
     Column(GlanceModifier.defaultWeight()) {
@@ -358,7 +358,7 @@ private fun EventMatchRow(row: EventWidgetMatch, logos: WidgetBitmaps, width: Dp
     Spacer(GlanceModifier.width(8.dp))
     FavoriteWidgetText(
       row.round,
-      12,
+      FavoriteWidgetFont.Label,
       FavoriteWidgetSecondary,
       modifier = GlanceModifier.width(columns.round),
       align = TextAlign.End,
@@ -379,12 +379,12 @@ private fun EventParticipant(
   Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
     FavoriteWidgetLogo(mark, logos, EventMatchLogo)
     Spacer(GlanceModifier.width(6.dp))
-    FavoriteWidgetText(name, 14, color, modifier = GlanceModifier.defaultWeight(), properName = true)
+    FavoriteWidgetText(name, FavoriteWidgetFont.Body, color, modifier = GlanceModifier.defaultWeight(), properName = true)
     score?.let {
       Spacer(GlanceModifier.width(FavoriteWidgetCaptionGap))
       FavoriteWidgetText(
         it,
-        14,
+        FavoriteWidgetFont.Body,
         color,
         FavoriteWidgetWeight.Medium,
         maxLines = 1,
