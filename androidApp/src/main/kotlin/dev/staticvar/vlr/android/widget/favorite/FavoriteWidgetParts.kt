@@ -110,8 +110,14 @@ internal fun presentationFor(
     }
     candidate = candidate.copy(compact = true)
     add(candidate)
-    while (candidate.rows > 0) {
+    while (candidate.rows > 1) {
       candidate = candidate.copy(rows = candidate.rows - 1, rowHeight = rowHeight(candidate.rows - 1))
+      add(candidate)
+    }
+    if (candidate.rows > 0) {
+      // Map pills give way to the last list row, then come back if that row still does not fit.
+      if (FavoriteWidgetPart.Pills in candidate) add(candidate.copy(parts = candidate.parts - FavoriteWidgetPart.Pills))
+      candidate = candidate.copy(rows = 0, rowHeight = rowHeight(0))
       add(candidate)
     }
     for (part in FavoriteWidgetPartDropOrder) {

@@ -114,6 +114,8 @@ class FavoriteEventWidgetRenderTest(
 
         "live-bo3-next", "live-earlier" -> listOf("LOUD vs Team Vitality", "Live", if (hidden) "Live now" else "2–1")
 
+        "live-one-map" -> listOf("LOUD vs Team Vitality", "Live", if (hidden) "Live now" else "0–0")
+
         "live-no-score" -> listOf("LOUD vs Team Vitality", "Live", if (hidden) "Live now" else "–")
 
         "between" -> if (hidden) {
@@ -210,7 +212,8 @@ class FavoriteEventWidgetRenderTest(
         FavoriteWidgetPart.Pills !in p -> p.copy(parts = p.parts + FavoriteWidgetPart.Pills)
         FavoriteWidgetPart.Progress !in p -> p.copy(parts = p.parts + FavoriteWidgetPart.Progress)
         FavoriteWidgetPart.OtherLive !in p -> p.copy(parts = p.parts + FavoriteWidgetPart.OtherLive)
-        p.large && p.rows < (measure.list?.count ?: 0) -> p.copy(rows = p.rows + 1)
+        p.large && p.rows < (measure.list?.count ?: 0) ->
+          p.copy(rows = p.rows + 1, parts = if (p.rows == 0) p.parts - FavoriteWidgetPart.Pills else p.parts)
         p.compact -> p.copy(compact = false)
         p.heroSize < favoriteWidgetHeroStart(size, p.large) ->
           p.copy(heroSize = minOf(favoriteWidgetHeroStart(size, p.large), p.heroSize + 2))
