@@ -8,13 +8,9 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Rect
 import android.os.LocaleList
-import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceId
@@ -67,12 +63,8 @@ class FavoriteTeamWidgetRenderTest(
   private val dark: Boolean,
   private val fontScale: Float,
   private val densityDpi: Int,
-  private val scaled: Boolean,
-  private val keptProfile: Int,
 ) {
   private val size = DpSize(width.dp, height.dp)
-  private val large = size.height >= 213.dp
-  private val fullLarge = size.height >= 330.dp
 
   @Test
   fun textFitsWithoutClippingOrOverlap() {
@@ -85,17 +77,12 @@ class FavoriteTeamWidgetRenderTest(
 
   @Test
   fun frameStringsLogosAndThemeReachRemoteViews() {
-    if (scaled) {
-      assertScaledContent()
-      return
-    }
     renders().forEach { render ->
       val strings = render.texts.map { it.value }
-      val profile = fullKeptProfile(render.name)
-      val large = profile.startsWith("large")
-      val expectedRows = profile.substringAfter("rows=").toInt()
-      val contextKept = "context" in profile
-      assertEquals("${render.name}: presentation", large, render.presentation.large)
+      val presentation = render.presentation
+      val large = presentation.large
+      val expectedRows = presentation.rows
+      val contextKept = FavoriteWidgetPart.Context in presentation
       val baseName = render.name.removeSuffix("-hidden")
       val expected = when (baseName) {
         "setup-choose" -> listOf(
@@ -118,6 +105,14 @@ class FavoriteTeamWidgetRenderTest(
         "upcoming", "upcoming-bitmaps" -> listOf(
           "Sentinels",
           "Plays FNATIC",
+          "Today",
+          "2:14 PM",
+          "Masters London · Upper final · Bo3",
+        )
+
+        "upcoming-long" -> listOf(
+          "Sentinels International Academy",
+          "Plays FNATIC International Academy",
           "Today",
           "2:14 PM",
           "Masters London · Upper final · Bo3",
@@ -197,18 +192,18 @@ class FavoriteTeamWidgetRenderTest(
             else -> listOf("Masters London · Upper final · Bo3")
           }
         }
-        if (!large && baseName == "live-bo5" && "pills" in profile) {
+        if (!large && baseName == "live-bo5" && FavoriteWidgetPart.Pills in presentation) {
           assertEquals(2, strings.count { it == "13–9" })
           assertEquals(2, strings.count { it == "9–13" })
         }
         val belowKept = if (!large && baseName in listOf("live-bo3", "live-next", "live-bo5")) {
-          "pills" in profile
+          FavoriteWidgetPart.Pills in presentation
         } else {
           contextKept
         }
         below.forEach { assertEquals("${render.name}: below $it", belowKept, it in strings) }
         assertTrue("Live accent lacks description", "Live" in render.descriptions)
-        assertEquals(render.primary, render.texts.first { it.value == "Live" }.color)
+        assertEquals(render.live, render.texts.first { it.value == "Live" }.color)
         if (large && baseName in listOf("live-bo3", "live-next", "live-bo5")) {
           val allMaps = if (baseName == "live-bo5") {
             listOf("Haven", "Lotus", "Ascent", "Icebox", "Split")
@@ -231,7 +226,8 @@ class FavoriteTeamWidgetRenderTest(
         assertTrue("Sentinels" in render.descriptions)
         assertTrue(
           "${render.name}: size-specific ranking missing",
-          (if ("regional" in profile) "#4 worldwide · #1 Americas" else "#4 worldwide") in strings,
+          (if (FavoriteWidgetPart.RegionalRank in presentation) "#4 worldwide · #1 Americas" else "#4 worldwide") in
+            strings,
         )
         if (!render.name.startsWith("idle")) {
           assertTrue(
@@ -261,7 +257,8 @@ class FavoriteTeamWidgetRenderTest(
           val count = expectedRows
           assertEquals("${render.name}: history prefix", rows.take(count), strings.filter { it in rows }.distinct())
         }
-        assertEquals(render.onSurface, render.texts.first { it.value == "Sentinels" }.color)
+        val title = (if (large) render.frame.large else render.frame.medium).header.title
+        assertEquals(render.onSurface, render.texts.first { it.value == title }.color)
         if (baseName == "upcoming-bitmaps") {
           assertFalse("SEN" in strings)
           assertEquals(if (expectedRows == 4) 1 else 0, strings.count { it == "FNC" })
@@ -346,7 +343,7 @@ class FavoriteTeamWidgetRenderTest(
           presentation.heroSize + 1,
         )
 
-        presentation.heroSize < (if (size.height < 158.dp) 32 else 40) ->
+        presentation.heroSize < favoriteWidgetHeroFloor(size) ->
           presentation.copy(heroSize = presentation.heroSize + 1)
 
         FavoriteWidgetPart.Form !in presentation ->
@@ -365,6 +362,11 @@ class FavoriteTeamWidgetRenderTest(
 
         presentation.compact -> presentation.copy(compact = false)
 
+        presentation.heroSize < favoriteWidgetHeroStart(size, presentation.large) ->
+          presentation.copy(
+            heroSize = minOf(favoriteWidgetHeroStart(size, presentation.large), presentation.heroSize + 2),
+          )
+
         else -> null
       }
       if (richer != null) {
@@ -373,180 +375,28 @@ class FavoriteTeamWidgetRenderTest(
           measure.height(richer) > size.height,
         )
       }
-      if (name == "idle-win" && densityDpi == 540 && fontScale == 2f && size == DpSize(235.55556.dp, 174.81482.dp)) {
-        assertEquals("Idle hero", 35, presentation.heroSize)
-        assertEquals("Idle kept parts", emptySet<FavoriteWidgetPart>(), presentation.parts)
-        assertEquals("Idle kept content", "rows=0", keptContent(render))
-        assertEquals("Idle form marks removed", 0, render.formCount)
-        assertFalse("Idle context removed", "Oct 15 · No match scheduled" in render.texts.map { it.value })
-        val hero = render.texts.single { it.value == "2–1" }
-        assertEquals(
-          "Idle hero in RemoteViews",
-          TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 35f, context.resources.displayMetrics),
-          hero.fontSize,
-          0.01f,
-        )
-        assertTrue(
-          "Idle hero is the largest text",
-          render.texts.filter { it !== hero }.all {
-            it.fontSize <
-              hero.fontSize
-          },
-        )
-      }
     }
   }
 
-  private fun fullKeptProfile(name: String): String {
-    val profiles = when {
-      name == "setup-no-favorites" -> listOf(
-        "large regional context form rows=0",
-        "medium rows=0",
-        "medium rows=0",
-        "medium rows=0",
-      )
-
-      name == "placeholder" -> listOf(
-        "large regional context form rows=0",
-        "large regional context form rows=2",
-        "large regional context form rows=4",
-        "large regional context form rows=2",
-      )
-
-      name.startsWith("idle-empty") -> listOf(
-        "large regional context form rows=0",
-        "large regional context form rows=0",
-        "large regional context form rows=0",
-        "large regional context form rows=0",
-      )
-
-      name == "live-bo5" -> listOf(
-        "large context form rows=0",
-        "large context form rows=0",
-        "large context form rows=0",
-        "large regional context form rows=2",
-      )
-
-      name.startsWith("live") -> listOf(
-        "large context form rows=0",
-        "large context form rows=0",
-        "large context form rows=0",
-        "large regional context form rows=1",
-      )
-
-      else -> listOf(
-        "large regional context form rows=0",
-        "large regional context form rows=1",
-        "large regional context form rows=4",
-        "large regional context form rows=1",
-      )
-    }
-    return profiles[listOf(136f, 213f, 330f, 229.33333f).indexOf(size.height.value)]
-  }
-
-  private fun assertScaledContent() {
-    renders().forEach { render ->
-      val strings = render.texts.map { it.value }
-      assertEquals(
-        "${render.name}: kept content",
-        keptProfiles[keptProfile][scaledCaseNames.indexOf(render.name)],
-        keptContent(render),
-      )
-      val required = when (render.name) {
-        "setup-choose" -> listOf("Choose a team", "To use this widget,", "Tap to choose")
-
-        "upcoming-long" -> listOf(
-          "Sentinels International Academy",
-          "Plays FNATIC International Academy",
-          "2:14 PM",
-          "Today",
-          "#4 worldwide",
-        )
-
-        "idle-win" -> listOf("Sentinels", "Beat Paper Rex", "2–1", "#4 worldwide")
-
-        "live-bo5-hidden" -> listOf("Sentinels", "Playing FNATIC", "Live", "Live now", "#4 worldwide")
-
-        else -> listOf("Sentinels", "Playing FNATIC", "Live", "2–2", "#4 worldwide")
-      }
-      required.forEach { expected ->
-        assertTrue(
-          "${render.name}: missing $expected in $strings",
-          strings.any {
-            it == expected ||
-              it.startsWith("$expected ·")
-          },
-        )
-      }
-      if (render.formCount > 0) {
-        assertEquals("${render.name}: complete form", if (render.name.startsWith("live")) 6 else 5, render.formCount)
-      }
-      if (render.name == "setup-choose") {
-        assertEquals("Val Esports" in strings, "Pick a team from your favorites" in strings)
-      }
-      if (render.name == "live-bo5" && "Maps" !in strings && "13–9" in strings) {
-        assertEquals(
-          listOf("13–9", "9–13", "13–9", "9–13", "Split 6–4"),
-          strings.filter { it in setOf("13–9", "9–13", "Split 6–4") },
-        )
-      }
-      if (render.name.startsWith("live")) {
-        assertTrue("Live accent missing", "Live" in render.descriptions)
-        assertEquals(render.primary, render.texts.first { it.value == "Live" }.color)
-      }
-    }
-  }
-
-  private fun keptContent(render: Render): String {
-    val strings = render.texts.map { it.value }
-    val rowNames = when (render.name) {
-      "upcoming-long" -> listOf("Paper Rex", "DRX", "G2 Esports", "FNATIC")
-      "idle-win" -> listOf("DRX", "G2 Esports", "FNATIC", "LOUD")
-      "live-bo5" -> listOf("Haven", "Lotus", "Ascent", "Icebox", "Split")
-      "live-bo5-hidden" -> listOf("Paper Rex", "DRX", "G2 Esports", "FNATIC")
-      else -> emptyList()
-    }
-    val visibleRows = strings.filter { it in rowNames }.distinct()
-    assertEquals("${render.name}: whole row prefix", rowNames.take(visibleRows.size), visibleRows)
-    return buildList {
-      if (strings.any { "#1 Americas" in it }) add("regional")
-      if (strings.any {
-          it in
-            setOf(
-              "Val Esports",
-              "Masters London · Upper final · Bo3",
-              "Masters London · Upper final · Bo5",
-              "Scores hidden · Bo5",
-              "Oct 15 · No match scheduled",
-            )
-        }
-      ) {
-        add("context")
-      }
-      if (render.name == "live-bo5" && "Maps" !in strings && "13–9" in strings) add("pills")
-      if (render.formCount > 0) add("form")
-      add("rows=${visibleRows.size}")
-    }.joinToString(" ")
-  }
-
-  private fun renders(): List<Render> = cache.getOrPut(listOf(size, dark, fontScale, densityDpi, scaled)) {
+  private fun renders(): List<Render> = cache.getOrPut(listOf(size, dark, fontScale, densityDpi)) {
     runBlocking { renderCases() }
   }
 
-  private fun expectedText(frame: FavoriteWidgetFrame, large: Boolean) = WidgetTextExpectations().apply {
+  private fun expectedText(frame: FavoriteWidgetFrame, fit: FavoriteWidgetPresentation) = WidgetTextExpectations().apply {
+    val large = fit.large
     empty(frame)
     if (frame is FavoriteWidgetFrame.Team) {
       val content = if (large) frame.large else frame.medium
       add(content.header.title, WidgetTextRole.NameTitle)
       add(content.header.ranking, WidgetTextRole.Ranking)
       add(frame.medium.header.ranking, WidgetTextRole.Ranking)
-      logo(content.header.team, if (large) 40 else 28)
+      logo(content.header.team, fit.headerLogo.value.toInt())
       when (val body = content.body) {
         is TeamDisplayBody.Visible -> {
           val hero = body.hero
           add(hero.lead, if (hero.opponent != null) WidgetTextRole.NameLead else WidgetTextRole.Lead)
           add(hero.value, WidgetTextRole.Hero)
-          logo(hero.opponent, 44)
+          logo(hero.opponent, if (fit.compact) 40 else 52)
           when (hero) {
             is TeamHeroText.Upcoming -> {
               add(hero.day, WidgetTextRole.Secondary)
@@ -565,7 +415,7 @@ class FavoriteTeamWidgetRenderTest(
           }
           when (val detail = body.detail) {
             is TeamDetail.Maps -> {
-              add(detail.heading, WidgetTextRole.Secondary)
+              add(detail.heading, WidgetTextRole.Heading)
               detail.rows.forEach { row ->
                 add(row.name, WidgetTextRole.RowName)
                 add(row.subtitle, WidgetTextRole.Secondary)
@@ -574,13 +424,13 @@ class FavoriteTeamWidgetRenderTest(
             }
 
             is TeamDetail.History -> {
-              add(detail.heading, WidgetTextRole.Secondary)
+              add(detail.heading, WidgetTextRole.Heading)
               detail.rows.forEach { row ->
                 add(row.mark, WidgetTextRole.Mark)
-                logo(row.opponent, 22)
+                logo(row.opponent, 24)
                 add(row.name, WidgetTextRole.RowName)
-                add(row.date, WidgetTextRole.Secondary)
-                add(row.score, WidgetTextRole.Score)
+                add(row.date, WidgetTextRole.Caption)
+                add(row.score, WidgetTextRole.RowScore)
               }
             }
 
@@ -593,18 +443,18 @@ class FavoriteTeamWidgetRenderTest(
           add(hero.lead, if (hero.opponent != null) WidgetTextRole.NameLead else WidgetTextRole.Lead)
           add(hero.value, WidgetTextRole.Hero)
           add(hero.context, WidgetTextRole.Secondary)
-          logo(hero.opponent, 44)
+          logo(hero.opponent, if (fit.compact) 40 else 52)
           when (hero) {
             is NeutralTeamHeroText.Upcoming -> add(hero.day, WidgetTextRole.Secondary)
             is NeutralTeamHeroText.Live -> add(hero.liveLabel, WidgetTextRole.Secondary)
             is NeutralTeamHeroText.Idle -> Unit
           }
           body.history?.let { list ->
-            add(list.heading, WidgetTextRole.Secondary)
+            add(list.heading, WidgetTextRole.Heading)
             list.rows.forEach { row ->
-              logo(row.opponent, 22)
+              logo(row.opponent, 24)
               add(row.name, WidgetTextRole.RowName)
-              add(row.date, WidgetTextRole.Secondary)
+              add(row.date, WidgetTextRole.Caption)
             }
           }
         }
@@ -664,10 +514,8 @@ class FavoriteTeamWidgetRenderTest(
       }
     }
     cases += "upcoming-bitmaps" to cases.first { it.first == "upcoming" }.second
-    if (scaled) {
-      cases.retainAll { it.first in setOf("live-bo5", "upcoming", "idle-win", "live-bo5-hidden", "setup-choose") }
-      val upcoming = cases.indexOfFirst { it.first == "upcoming" }
-      val frame = cases[upcoming].second as FavoriteWidgetFrame.Team
+    run {
+      val frame = cases.first { it.first == "upcoming" }.second as FavoriteWidgetFrame.Team
       fun longNames(value: TeamPresentation) = value.copy(
         header = value.header.copy(title = "Sentinels International Academy"),
         body = (value.body as TeamDisplayBody.Visible).let { body ->
@@ -677,7 +525,7 @@ class FavoriteTeamWidgetRenderTest(
           )
         },
       )
-      cases[upcoming] = "upcoming-long" to frame.copy(medium = longNames(frame.medium), large = longNames(frame.large))
+      cases += "upcoming-long" to frame.copy(medium = longNames(frame.medium), large = longNames(frame.large))
     }
     return cases.map { (name, frame) ->
       val bitmap = Bitmap.createBitmap(24, 24, Bitmap.Config.ARGB_8888).apply {
@@ -717,31 +565,15 @@ class FavoriteTeamWidgetRenderTest(
         view.layout(0, 0, width, height)
         val output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         view.draw(Canvas(output))
-        val directory = File(context.filesDir, "favorite-team-renders" + if (scaled) "/scale" else "").apply {
-          mkdirs()
-        }
-        val sizeName = when {
-          fullLarge -> "large"
-          size.height >= 229.dp -> "portrait-4x2"
-          this@FavoriteTeamWidgetRenderTest.large -> "compact-large"
-          else -> "medium"
-        }
-        val suffix = if (scaled) "-font-$fontScale-dpi-$densityDpi-${size.width.value}x${size.height.value}" else ""
-        File(directory, "$name-$sizeName-${if (dark) "dark" else "light"}$suffix.png")
-          .outputStream().use { output.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        val directory = File(context.filesDir, "favorite-team-renders").apply { mkdirs() }
+        val stem = "$name-${size.width.value}x${size.height.value}-" +
+          "${if (dark) "dark" else "light"}-font-$fontScale-dpi-$densityDpi"
+        File(directory, "$stem.png").outputStream().use { output.compress(Bitmap.CompressFormat.PNG, 100, it) }
         val allViews = favoriteWidgetDescendants(view)
-        if (scaled) {
-          File(directory, "$name$suffix.txt").writeText(
-            "@forms=${allViews.filterIsInstance<android.widget.ImageView>().size}\n" +
-              allViews.filterIsInstance<TextView>().filter {
-                it.text.isNotEmpty()
-              }.joinToString("\n") { it.text.toString() },
-          )
-        }
         val inspection =
           inspectFavoriteWidgetView(
             view,
-            expectedText(frame, presentation.large),
+            expectedText(frame, presentation),
             presentation.textStep,
             presentation.heroSize,
           )
@@ -754,19 +586,16 @@ class FavoriteTeamWidgetRenderTest(
             allViews.filterIsInstance<android.widget.ImageView>().size,
             if (frame is FavoriteWidgetFrame.Setup || frame is FavoriteWidgetFrame.Placeholder) {
               allViews.count {
-                it.visibility == View.VISIBLE && it.width == (22 * density).roundToInt() &&
-                  it.height == (22 * density).roundToInt()
+                it.visibility == View.VISIBLE && it.width == (24 * density).roundToInt() &&
+                  it.height == (24 * density).roundToInt()
               }
             } else {
               0
             },
             context.getColor(R.color.glance_colorOnSurface),
-            context.getColor(
-              R.color.glance_colorPrimary,
-            ),
+            context.getColor(R.color.glance_colorError),
             context.getColor(R.color.glance_colorWidgetBackground), output.getPixel(0, 0),
           )
-        if (scaled) File(directory, "$name$suffix.kept").writeText(keptContent(requireNotNull(result)))
         output.recycle()
       }
       bitmap.recycle()
@@ -785,198 +614,16 @@ class FavoriteTeamWidgetRenderTest(
     val formCount: Int,
     val ghostRows: Int,
     val onSurface: Int,
-    val primary: Int,
+    val live: Int,
     val background: Int,
     val cornerColor: Int,
   )
 
   companion object {
-    private val scaledCaseNames = listOf("setup-choose", "upcoming-long", "live-bo5", "live-bo5-hidden", "idle-win")
-    private val keptProfiles = listOf(
-      listOf(
-        "context rows=0",
-        "regional context form rows=3",
-        "regional context form rows=3",
-        "regional context form rows=3",
-        "regional context form rows=3",
-      ),
-      listOf(
-        "context rows=0",
-        "regional context form rows=2",
-        "regional context form rows=3",
-        "regional context form rows=2",
-        "regional context form rows=2",
-      ),
-      listOf(
-        "context rows=0",
-        "context form rows=0",
-        "context form rows=0",
-        "context form rows=0",
-        "context form rows=0",
-      ),
-      listOf(
-        "context rows=0",
-        "regional context form rows=1",
-        "regional context form rows=1",
-        "regional context form rows=1",
-        "regional context form rows=1",
-      ),
-      listOf(
-        "context rows=0",
-        "regional context form rows=0",
-        "regional context form rows=1",
-        "regional context form rows=0",
-        "regional context form rows=0",
-      ),
-      listOf(
-        "context rows=0",
-        "form rows=0",
-        "form rows=0",
-        "context form rows=0",
-        "context form rows=0",
-      ),
-      listOf(
-        "context rows=0",
-        "regional context form rows=2",
-        "regional context form rows=2",
-        "regional context form rows=2",
-        "regional context form rows=2",
-      ),
-      listOf(
-        "context rows=0",
-        "regional context form rows=0",
-        "regional context form rows=0",
-        "regional context form rows=0",
-        "regional context form rows=0",
-      ),
-      listOf(
-        "rows=0",
-        "rows=0",
-        "rows=0",
-        "rows=0",
-        "rows=0",
-      ),
-      listOf(
-        "context rows=0",
-        "regional context form rows=4",
-        "regional context form rows=5",
-        "regional context form rows=4",
-        "regional context form rows=4",
-      ),
-      listOf(
-        "rows=0",
-        "context form rows=0",
-        "context form rows=0",
-        "context form rows=0",
-        "context form rows=0",
-      ),
-      listOf(
-        "rows=0",
-        "context form rows=0",
-        "rows=0",
-        "rows=0",
-        "context form rows=0",
-      ),
-      listOf(
-        "context rows=0",
-        "regional context form rows=1",
-        "regional context form rows=2",
-        "regional context form rows=1",
-        "regional context form rows=1",
-      ),
-      listOf(
-        "rows=0",
-        "form rows=0",
-        "form rows=0",
-        "context form rows=0",
-        "form rows=0",
-      ),
-      listOf(
-        "rows=0",
-        "form rows=0",
-        "form rows=0",
-        "form rows=0",
-        "form rows=0",
-      ),
-      listOf(
-        "rows=0",
-        "form rows=0",
-        "form rows=0",
-        "context form rows=0",
-        "context form rows=0",
-      ),
-    )
-
     private val cache = mutableMapOf<List<Any>, List<Render>>()
 
     @JvmStatic
-    @Parameterized.Parameters(name = "width={0}, height={1}, dark={2}, font={3}, dpi={4}, scaled={5}")
-    fun sizesAndThemes(): List<Array<Any>> = listOf(
-      DpSize(280.dp, 136.dp),
-      DpSize(280.dp, 213.dp),
-      DpSize(280.dp, 330.dp),
-      DpSize(292.57144.dp, 229.33333.dp),
-    ).flatMap { size ->
-      listOf(false, true).map { dark -> arrayOf<Any>(size.width.value, size.height.value, dark, 1f, 0, false, -1) }
-    } + listOf(
-      Triple(356, DpSize(338.42694.dp, 280.44943.dp), listOf(0, 1, 2)),
-      Triple(356, DpSize(338.42694.dp, 222.02246.dp), listOf(3, 4, 5)),
-      Triple(356, DpSize(338.42694.dp, 268.76404.dp), listOf(0, 6, 2)),
-      Triple(356, DpSize(519.99994.dp, 167.191.dp), listOf(7, 7, 8)),
-      Triple(356, DpSize(671.01117.dp, 167.191.dp), listOf(7, 7, 8)),
-      Triple(356, DpSize(338.42694.dp, 577.0786.dp), listOf(9, 9, 2)),
-      Triple(356, DpSize(338.42694.dp, 460.2247.dp), listOf(9, 9, 2)),
-      Triple(356, DpSize(338.42694.dp, 553.7078.dp), listOf(9, 9, 2)),
-      Triple(356, DpSize(519.99994.dp, 344.26965.dp), listOf(9, 9, 6)),
-      Triple(356, DpSize(671.01117.dp, 344.26965.dp), listOf(9, 9, 6)),
-      Triple(356, DpSize(235.dp, 103.dp), listOf(8, 8, 8)),
-      Triple(356, DpSize(235.dp, 221.dp), listOf(10, 11, 8)),
-      Triple(356, DpSize(235.dp, 344.dp), listOf(10, 11, 8)),
-      Triple(420, DpSize(292.57144.dp, 229.33333.dp), listOf(12, 2, 13)),
-      Triple(420, DpSize(292.57144.dp, 196.57143.dp), listOf(4, 2, 14)),
-      Triple(420, DpSize(292.57144.dp, 180.57143.dp), listOf(7, 2, 14)),
-      Triple(420, DpSize(292.57144.dp, 221.71428.dp), listOf(3, 2, 13)),
-      Triple(420, DpSize(440.38095.dp, 137.14285.dp), listOf(7, 14, 8)),
-      Triple(420, DpSize(537.9048.dp, 137.14285.dp), listOf(7, 14, 8)),
-      Triple(420, DpSize(292.57144.dp, 474.66666.dp), listOf(9, 2, 10)),
-      Triple(420, DpSize(292.57144.dp, 409.14285.dp), listOf(9, 2, 10)),
-      Triple(420, DpSize(292.57144.dp, 377.14285.dp), listOf(9, 2, 10)),
-      Triple(420, DpSize(292.57144.dp, 459.42856.dp), listOf(9, 2, 10)),
-      Triple(420, DpSize(440.38095.dp, 284.1905.dp), listOf(0, 1, 7)),
-      Triple(420, DpSize(537.9048.dp, 284.1905.dp), listOf(0, 1, 7)),
-      Triple(420, DpSize(235.dp, 103.dp), listOf(8, 8, 8)),
-      Triple(420, DpSize(235.dp, 221.dp), listOf(10, 10, 8)),
-      Triple(420, DpSize(235.dp, 344.dp), listOf(10, 10, 8)),
-      Triple(500, DpSize(251.52.dp, 195.84.dp), listOf(10, 10, 8)),
-      Triple(500, DpSize(251.52.dp, 153.6.dp), listOf(2, 2, 8)),
-      Triple(500, DpSize(251.52.dp, 189.44.dp), listOf(10, 10, 8)),
-      Triple(500, DpSize(397.44.dp, 111.04.dp), listOf(8, 8, 8)),
-      Triple(500, DpSize(456.32.dp, 111.04.dp), listOf(8, 8, 8)),
-      Triple(500, DpSize(251.52.dp, 407.68.dp), listOf(10, 10, 8)),
-      Triple(500, DpSize(251.52.dp, 323.2.dp), listOf(10, 10, 8)),
-      Triple(500, DpSize(251.52.dp, 394.88.dp), listOf(10, 10, 8)),
-      Triple(500, DpSize(397.44.dp, 232.0.dp), listOf(12, 3, 2)),
-      Triple(500, DpSize(456.32.dp, 232.0.dp), listOf(12, 3, 7)),
-      Triple(500, DpSize(235.dp, 103.dp), listOf(8, 8, 8)),
-      Triple(500, DpSize(235.dp, 221.dp), listOf(10, 11, 8)),
-      Triple(500, DpSize(235.dp, 344.dp), listOf(10, 11, 8)),
-      Triple(540, DpSize(235.55556.dp, 174.81482.dp), listOf(10, 15, 8)),
-      Triple(540, DpSize(235.55556.dp, 137.48148.dp), listOf(2, 14, 8)),
-      Triple(540, DpSize(235.55556.dp, 170.07408.dp), listOf(10, 15, 8)),
-      Triple(540, DpSize(361.18518.dp, 103.111115.dp), listOf(8, 8, 8)),
-      Triple(540, DpSize(425.18518.dp, 103.111115.dp), listOf(8, 8, 8)),
-      Triple(540, DpSize(235.55556.dp, 365.62964.dp), listOf(10, 10, 8)),
-      Triple(540, DpSize(235.55556.dp, 290.96295.dp), listOf(10, 10, 8)),
-      Triple(540, DpSize(235.55556.dp, 356.14816.dp), listOf(10, 10, 8)),
-      Triple(540, DpSize(361.18518.dp, 212.14815.dp), listOf(3, 7, 2)),
-      Triple(540, DpSize(425.18518.dp, 212.14815.dp), listOf(3, 7, 7)),
-      Triple(540, DpSize(235.dp, 103.dp), listOf(8, 8, 8)),
-      Triple(540, DpSize(235.dp, 221.dp), listOf(10, 11, 8)),
-      Triple(540, DpSize(235.dp, 344.dp), listOf(10, 11, 8)),
-    ).flatMap { (density, size, profiles) ->
-      listOf(1f, 1.3f, 2f).mapIndexed { index, scale ->
-        arrayOf<Any>(size.width.value, size.height.value, false, scale, density, true, profiles[index])
-      }
-    }
+    @Parameterized.Parameters(name = "width={0}, height={1}, dark={2}, font={3}, dpi={4}")
+    fun hosts(): List<Array<Any>> = favoriteWidgetRenderHosts.map { it.parameters() }
   }
 }

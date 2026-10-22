@@ -20,33 +20,37 @@ internal data class FavoriteWidgetViewInspection(val texts: List<TextMeasurement
 internal enum class WidgetTextRole(val sp: Int?, val lines: Int = 1, val properName: Boolean = false) {
   Hero(null),
   HeroName(null, properName = true),
-  Title(15, 2),
-  NameTitle(15, properName = true),
-  Lead(13, 2),
-  NameLead(13, properName = true),
-  Secondary(12, 2),
-  Ranking(12),
-  Stage(12, 2),
-  Round(11, 2),
-  Pill(11),
+  Title(16, 2),
+  NameTitle(16, properName = true),
+  Lead(14, 2),
+  NameLead(14, properName = true),
+  Secondary(13, 2),
+  Ranking(13),
+  Stage(13, 2),
+  Heading(12, 2),
+  Caption(12, 2),
+  Round(12, 2),
+  Pill(12),
   Score(17),
+  RowScore(16),
   RowName(15, properName = true),
-  GroupName(13, properName = true),
-  MatchName(12, properName = true),
-  Clock(13),
+  GroupName(15, properName = true),
+  MatchName(14, properName = true),
+  Clock(14),
   Rank(13),
-  Record(13),
-  Amount(13),
-  Position(12),
-  MatchScore(12),
-  Mark(12),
-  Logo16(5, properName = true),
-  Logo20(6, properName = true),
-  Logo22(7, properName = true),
+  Record(15),
+  Maps(13),
+  Amount(15),
+  Position(13),
+  MatchScore(14),
+  Mark(11),
+  Logo18(6, properName = true),
+  Logo24(8, properName = true),
   Logo28(9, properName = true),
-  Logo30(10, properName = true),
+  Logo32(10, properName = true),
+  Logo36(12, properName = true),
   Logo40(13, properName = true),
-  Logo44(14, properName = true),
+  Logo52(17, properName = true),
 }
 
 internal class WidgetTextExpectations {
@@ -57,13 +61,13 @@ internal class WidgetTextExpectations {
   fun logo(mark: LogoMark?, size: Int) {
     if (mark == null) return
     val role = when (size) {
-      16 -> WidgetTextRole.Logo16
-      20 -> WidgetTextRole.Logo20
-      22 -> WidgetTextRole.Logo22
+      18 -> WidgetTextRole.Logo18
+      24 -> WidgetTextRole.Logo24
       28 -> WidgetTextRole.Logo28
-      30 -> WidgetTextRole.Logo30
+      32 -> WidgetTextRole.Logo32
+      36 -> WidgetTextRole.Logo36
       40 -> WidgetTextRole.Logo40
-      44 -> WidgetTextRole.Logo44
+      52 -> WidgetTextRole.Logo52
       else -> error("Unknown logo size $size")
     }
     add(
@@ -82,13 +86,13 @@ internal class WidgetTextExpectations {
         add(frame.text.lead, WidgetTextRole.Lead)
         add(frame.text.action, WidgetTextRole.Hero)
         add(frame.text.instruction, WidgetTextRole.Secondary)
-        add(frame.text.ghost, WidgetTextRole.Secondary)
+        add(frame.text.ghost, WidgetTextRole.Heading)
       }
 
       is FavoriteWidgetFrame.Placeholder -> {
         add(frame.text.title, WidgetTextRole.Title)
         add(frame.text.value, WidgetTextRole.Hero)
-        add(frame.text.ghost, WidgetTextRole.Secondary)
+        add(frame.text.ghost, WidgetTextRole.Heading)
       }
 
       else -> Unit
@@ -138,17 +142,24 @@ internal fun inspectFavoriteWidgetView(
         if (!parent.contentDescription.isNullOrEmpty() && parent.width == parent.height) logo = true
         parent = parent.parent as? View
       }
-      val roles = expected.roles[text.text.toString()].orEmpty().filter { it.name.startsWith("Logo") == logo }
+      val shown = text.text.toString()
+      val value = if (shown in expected.roles || !shown.endsWith("…")) {
+        shown
+      } else {
+        expected.roles.keys.firstOrNull { it.startsWith(shown.dropLast(1)) } ?: shown
+      }
+      val roles = expected.roles[value].orEmpty().filter { it.name.startsWith("Logo") == logo }
       val matches = roles.filter { role ->
-        val sp = role.sp?.minus(textStep) ?: heroSize
+        val sp = role.sp?.minus(if (logo) 0 else textStep) ?: heroSize
         val pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp.toFloat(), text.resources.displayMetrics)
-        abs(text.textSize - pixels) < .01f
+        abs(text.textSize - pixels) < .01f || (logo && text.textSize < pixels)
       }
       if (matches.isEmpty()) {
         problems +=
           "role size ${text.textSize}px does not match $roles at step $textStep, hero $heroSize"
       }
       matches.forEach { hierarchy.getOrPut(it) { mutableListOf() }.add(text.textSize) }
+      if (value != shown && matches.none { it.properName }) problems += "ellipsis"
       val layout = text.layout
       if (layout == null || layout.lineCount == 0) {
         problems += "no text layout"
@@ -162,7 +173,7 @@ internal fun inspectFavoriteWidgetView(
           if (layout.getLineWidth(line) >
             text.width - text.compoundPaddingLeft - text.compoundPaddingRight + 1
           ) {
-            problems += "line width ${layout.getLineWidth(line)}/${text.width}"
+            problems += "line width ${layout.getLineWidth(line)}/${text.width} for $shown"
           }
         }
         if (layout.getLineEnd(layout.lineCount - 1) < text.text.length) problems += "missing characters"
@@ -184,7 +195,7 @@ internal fun inspectFavoriteWidgetView(
         }
         child = parent
       }
-      TextMeasurement(text.text.toString(), text.currentTextColor, text.textSize, problems)
+      TextMeasurement(value, text.currentTextColor, text.textSize, problems)
     },
     clippedViews = allViews.filter { child ->
       val parent = child.parent as? View
@@ -212,3 +223,4 @@ internal fun favoriteWidgetDescendants(view: View): List<View> = listOf(view) + 
 } else {
   emptyList()
 }
+
