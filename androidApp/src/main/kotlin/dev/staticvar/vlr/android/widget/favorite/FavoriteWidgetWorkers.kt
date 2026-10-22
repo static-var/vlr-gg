@@ -31,7 +31,10 @@ internal class FavoriteEntityRenderWorker(context: Context, params: WorkerParame
 
 internal class FavoriteEntityReconcileWorker(context: Context, params: WorkerParameters) :
   CoroutineWorker(context, params) {
-  override suspend fun doWork(): Result = widgetWork { FavoriteWidgetRuntime.get().changed() }
+  override suspend fun doWork(): Result = widgetWork {
+    FavoriteWidgetRuntime.get().changed()
+    publishFavoriteWidgetPreviews(applicationContext)
+  }
 }
 
 internal class FavoriteEntityRestoreWorker(context: Context, params: WorkerParameters) :
