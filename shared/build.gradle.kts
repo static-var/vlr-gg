@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
@@ -103,6 +104,8 @@ kotlin {
         implementation(libs.lifecycle.viewmodel.compose.cmp)
         implementation(libs.lifecycle.viewmodel.navigation3)
         implementation(libs.kotlinx.serialization)
+        implementation(libs.kotlinx.datetime)
+        implementation(libs.ktor.core)
         implementation(libs.multiplatform.settings)
         implementation(libs.koin.core)
         implementation(libs.koin.compose)
@@ -134,6 +137,7 @@ kotlin {
     }
 
     val androidHostTest by getting {
+      resources.srcDir(rootProject.file("iosApp/VLRWidgetTests/Fixtures/EventWidget"))
       dependencies {
         implementation(libs.coroutine.test)
       }
@@ -153,7 +157,15 @@ kotlin {
         implementation(libs.coroutine.test)
         implementation(libs.multiplatform.settings)
         implementation(libs.multiplatform.settings.test)
+        implementation(libs.ktor.mock)
+        implementation(libs.kotlinx.io.core)
       }
     }
   }
+}
+
+tasks.withType<KotlinNativeSimulatorTest>().configureEach {
+  val fixtures = rootProject.layout.projectDirectory.dir("iosApp/VLRWidgetTests/Fixtures/EventWidget")
+  inputs.dir(fixtures).withPathSensitivity(PathSensitivity.RELATIVE)
+  environment("SIMCTL_CHILD_VLR_WIDGET_FIXTURES", fixtures.asFile.absolutePath)
 }
