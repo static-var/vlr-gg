@@ -22,16 +22,17 @@ struct FavoriteEventQuery: EntityQuery {
 
     func entities(for identifiers: [String]) async throws -> [FavoriteEventEntity] {
         let events = loadEvents()
-        return await entities(identifiers.compactMap { id in events.first { $0.id == id } })
+        return entities(identifiers.compactMap { id in events.first { $0.id == id } })
     }
 
     func suggestedEntities() async throws -> [FavoriteEventEntity] {
-        await entities(loadEvents().sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending })
+        let events = loadEvents().sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+        await WidgetLogoPrefetch.run(events.compactMap(\.logo), timeout: .seconds(1))
+        return entities(events)
     }
 
-    private func entities(_ values: [WidgetFavoriteEvent]) async -> [FavoriteEventEntity] {
-        await WidgetLogoPrefetch.run(values.compactMap(\.logo), timeout: .seconds(1))
-        return values.map { FavoriteEventEntity(id: $0.id, name: $0.name, imageData: MatchActivityLogoCache.cachedImageData(for: $0.logo)) }
+    private func entities(_ values: [WidgetFavoriteEvent]) -> [FavoriteEventEntity] {
+        values.map { FavoriteEventEntity(id: $0.id, name: $0.name, imageData: MatchActivityLogoCache.cachedImageData(for: $0.logo)) }
     }
 }
 

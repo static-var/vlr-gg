@@ -26,16 +26,17 @@ struct FavoriteTeamQuery: EntityQuery {
 
     func entities(for identifiers: [String]) async throws -> [FavoriteTeamEntity] {
         let teams = loadTeams()
-        return await entities(identifiers.compactMap { id in teams.first { $0.id == id } })
+        return entities(identifiers.compactMap { id in teams.first { $0.id == id } })
     }
 
     func suggestedEntities() async throws -> [FavoriteTeamEntity] {
-        await entities(loadTeams().sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending })
+        let teams = loadTeams().sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+        await WidgetLogoPrefetch.run(teams.compactMap(\.logo), timeout: .seconds(1))
+        return entities(teams)
     }
 
-    private func entities(_ values: [WidgetFavoriteTeam]) async -> [FavoriteTeamEntity] {
-        await WidgetLogoPrefetch.run(values.compactMap(\.logo), timeout: .seconds(1))
-        return values.map { FavoriteTeamEntity(id: $0.id, name: $0.name, tag: $0.tag, imageData: MatchActivityLogoCache.cachedImageData(for: $0.logo)) }
+    private func entities(_ values: [WidgetFavoriteTeam]) -> [FavoriteTeamEntity] {
+        values.map { FavoriteTeamEntity(id: $0.id, name: $0.name, tag: $0.tag, imageData: MatchActivityLogoCache.cachedImageData(for: $0.logo)) }
     }
 }
 
