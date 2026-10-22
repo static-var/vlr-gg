@@ -1,0 +1,3436 @@
+{
+  "scheduled-first": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T14:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-20"
+            },
+            "endInclusive": {
+              "date": "2026-10-25"
+            }
+          },
+          "reportedStatus": "Upcoming"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-20T18:00:00Z",
+              "floatingCalendarDay": "2026-10-20",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T21:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "5",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": "VIT",
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Upper final",
+              "stage": "Playoffs",
+              "format": "Bo3"
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "6",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": {
+          "matchId": "5",
+          "maps": []
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "scheduled-today": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:30:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": "VIT",
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T18:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": "Bo3"
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T21:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "5",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Upper final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "6",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": {
+          "matchId": "1",
+          "maps": []
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "scheduled-tomorrow": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T14:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": "VIT",
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": "Bo3"
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T21:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "5",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Upper final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "6",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": {
+          "matchId": "1",
+          "maps": []
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "scheduled-delayed": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:15:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": "VIT",
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T11:59:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": "Bo3"
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T21:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "5",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Upper final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "6",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": {
+          "matchId": "1",
+          "maps": []
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "scheduled-tbd": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T14:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "undecided"
+                }
+              },
+              "start": null,
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": "Bo3"
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T21:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "5",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Upper final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "6",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": {
+          "matchId": "1",
+          "maps": []
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "scheduled-group": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:30:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": "VIT",
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T18:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Group Omega",
+              "stage": "Group Stage",
+              "format": "Bo3"
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T21:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "5",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Upper final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "6",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          }
+        ],
+        "groups": [
+          {
+            "name": "Group Omega",
+            "rows": [
+              {
+                "team": {
+                  "id": "1",
+                  "name": "LOUD",
+                  "tag": null,
+                  "logo": "https://example.test/team1.png"
+                },
+                "wins": 4,
+                "losses": 0,
+                "ties": 0,
+                "maps": 4
+              },
+              {
+                "team": {
+                  "id": "2",
+                  "name": "Team Vitality",
+                  "tag": null,
+                  "logo": "https://example.test/team2.png"
+                },
+                "wins": 3,
+                "losses": 1,
+                "ties": 0,
+                "maps": 2
+              },
+              {
+                "team": {
+                  "id": "3",
+                  "name": "Sentinels",
+                  "tag": null,
+                  "logo": "https://example.test/team3.png"
+                },
+                "wins": 2,
+                "losses": 2,
+                "ties": 0,
+                "maps": 0
+              },
+              {
+                "team": {
+                  "id": "4",
+                  "name": "G2 Esports",
+                  "tag": null,
+                  "logo": "https://example.test/team4.png"
+                },
+                "wins": 1,
+                "losses": 3,
+                "ties": 0,
+                "maps": -2
+              },
+              {
+                "team": {
+                  "id": "5",
+                  "name": "DRX",
+                  "tag": null,
+                  "logo": "https://example.test/team5.png"
+                },
+                "wins": 0,
+                "losses": 4,
+                "ties": 0,
+                "maps": -4
+              }
+            ]
+          }
+        ],
+        "prizes": [],
+        "detail": {
+          "matchId": "1",
+          "maps": []
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "live-bo5": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:15:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": "VIT",
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T11:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": "Bo5"
+            },
+            "phase": {
+              "type": "live",
+              "score": {
+                "team": 2,
+                "opponent": 2
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "2",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "3",
+                    "name": "Sentinels",
+                    "tag": null,
+                    "logo": "https://example.test/team3.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T08:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Lower round 2",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 0
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "3",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "3",
+                    "name": "Sentinels",
+                    "tag": null,
+                    "logo": "https://example.test/team3.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T09:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Lower round 3",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 1,
+                "opponent": 2
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T21:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "5",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Upper final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "6",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "7",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T11:30:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "live",
+              "score": {
+                "team": 0,
+                "opponent": 1
+              }
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": {
+          "matchId": "1",
+          "maps": [
+            {
+              "name": "Haven",
+              "pick": {
+                "type": "team",
+                "tag": "LOUD"
+              },
+              "status": "Won",
+              "score": {
+                "team": 13,
+                "opponent": 9
+              }
+            },
+            {
+              "name": "Lotus",
+              "pick": {
+                "type": "opponent",
+                "tag": "VIT"
+              },
+              "status": "Lost",
+              "score": {
+                "team": 9,
+                "opponent": 13
+              }
+            },
+            {
+              "name": "Ascent",
+              "pick": {
+                "type": "team",
+                "tag": "LOUD"
+              },
+              "status": "Won",
+              "score": {
+                "team": 13,
+                "opponent": 9
+              }
+            },
+            {
+              "name": "Icebox",
+              "pick": {
+                "type": "opponent",
+                "tag": "VIT"
+              },
+              "status": "Lost",
+              "score": {
+                "team": 9,
+                "opponent": 13
+              }
+            },
+            {
+              "name": "Split",
+              "pick": {
+                "type": "team",
+                "tag": "LOUD"
+              },
+              "status": "Live",
+              "score": {
+                "team": 6,
+                "opponent": 4
+              }
+            }
+          ]
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "live-bo3-next": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:15:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": "VIT",
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T11:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": "Bo3"
+            },
+            "phase": {
+              "type": "live",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "2",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "3",
+                    "name": "Sentinels",
+                    "tag": null,
+                    "logo": "https://example.test/team3.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T08:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Lower round 2",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 0
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "3",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "3",
+                    "name": "Sentinels",
+                    "tag": null,
+                    "logo": "https://example.test/team3.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T09:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Lower round 3",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 1,
+                "opponent": 2
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T21:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "5",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Upper final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "6",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": {
+          "matchId": "1",
+          "maps": [
+            {
+              "name": "Haven",
+              "pick": {
+                "type": "team",
+                "tag": "LOUD"
+              },
+              "status": "Won",
+              "score": {
+                "team": 13,
+                "opponent": 9
+              }
+            },
+            {
+              "name": "Lotus",
+              "pick": {
+                "type": "opponent",
+                "tag": "VIT"
+              },
+              "status": "Lost",
+              "score": {
+                "team": 9,
+                "opponent": 13
+              }
+            },
+            {
+              "name": "Ascent",
+              "pick": {
+                "type": "team",
+                "tag": "LOUD"
+              },
+              "status": "Next",
+              "score": null
+            }
+          ]
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "live-one-map": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:15:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": "VIT",
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T11:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": "Bo3"
+            },
+            "phase": {
+              "type": "live",
+              "score": {
+                "team": 0,
+                "opponent": 0
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "2",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "3",
+                    "name": "Sentinels",
+                    "tag": null,
+                    "logo": "https://example.test/team3.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T08:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Lower round 2",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 0
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "3",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "3",
+                    "name": "Sentinels",
+                    "tag": null,
+                    "logo": "https://example.test/team3.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T09:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Lower round 3",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 1,
+                "opponent": 2
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T21:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "5",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Upper final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "6",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": {
+          "matchId": "1",
+          "maps": [
+            {
+              "name": "Haven",
+              "pick": {
+                "type": "team",
+                "tag": "LOUD"
+              },
+              "status": "Live",
+              "score": {
+                "team": 6,
+                "opponent": 4
+              }
+            }
+          ]
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "live-no-score": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:15:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": "VIT",
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T11:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": "Bo3"
+            },
+            "phase": {
+              "type": "live",
+              "score": null
+            }
+          },
+          {
+            "fixture": {
+              "id": "2",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "3",
+                    "name": "Sentinels",
+                    "tag": null,
+                    "logo": "https://example.test/team3.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T08:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Lower round 2",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 0
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "3",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "3",
+                    "name": "Sentinels",
+                    "tag": null,
+                    "logo": "https://example.test/team3.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T09:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Lower round 3",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 1,
+                "opponent": 2
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T21:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "5",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Upper final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "6",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": {
+          "matchId": "1",
+          "maps": []
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "live-earlier": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:15:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": "VIT",
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T11:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": "Bo3"
+            },
+            "phase": {
+              "type": "live",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "2",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "3",
+                    "name": "Sentinels",
+                    "tag": null,
+                    "logo": "https://example.test/team3.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-15T08:00:00Z",
+              "floatingCalendarDay": "2026-10-15",
+              "round": "Lower round 2",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 0
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "3",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "3",
+                    "name": "Sentinels",
+                    "tag": null,
+                    "logo": "https://example.test/team3.png"
+                  }
+                }
+              },
+              "start": "2026-10-15T09:00:00Z",
+              "floatingCalendarDay": "2026-10-15",
+              "round": "Lower round 3",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 1,
+                "opponent": 2
+              }
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": {
+          "matchId": "1",
+          "maps": []
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "between": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T14:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-16T10:00:00Z",
+              "floatingCalendarDay": "2026-10-16",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": "LOUD",
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": "VIT",
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Phase 2",
+              "format": "Bo3"
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "5",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Phase 2",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          },
+          {
+            "fixture": {
+              "id": "6",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-17T18:00:00Z",
+              "floatingCalendarDay": "2026-10-17",
+              "round": "Lower final",
+              "stage": "Phase 2",
+              "format": null
+            },
+            "phase": {
+              "type": "upcoming"
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": {
+          "matchId": "4",
+          "maps": []
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "gap-start": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T18:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-20"
+            },
+            "endInclusive": {
+              "date": "2026-10-25"
+            }
+          },
+          "reportedStatus": "Upcoming"
+        },
+        "matches": [],
+        "groups": [],
+        "prizes": [],
+        "detail": null
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "gap-tbd": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T18:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": null,
+            "endInclusive": null
+          },
+          "reportedStatus": "Upcoming"
+        },
+        "matches": [],
+        "groups": [],
+        "prizes": [],
+        "detail": null
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "gap-next": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T14:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-18"
+            }
+          },
+          "reportedStatus": "Ongoing"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-15T18:00:00Z",
+              "floatingCalendarDay": "2026-10-15",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 3,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "2",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "3",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": null
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "finished-prizes": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-17T00:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-15"
+            }
+          },
+          "reportedStatus": "Completed"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-15T18:00:00Z",
+              "floatingCalendarDay": "2026-10-15",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 3,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "2",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "3",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [
+          {
+            "position": "2nd",
+            "amount": "$400,000",
+            "team": {
+              "id": "2",
+              "name": "Team Vitality",
+              "tag": null,
+              "logo": "https://example.test/team2.png"
+            }
+          },
+          {
+            "position": "1st",
+            "amount": "$1,000,000",
+            "team": {
+              "id": "1",
+              "name": "LOUD",
+              "tag": null,
+              "logo": "https://example.test/team1.png"
+            }
+          },
+          {
+            "position": "3rd",
+            "amount": "$200,000",
+            "team": {
+              "id": "3",
+              "name": "Sentinels",
+              "tag": null,
+              "logo": "https://example.test/team3.png"
+            }
+          },
+          {
+            "position": "4th",
+            "amount": "$100,000",
+            "team": {
+              "id": "4",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": "https://example.test/team4.png"
+            }
+          }
+        ],
+        "detail": null
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "finished-matches": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-17T00:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-15"
+            }
+          },
+          "reportedStatus": "Completed"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-15T18:00:00Z",
+              "floatingCalendarDay": "2026-10-15",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 3,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "2",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "3",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": {
+                "team": 2,
+                "opponent": 1
+              }
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": null
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "finished-unconfirmed": {
+    "version": 1,
+    "key": {
+      "kind": "Event",
+      "entityId": "3122",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-17T00:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "event",
+      "value": {
+        "event": {
+          "id": "3122",
+          "title": "Champions Paris",
+          "logo": "https://example.test/event.png",
+          "location": "Paris",
+          "prizePool": "$2,250,000",
+          "dates": {
+            "start": {
+              "date": "2026-10-10"
+            },
+            "endInclusive": {
+              "date": "2026-10-15"
+            }
+          },
+          "reportedStatus": "Completed"
+        },
+        "matches": [
+          {
+            "fixture": {
+              "id": "1",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "1",
+                    "name": "LOUD",
+                    "tag": null,
+                    "logo": "https://example.test/team1.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "2",
+                    "name": "Team Vitality",
+                    "tag": null,
+                    "logo": "https://example.test/team2.png"
+                  }
+                }
+              },
+              "start": "2026-10-15T18:00:00Z",
+              "floatingCalendarDay": "2026-10-15",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": null
+            }
+          },
+          {
+            "fixture": {
+              "id": "2",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": null
+            }
+          },
+          {
+            "fixture": {
+              "id": "3",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": null
+            }
+          },
+          {
+            "fixture": {
+              "id": "4",
+              "participants": {
+                "left": {
+                  "type": "team",
+                  "value": {
+                    "id": "4",
+                    "name": "G2 Esports",
+                    "tag": null,
+                    "logo": "https://example.test/team4.png"
+                  }
+                },
+                "right": {
+                  "type": "team",
+                  "value": {
+                    "id": "5",
+                    "name": "DRX",
+                    "tag": null,
+                    "logo": "https://example.test/team5.png"
+                  }
+                }
+              },
+              "start": "2026-10-14T18:00:00Z",
+              "floatingCalendarDay": "2026-10-14",
+              "round": "Grand final",
+              "stage": "Playoffs",
+              "format": null
+            },
+            "phase": {
+              "type": "completed",
+              "score": null
+            }
+          }
+        ],
+        "groups": [],
+        "prizes": [],
+        "detail": null
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  }
+}

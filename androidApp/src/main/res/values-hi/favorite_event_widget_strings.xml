@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_event_widget_name">इवेंट</string>
+    <string name="favorite_event_widget_description">आपके पसंदीदा इवेंट का अगला मैच, लाइव स्कोर और अंक तालिका।</string>
+</resources>

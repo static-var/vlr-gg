@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_event_widget_name">Evento</string>
+    <string name="favorite_event_widget_description">El próximo partido, resultados en vivo y clasificación de tu evento favorito.</string>
+</resources>

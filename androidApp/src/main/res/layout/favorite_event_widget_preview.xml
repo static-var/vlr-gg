@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="PrivateResource,Overdraw"
+    android:layout_width="280dp"
+    android:layout_height="158dp"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/glance_colorWidgetBackground">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <View
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/favorite_widget_preview_tile" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="@string/widget_event_choose_event"
+            android:textColor="@color/glance_colorOnSurface"
+            android:textSize="16sp" />
+    </LinearLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:maxLines="1"
+        android:text="@string/widget_favorite_tap_to_choose"
+        android:textColor="@color/glance_colorOnSurface"
+        android:textSize="36sp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:maxLines="2"
+        android:text="@string/widget_event_pick"
+        android:textColor="@color/glance_colorOnSurfaceVariant"
+        android:textSize="13sp" />
+</LinearLayout>
