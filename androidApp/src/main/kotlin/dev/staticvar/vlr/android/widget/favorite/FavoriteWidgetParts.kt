@@ -25,6 +25,8 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.action.clickable
+import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
 import androidx.glance.layout.Alignment
@@ -51,6 +53,7 @@ import dev.staticvar.vlr.android.R
 import dev.staticvar.vlr.shared.widget.favorite.LogoMark
 import dev.staticvar.vlr.shared.widget.favorite.PillText
 import dev.staticvar.vlr.shared.widget.favorite.PillTone
+import dev.staticvar.vlr.shared.widget.favorite.WidgetTap
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -494,11 +497,17 @@ internal val FavoriteWidgetCardOutline: ColorProvider @Composable get() = Glance
 internal val FavoriteWidgetCardTop = 10.dp
 internal val FavoriteWidgetCardBottom = 4.dp
 
+internal class FavoriteWidgetCardRow(val tap: WidgetTap.Entity?, val content: @Composable () -> Unit)
+
+@Composable
+internal fun GlanceModifier.opens(tap: WidgetTap.Entity?): GlanceModifier =
+  if (tap == null) this else clickable(actionStartActivity(tap.intent(LocalContext.current)))
+
 @Composable
 internal fun FavoriteWidgetCard(
   heading: String,
   modifier: GlanceModifier = GlanceModifier,
-  rows: List<@Composable () -> Unit>,
+  rows: List<FavoriteWidgetCardRow>,
 ) {
   Column(
     modifier.fillMaxWidth().cornerRadius(16.dp).background(FavoriteWidgetCardColor)
@@ -515,7 +524,9 @@ internal fun FavoriteWidgetCard(
       if (index > 0) {
         Box(GlanceModifier.fillMaxWidth().height(FavoriteWidgetDivider).background(FavoriteWidgetCardOutline)) {}
       }
-      Box(GlanceModifier.fillMaxWidth().defaultWeight(), contentAlignment = Alignment.CenterStart) { row() }
+      Box(GlanceModifier.fillMaxWidth().defaultWeight().opens(row.tap), contentAlignment = Alignment.CenterStart) {
+        row.content()
+      }
     }
   }
 }

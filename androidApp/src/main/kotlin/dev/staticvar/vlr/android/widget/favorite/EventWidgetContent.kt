@@ -23,6 +23,7 @@ import dev.staticvar.vlr.shared.widget.favorite.ScheduledEventText
 import dev.staticvar.vlr.shared.widget.favorite.StageText
 import dev.staticvar.vlr.shared.widget.favorite.UpcomingListText
 import dev.staticvar.vlr.shared.widget.favorite.VisibleEventText
+import dev.staticvar.vlr.shared.widget.favorite.WidgetTap
 
 internal data class EventWidgetHero(
   val lead: String,
@@ -35,6 +36,7 @@ internal data class EventWidgetHero(
   val pills: List<PillText> = emptyList(),
   val pair: LogoPair? = null,
   val champion: LogoMark.Named? = null,
+  val tap: WidgetTap.Entity? = null,
 )
 
 internal sealed interface EventWidgetList {
@@ -66,6 +68,7 @@ internal data class EventWidgetMatch(
   val rightScore: String? = null,
   val loser: LoserSide? = null,
   val live: Boolean,
+  val tap: WidgetTap.Entity?,
 )
 
 internal data class EventWidgetContent(val hero: EventWidgetHero, val list: EventWidgetList?)
@@ -91,6 +94,7 @@ internal fun EventPresentation.content(): EventWidgetContent = when (val body = 
           beside = it.beside,
           pills = it.pills,
           pair = it.pair,
+          tap = it.tap,
         )
       },
       state.list?.content(),
@@ -98,7 +102,7 @@ internal fun EventPresentation.content(): EventWidgetContent = when (val body = 
 
     is VisibleEventText.Between -> EventWidgetContent(
       state.hero.let {
-        EventWidgetHero(it.lead, it.score, it.context, pair = it.pair)
+        EventWidgetHero(it.lead, it.score, it.context, pair = it.pair, tap = it.tap)
       },
       state.list?.content(),
     )
@@ -107,7 +111,7 @@ internal fun EventPresentation.content(): EventWidgetContent = when (val body = 
 
     is VisibleEventText.Finished -> EventWidgetContent(
       when (val hero = state.hero) {
-        is FinishedEventText.Champion -> EventWidgetHero(hero.label, hero.name, hero.context, champion = hero.logo)
+        is FinishedEventText.Champion -> EventWidgetHero(hero.label, hero.name, hero.context, champion = hero.logo, tap = hero.tap)
         is FinishedEventText.Unconfirmed -> hero.ended.content()
       },
       when (val list = state.list) {
@@ -123,7 +127,7 @@ internal fun EventPresentation.content(): EventWidgetContent = when (val body = 
 
     is HiddenEventText.Live -> EventWidgetContent(
       state.hero.let {
-        EventWidgetHero(it.lead, it.label, it.context, liveLabel = it.liveLabel, pair = it.pair)
+        EventWidgetHero(it.lead, it.label, it.context, liveLabel = it.liveLabel, pair = it.pair, tap = it.tap)
       },
       state.list?.content(),
     )
@@ -134,7 +138,7 @@ internal fun EventPresentation.content(): EventWidgetContent = when (val body = 
   }
 }
 
-private fun ScheduledEventText.content() = EventWidgetHero(lead, time, context, day, pair = pair)
+private fun ScheduledEventText.content() = EventWidgetHero(lead, time, context, day, pair = pair, tap = tap)
 private fun GapText.content() = EventWidgetHero(lead, value, context)
 private fun EndedText.content() = EventWidgetHero(lead, date, context)
 private fun MatchListText.content() = EventWidgetList.Matches(
@@ -142,13 +146,13 @@ private fun MatchListText.content() = EventWidgetList.Matches(
   rows.map {
     EventWidgetMatch(
       it.day, it.time, it.left, it.right, it.leftName, it.rightName, it.round,
-      it.leftScore, it.rightScore, it.loser, it.live,
+      it.leftScore, it.rightScore, it.loser, it.live, it.tap,
     )
   },
 )
 private fun NeutralListText.content() = EventWidgetList.Matches(
   heading,
   rows.map {
-    EventWidgetMatch(it.day, it.time, it.left, it.right, it.leftName, it.rightName, it.round, live = it.live)
+    EventWidgetMatch(it.day, it.time, it.left, it.right, it.leftName, it.rightName, it.round, live = it.live, tap = it.tap)
   },
 )
