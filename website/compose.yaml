@@ -30,7 +30,7 @@ services:
         max-size: "5m"
         max-file: "2"
   signup:
-    image: python:3.13-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f
+    image: python:3.13-alpine@sha256:bf12ecc0bea3f171d55145dd02c78b5eeb09f30ee2ac9cc2b4c9e4e8f5e30741
     restart: unless-stopped
     user: "1001:1001"
     command: ["python", "/app/server.py"]
