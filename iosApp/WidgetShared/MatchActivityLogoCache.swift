@@ -130,6 +130,11 @@ enum MatchActivityLogoCache {
         return result
     }
 
+    static func cachedImageData(for source: String?) -> Data? {
+        guard let source, let file = fileURL(for: source) else { return nil }
+        return originalImage(at: file)?.pngData()
+    }
+
     private static func originalImage(at file: URL, size: LogoSize = .expanded) -> UIImage? {
         guard let data = try? Data(contentsOf: file) else { return nil }
         return image(data: data, size: size)

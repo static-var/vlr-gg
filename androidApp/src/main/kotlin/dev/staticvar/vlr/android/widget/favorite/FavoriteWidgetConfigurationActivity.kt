@@ -10,22 +10,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,24 +38,34 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.card.PrismCard
+import dev.staticvar.designsystem.component.card.PrismCardStyle
+import dev.staticvar.designsystem.component.icon.PrismIconSize
+import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
+import dev.staticvar.designsystem.component.selection.PrismRadioButton
+import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismCatppuccinFlavour
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
-import dev.staticvar.designsystem.prism.typography.prismTypography
 import dev.staticvar.vlr.android.MainActivity
 import dev.staticvar.vlr.android.R
 import dev.staticvar.vlr.core.settings.AppearanceRepository
 import dev.staticvar.vlr.core.settings.CatppuccinFlavour
 import dev.staticvar.vlr.core.settings.ThemeFamily
 import dev.staticvar.vlr.shared.widget.favorite.WidgetKind
+import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.getKoin
@@ -142,6 +152,7 @@ class FavoriteWidgetConfigurationActivity : ComponentActivity() {
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
             )
           },
+          onClose = ::finish,
         )
       }
     }
@@ -154,57 +165,88 @@ private fun FavoritePickerContent(
   saving: Boolean,
   onSelect: (String) -> Unit,
   onOpenApp: () -> Unit,
+  onClose: () -> Unit,
 ) {
-  Surface(modifier = Modifier.fillMaxSize()) {
+  Surface(modifier = Modifier.fillMaxSize(), color = Prism.color.background) {
     if (picker == null) {
-      Box(Modifier.fillMaxSize().safeDrawingPadding(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
-      }
-    } else {
-      Column(Modifier.fillMaxSize().safeDrawingPadding()) {
-        Text(
-          text = stringResource(
-            when (picker.kind) {
-              WidgetKind.Team -> R.string.widget_team_choose_team
-              WidgetKind.Event -> R.string.widget_event_choose_event
-            },
-          ),
-          style = MaterialTheme.prismTypography.cardTitle,
-          modifier = Modifier.padding(24.dp).semantics { heading() },
-        )
-        if (picker.choices.isEmpty()) {
-          Column(
-            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())
-              .padding(horizontal = 24.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-          ) {
+      PrismFullscreenLoader(Modifier.fillMaxSize())
+      return@Surface
+    }
+    Column(Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = Prism.dimens.spacingM)) {
+      PrismScreenTitleBar(
+        title = stringResource(
+          when (picker.kind) {
+            WidgetKind.Team -> R.string.widget_team_choose_team
+            WidgetKind.Event -> R.string.widget_event_choose_event
+          },
+        ),
+        onBackPress = onClose,
+      )
+      if (picker.choices.isEmpty()) {
+        Column(
+          modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(vertical = Prism.dimens.spacingM),
+          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+        ) {
+          Text(
+            text = stringResource(
+              when (picker.kind) {
+                WidgetKind.Team -> R.string.widget_favorite_picker_empty_teams
+                WidgetKind.Event -> R.string.widget_favorite_picker_empty_events
+              },
+            ),
+            style = Prism.typography.bodyLarge,
+            color = Prism.color.contentPrimary,
+          )
+          PrismButton(onClick = onOpenApp) { Text(stringResource(R.string.widget_favorite_open_app)) }
+        }
+      } else {
+        LazyColumn(
+          modifier = Modifier.weight(1f).selectableGroup(),
+          contentPadding = PaddingValues(bottom = Prism.dimens.spacingL),
+          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+        ) {
+          item {
             Text(
               text = stringResource(
                 when (picker.kind) {
-                  WidgetKind.Team -> R.string.widget_favorite_picker_empty_teams
-                  WidgetKind.Event -> R.string.widget_favorite_picker_empty_events
+                  WidgetKind.Team -> R.string.widget_team_picker_explanation
+                  WidgetKind.Event -> R.string.widget_event_picker_explanation
                 },
               ),
-              style = MaterialTheme.prismTypography.bodyLarge,
+              style = Prism.typography.bodySmall,
+              color = Prism.color.bodyColor,
+              modifier = Modifier.padding(bottom = Prism.dimens.spacingS),
             )
-            Button(onClick = onOpenApp) {
-              Text(stringResource(R.string.widget_favorite_open_app))
-            }
           }
-        } else {
-          LazyColumn(modifier = Modifier.weight(1f)) {
-            items(picker.choices, key = { it.id }) { choice ->
-              Text(
-                text = choice.name,
-                style = MaterialTheme.prismTypography.bodyLarge,
-                modifier = Modifier.fillMaxWidth()
-                  .clickable(enabled = !saving, role = Role.Button) { onSelect(choice.id) }
-                  .padding(horizontal = 24.dp, vertical = 20.dp),
-              )
-            }
+          items(picker.choices, key = { it.id }) { choice ->
+            FavoriteChoiceRow(choice, choice.id == picker.selected, enabled = !saving) { onSelect(choice.id) }
           }
         }
       }
+    }
+  }
+}
+
+@Composable
+private fun FavoriteChoiceRow(choice: FavoriteChoice, selected: Boolean, enabled: Boolean, onSelect: () -> Unit) {
+  PrismCard(
+    modifier = Modifier.fillMaxWidth().semantics {
+      this.selected = selected
+      role = Role.RadioButton
+    },
+    style = if (selected) PrismCardStyle.Filled else PrismCardStyle.Outlined,
+    onClick = onSelect,
+    enabled = enabled,
+  ) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      SharedNetworkIcon(imageUrl = choice.logo, contentDescription = choice.name, size = PrismIconSize.Size40)
+      Spacer(Modifier.width(Prism.dimens.spacingM))
+      Column(Modifier.weight(1f)) {
+        Text(choice.name, style = Prism.typography.bodyLarge, color = Prism.color.contentPrimary)
+        choice.tag?.let { Text(it, style = Prism.typography.bodySmall, color = Prism.color.bodyColor) }
+      }
+      Spacer(Modifier.width(Prism.dimens.spacingS))
+      PrismRadioButton(selected = selected, onClick = onSelect, enabled = enabled, modifier = Modifier.clearAndSetSemantics {})
     }
   }
 }

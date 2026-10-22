@@ -45,7 +45,7 @@ class UpcomingMatchesSnapshotTest {
       teams = listOf(DirectFavorite.Team("2", "Sentinels", "https://owcdn.net/sen.png", "SEN")),
       players = listOf(DirectFavorite.Player("1", "Player", "", currentTeamId = "624")),
     )
-    assertEquals(listOf(WidgetFavoriteTeam("2", "Sentinels")), snapshot.widgetFavoriteTeams())
+    assertEquals(listOf(WidgetFavoriteTeam("2", "Sentinels", "SEN", "https://owcdn.net/sen.png")), snapshot.widgetFavoriteTeams())
   }
 
   @Test

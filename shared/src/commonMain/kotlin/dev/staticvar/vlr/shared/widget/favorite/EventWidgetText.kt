@@ -106,6 +106,7 @@ internal object EventWidgetText {
           StageText(state.hero.round, state.hero.format?.label),
           WidgetSeriesRules.pills(state.maps, locale).map { PillText(it.text, pillTone(it.status)) },
           pair(state.hero.participants),
+          WidgetTap.Match(state.hero.id),
         ),
         if (large) matchList(state.list, now, zone, locale) else null,
       )
@@ -122,6 +123,7 @@ internal object EventWidgetText {
           state.last.winnerFirstScore.text,
           dotJoin(state.last.round, next),
           LogoPair(logoMark(state.last.winner), logoMark(state.last.loser)),
+          WidgetTap.Match(state.last.matchId),
         ),
         if (large) matchList(state.list, now, zone, locale) else null,
       )
@@ -142,6 +144,7 @@ internal object EventWidgetText {
             hero.final?.round,
           ),
           logoMark(hero.team),
+          teamTap(hero.team),
         )
 
         is EventFinish.Unconfirmed -> FinishedEventText.Unconfirmed(ended(hero.ended, false, locale))
@@ -169,6 +172,7 @@ internal object EventWidgetText {
         dotJoin(locale.text(WidgetTextKey.ScoresHidden), state.hero.round),
         locale.text(WidgetTextKey.Live),
         pair(state.hero.participants),
+        WidgetTap.Match(state.hero.id),
       ),
       if (large) neutralList(state.list, now, zone, locale) else null,
     )
@@ -225,7 +229,7 @@ internal object EventWidgetText {
       }
     }
     val day = (kickoff as? Kickoff.Scheduled)?.day
-    return ScheduledEventText(lead, day, kickoff.hero(locale), context, pair(fixture.participants))
+    return ScheduledEventText(lead, day, kickoff.hero(locale), context, pair(fixture.participants), WidgetTap.Match(fixture.id))
   }
 
   private fun gap(value: EventGap, locale: WidgetLocale): GapText = when (value) {
@@ -283,6 +287,7 @@ internal object EventWidgetText {
             locale.integer(it.standing.wins) + "–" + locale.integer(it.standing.losses),
             signedInteger(it.standing.maps, locale),
             it.favorite,
+            teamTap(it.standing.team),
           )
         },
       )
@@ -300,7 +305,7 @@ internal object EventWidgetText {
     is EventFinishedList.Prizes -> value.rows.takeIf { it.isNotEmpty() }?.let { rows ->
       FinishedListText.Prizes(
         locale.text(WidgetTextKey.FinalStandings),
-        rows.map { PrizeRowText(it.position, logoMark(it.team), it.amount) },
+        rows.map { PrizeRowText(it.position, logoMark(it.team), it.amount, teamTap(it.team)) },
       )
     }
   }
@@ -339,6 +344,7 @@ internal object EventWidgetText {
               null
             },
             neutral.live,
+            neutral.tap,
           )
         },
       )
@@ -382,6 +388,7 @@ internal object EventWidgetText {
       name(fixture.participants.right, locale),
       fixture.round,
       match.phase == NeutralPhase.Live,
+      WidgetTap.Match(fixture.id),
     )
   }
 

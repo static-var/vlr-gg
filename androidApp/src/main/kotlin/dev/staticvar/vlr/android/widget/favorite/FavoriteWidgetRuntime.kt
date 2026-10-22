@@ -9,10 +9,14 @@ import androidx.glance.appwidget.updateAll
 import androidx.work.WorkManager
 import dev.staticvar.vlr.android.widget.WidgetSnapshotStore
 import dev.staticvar.vlr.shared.widget.UpcomingMatchesSnapshot
+import dev.staticvar.vlr.shared.widget.WidgetFavoriteEvent
+import dev.staticvar.vlr.shared.widget.WidgetFavoriteTeam
+import dev.staticvar.vlr.shared.widget.WidgetTheme
 import dev.staticvar.vlr.shared.widget.favorite.FavoriteWidgetEngine
 import dev.staticvar.vlr.shared.widget.favorite.FavoriteWidgetFrame
 import dev.staticvar.vlr.shared.widget.favorite.StoredWidgetRecord
 import dev.staticvar.vlr.shared.widget.favorite.WidgetKey
+import dev.staticvar.vlr.shared.widget.favorite.WidgetKind
 import dev.staticvar.vlr.shared.widget.favorite.WidgetProjection
 import dev.staticvar.vlr.shared.widget.favorite.WidgetRefreshResult
 import dev.staticvar.vlr.shared.widget.favorite.WidgetRequest
@@ -58,6 +62,26 @@ internal class FavoriteWidgetRuntime(
 
   suspend fun picker(appWidgetId: Int): FavoritePicker? = withContext(Dispatchers.IO) {
     bindings.picker(appWidgetId, source())
+  }
+
+  fun preview(kind: WidgetKind): FavoriteWidgetFrame {
+    val record = context.assets.open("favorite-widget-preview/${kind.name.lowercase()}.json").bufferedReader()
+      .use { it.readText() }
+    val source = UpcomingMatchesSnapshot(
+      savedAtEpochMillis = 0,
+      clientId = "preview",
+      hasFavorites = true,
+      matches = emptyList(),
+      theme = WidgetTheme(0, 0, 0, 0, 0, 0, false),
+      favoriteTeams = listOf(WidgetFavoriteTeam(PreviewTeam, "Sentinels")),
+      favoriteEvents = listOf(WidgetFavoriteEvent(PreviewEvent, "Champions Paris")),
+    )
+    val entityId = when (kind) {
+      WidgetKind.Team -> PreviewTeam
+      WidgetKind.Event -> PreviewEvent
+    }
+    val request = WidgetRequest(WidgetSelection.Chosen(kind, entityId), source, PreviewTime, TimeZone.UTC)
+    return engine.project(request, StoredWidgetRecord(record), AndroidWidgetLocale(context)).frame
   }
 
   suspend fun configure(appWidgetId: Int, entityId: String): ConfigurationResult = withContext(Dispatchers.IO) {
@@ -142,6 +166,10 @@ internal class FavoriteWidgetRuntime(
   }
 
   companion object {
+    private const val PreviewTeam = "2"
+    private const val PreviewEvent = "3122"
+    private val PreviewTime = Instant.parse("2026-10-16T12:00:00Z")
+
     val invalidations = MutableStateFlow(0L)
 
     fun invalidate() {

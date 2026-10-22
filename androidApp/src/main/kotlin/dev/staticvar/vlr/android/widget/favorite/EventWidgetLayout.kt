@@ -150,7 +150,7 @@ private fun EventHero(
   val below = hero.pills.isNotEmpty() && FavoriteWidgetPart.Pills in fit
   val context = hero.context?.takeIf { FavoriteWidgetPart.Context in fit }
   Row(
-    GlanceModifier.fillMaxWidth().height(measure.heroHeight(hero, fit)),
+    GlanceModifier.fillMaxWidth().height(measure.heroHeight(hero, fit)).opens(hero.tap),
     verticalAlignment = Alignment.Vertical.CenterVertically,
   ) {
     Column(GlanceModifier.defaultWeight()) {
@@ -240,11 +240,13 @@ private fun EventHero(
 @Composable
 private fun ColumnScope.EventList(list: EventWidgetList, logos: WidgetBitmaps, width: Dp, fit: FavoriteWidgetPresentation) {
   val typography = FavoriteWidgetTypography(LocalContext.current)
-  val rows: List<@Composable () -> Unit> = when (list) {
-    is EventWidgetList.Matches -> list.rows.take(fit.rows).map { row -> @Composable { EventMatchRow(row, logos, width) } }
+  val rows = when (list) {
+    is EventWidgetList.Matches -> list.rows.take(fit.rows).map { row ->
+      FavoriteWidgetCardRow(row.tap) { EventMatchRow(row, logos, width) }
+    }
 
     is EventWidgetList.Group -> list.rows.take(fit.rows).map { row ->
-      @Composable {
+      FavoriteWidgetCardRow(row.tap) {
         val columns = groupColumns(typography, row, width, fit.textStep)
         Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
           FavoriteWidgetText(
@@ -289,7 +291,7 @@ private fun ColumnScope.EventList(list: EventWidgetList, logos: WidgetBitmaps, w
     }
 
     is EventWidgetList.Prizes -> list.rows.take(fit.rows).map { row ->
-      @Composable {
+      FavoriteWidgetCardRow(row.tap) {
         val columns = prizeColumns(typography, row, width, fit.textStep)
         Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
           FavoriteWidgetText(
@@ -317,7 +319,7 @@ private fun ColumnScope.EventList(list: EventWidgetList, logos: WidgetBitmaps, w
     }
 
     is EventWidgetList.Ghost -> List(fit.rows) {
-      @Composable {
+      FavoriteWidgetCardRow(null) {
         Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
           repeat(2) {
             Box(GlanceModifier.size(EventMatchLogo).cornerRadius(5.dp).background(FavoriteWidgetCardOutline)) {}

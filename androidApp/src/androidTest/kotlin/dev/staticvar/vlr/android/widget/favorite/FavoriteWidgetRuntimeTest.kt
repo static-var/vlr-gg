@@ -376,17 +376,21 @@ class FavoriteWidgetRuntimeTest {
     val id = installWidget()
     val runtime = runtime()
     val glanceId = GlanceAppWidgetManager(context).getGlanceIdBy(id)
-    assertEquals(listOf(FavoriteChoice("2", "Sentinels")), requireNotNull(runtime.picker(id)).choices)
+    assertEquals(listOf(FavoriteChoice("2", "Sentinels", null, null)), requireNotNull(runtime.picker(id)).choices)
 
-    writeSource(listOf(WidgetFavoriteTeam("3", "FNATIC")))
+    writeSource(listOf(WidgetFavoriteTeam("3", "FNATIC", "FNC", "https://owcdn.net/fnc.png")))
 
     assertEquals(ConfigurationResult.FavoritesChanged, runtime.configure(id, "2"))
     assertEquals(emptyMap<String, Any>(), state(glanceId))
-    assertEquals(listOf(FavoriteChoice("3", "FNATIC")), requireNotNull(runtime.picker(id)).choices)
+    assertEquals(
+      FavoritePicker(WidgetKind.Team, listOf(FavoriteChoice("3", "FNATIC", "FNC", "https://owcdn.net/fnc.png")), null),
+      runtime.picker(id),
+    )
 
     assertEquals(ConfigurationResult.Saved, runtime.configure(id, "3"))
     assertEquals(mapOf("selected_entity_id" to "3"), state(glanceId))
     assertEquals(WidgetSelection.Chosen(WidgetKind.Team, "3"), requireNotNull(bindings.read(id)).selection)
+    assertEquals("3", requireNotNull(runtime.picker(id)).selected)
 
     writeSource(emptyList())
 

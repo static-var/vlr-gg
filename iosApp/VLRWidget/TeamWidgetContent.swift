@@ -139,6 +139,21 @@ struct TeamWidgetContent: Codable, Equatable, Sendable {
         return ([header.team.logo, opponent?.logo] + (large ? historyRows.map { $0.opponent.logo } : [])).compactMap { $0 }
     }
 
+    var widgetURL: URL {
+        header.team.id.map { VLRWidgetContract.detailsURL(kind: "team", id: $0) } ?? VLRWidgetContract.appURL
+    }
+
+    var heroURL: URL {
+        let matchID: String?
+        switch state {
+        case .upcoming(let fixture), .liveHidden(let fixture): matchID = fixture.id
+        case .live(let series): matchID = series.fixture.id
+        case .idle(let last): matchID = last?.id
+        case .idleHidden(let last): matchID = last.id
+        }
+        return matchID.map { VLRWidgetContract.matchURL(id: $0) } ?? widgetURL
+    }
+
     var fixture: TeamWidgetFixture? {
         switch state {
         case .upcoming(let fixture), .liveHidden(let fixture): fixture
@@ -155,14 +170,24 @@ enum TeamWidgetSetup: Equatable {
 enum TeamWidgetEntryContent: Equatable {
     case needsTeam(TeamWidgetSetup)
     case content(TeamWidgetContent)
-    case placeholder
+    case placeholder(teamID: String?)
 
     static func make(_ content: TeamWidgetContent?, teamID: String?, clientID: String, source: UpcomingMatchesSnapshot?) -> Self {
         guard let source, !source.favoriteTeams.isEmpty else { return .needsTeam(.noFavorites) }
         guard let teamID, source.clientId == clientID,
               source.favoriteTeams.contains(where: { $0.id == teamID }) else { return .needsTeam(.chooseTeam) }
-        guard let content else { return .placeholder }
+        guard let content else { return .placeholder(teamID: teamID) }
         return .content(source.spoilersHidden ? content.redacted() : content)
+    }
+}
+
+extension TeamWidgetEntryContent {
+    var widgetURL: URL {
+        switch self {
+        case .content(let content): content.widgetURL
+        case .placeholder(let id): id.map { VLRWidgetContract.detailsURL(kind: "team", id: $0) } ?? VLRWidgetContract.appURL
+        case .needsTeam: VLRWidgetContract.appURL
+        }
     }
 }
 

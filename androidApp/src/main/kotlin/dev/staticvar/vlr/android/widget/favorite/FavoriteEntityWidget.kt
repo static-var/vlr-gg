@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
 import androidx.glance.GlanceId
@@ -47,6 +48,8 @@ import kotlinx.coroutines.flow.first
 internal abstract class FavoriteEntityWidget(val kind: WidgetKind) : GlanceAppWidget() {
   final override val stateDefinition = PreferencesGlanceStateDefinition
   final override val sizeMode = SizeMode.Exact
+  final override val previewSizeMode =
+    SizeMode.Responsive(setOf(DpSize(280.dp, 136.dp), DpSize(280.dp, 213.dp), DpSize(280.dp, 330.dp)))
 
   final override suspend fun provideGlance(context: Context, id: GlanceId) {
     val runtime = FavoriteWidgetRuntime.get()
@@ -62,19 +65,31 @@ internal abstract class FavoriteEntityWidget(val kind: WidgetKind) : GlanceAppWi
         context.createConfigurationContext(Configuration(context.applicationContext.resources.configuration))
       }
       CompositionLocalProvider(LocalContext provides renderContext) {
-        GlanceTheme {
-          val background = GlanceModifier.fillMaxSize().appWidgetBackground()
-            .background(GlanceTheme.colors.widgetBackground)
-          val shape = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            background.cornerRadius(android.R.dimen.system_app_widget_background_radius)
-          } else {
-            background.cornerRadius(20.dp)
-          }
-          Box(shape.clickable(actionStartActivity(widget.frame.tap.intent(context, appWidgetId)))) {
-            Content(widget.frame, widget.logos)
-          }
+        WidgetFrame(GlanceModifier.clickable(actionStartActivity(widget.frame.tap.intent(context, appWidgetId)))) {
+          Content(widget.frame, widget.logos)
         }
       }
+    }
+  }
+
+  final override suspend fun providePreview(context: Context, widgetCategory: Int) {
+    val frame = FavoriteWidgetRuntime.get().preview(kind)
+    provideContent {
+      WidgetFrame(GlanceModifier) { Content(frame, WidgetBitmaps(emptyMap())) }
+    }
+  }
+
+  @Composable
+  private fun WidgetFrame(modifier: GlanceModifier, content: @Composable () -> Unit) {
+    GlanceTheme {
+      val background = GlanceModifier.fillMaxSize().appWidgetBackground()
+        .background(GlanceTheme.colors.widgetBackground)
+      val shape = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        background.cornerRadius(android.R.dimen.system_app_widget_background_radius)
+      } else {
+        background.cornerRadius(20.dp)
+      }
+      Box(shape.then(modifier)) { content() }
     }
   }
 
@@ -88,12 +103,17 @@ internal fun WidgetTap.intent(context: Context, appWidgetId: Int): Intent = when
 
   WidgetTap.App -> Intent(context, MainActivity::class.java)
 
-  is WidgetTap.Match -> entityIntent(context, "match", id)
-
-  is WidgetTap.Event -> entityIntent(context, "event", id)
+  is WidgetTap.Entity -> intent(context)
 }
 
-private fun entityIntent(context: Context, path: String, id: String) = Intent(context, MainActivity::class.java).apply {
-  data = Uri.Builder().scheme("https").authority("valesports.app").appendPath(path).appendPath(id).build()
-  flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+internal fun WidgetTap.Entity.intent(context: Context): Intent {
+  val (path, id) = when (this) {
+    is WidgetTap.Match -> "match" to id
+    is WidgetTap.Event -> "event" to id
+    is WidgetTap.Team -> "team" to id
+  }
+  return Intent(context, MainActivity::class.java).apply {
+    data = Uri.Builder().scheme("https").authority("valesports.app").appendPath(path).appendPath(id).build()
+    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+  }
 }

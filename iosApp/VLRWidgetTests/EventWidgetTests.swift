@@ -544,6 +544,36 @@ extension EventWidgetTests {
         XCTAssertEqual(EventWidgetEntryContent.placeholder(eventID: nil).widgetURL, VLRWidgetContract.appURL)
     }
 
+    func testHeroTapTargetsAcrossVisibleAndHiddenStates() throws {
+        let cases = try renderCases()
+        let targets = [
+            "gallery-sample": "https://valesports.app/match/sample",
+            "01-first-match": "https://valesports.app/match/first",
+            "02-up-next": "https://valesports.app/match/next",
+            "04-live-today": "https://valesports.app/match/live",
+            "06-result-right-winner": "https://valesports.app/match/last",
+        ]
+        for (name, target) in targets {
+            let scenario = try XCTUnwrap(cases.first { $0.name == name })
+            guard case .content(let content) = scenario.content else { return XCTFail(name) }
+            XCTAssertEqual(content.heroURL.absoluteString, target, name)
+        }
+        let champion = try content(plan(data("2766")))
+        XCTAssertEqual(champion.heroURL, VLRWidgetContract.detailsURL(kind: "team", id: "6961"))
+        for scenario in cases {
+            guard case .content(let content) = scenario.content else { continue }
+            switch content.body {
+            case .hidden(.scheduled(let hero, _)):
+                XCTAssertEqual(content.heroURL, VLRWidgetContract.matchURL(id: hero.fixture.id), scenario.name)
+            case .hidden(.live(let hero, _)):
+                XCTAssertEqual(content.heroURL, VLRWidgetContract.matchURL(id: hero.fixture.id), scenario.name)
+            case .visible(.gap), .hidden(.gap), .hidden(.finished), .visible(.finished(.unconfirmed, _)):
+                XCTAssertEqual(content.heroURL, content.widgetURL, scenario.name)
+            default: break
+            }
+        }
+    }
+
     @MainActor
     func testEventWidgetRendersEveryStateInLightDarkAndTint() throws {
         let directory = ProcessInfo.processInfo.environment["VLR_RENDER_DIR"].map { URL(fileURLWithPath: $0).appendingPathComponent("event") }
@@ -592,6 +622,19 @@ extension EventWidgetTests {
 
 @available(iOS 17.0, *)
 final class EventWidgetIntentTests: XCTestCase {
+    func testPickerDecodesOptionalLogosAndKeepsRowsWithoutImages() async throws {
+        let values = try JSONDecoder().decode([WidgetFavoriteEvent].self, from: Data("""
+        [{"id":"2","name":"Masters","logo":"https://invalid.test/logo"},
+         {"id":"1","name":"Champions","logo":null}, {"id":"3","name":"Legacy"}]
+        """.utf8))
+        XCTAssertEqual(values[0].logo, "https://invalid.test/logo")
+        XCTAssertNil(values[1].logo)
+        XCTAssertNil(values[2].logo)
+        let entities = try await FavoriteEventQuery(loadEvents: { values }).suggestedEntities()
+        XCTAssertEqual(entities.map(\.name), ["Champions", "Legacy", "Masters"])
+        XCTAssertTrue(entities.allSatisfy { $0.displayRepresentation.image == nil })
+    }
+
     func testPickerResolvesCurrentDirectFavoritesOnly() async throws {
         let query = FavoriteEventQuery(loadEvents: { [.init(id: "2", name: "Masters"), .init(id: "1", name: "Champions")] })
         let suggested = try await query.suggestedEntities()

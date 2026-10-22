@@ -2,4 +2,6 @@
 <resources>
     <string name="widget_favorite_picker_empty_teams">Добавьте команду в избранное в Val Esports, чтобы использовать этот виджет.</string>
     <string name="widget_favorite_picker_empty_events">Добавьте турнир в избранное в Val Esports, чтобы использовать этот виджет.</string>
+    <string name="widget_team_picker_explanation">Виджет показывает следующий матч, счёт в прямом эфире и последние результаты этой команды. Нажмите на команду из избранного.</string>
+    <string name="widget_event_picker_explanation">Виджет показывает следующий матч, счёт в прямом эфире и таблицу этого турнира. Нажмите на турнир из избранного.</string>
 </resources>

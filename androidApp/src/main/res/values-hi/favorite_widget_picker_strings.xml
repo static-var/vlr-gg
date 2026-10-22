@@ -2,4 +2,6 @@
 <resources>
     <string name="widget_favorite_picker_empty_teams">यह विजेट इस्तेमाल करने के लिए Val Esports में किसी टीम को पसंदीदा बनाएँ।</string>
     <string name="widget_favorite_picker_empty_events">यह विजेट इस्तेमाल करने के लिए Val Esports में किसी इवेंट को पसंदीदा बनाएँ।</string>
+    <string name="widget_team_picker_explanation">विजेट इस टीम का अगला मैच, लाइव स्कोर और हाल के नतीजे दिखाता है। अपने पसंदीदा में से एक टीम पर टैप करें।</string>
+    <string name="widget_event_picker_explanation">विजेट इस इवेंट का अगला मैच, लाइव स्कोर और स्टैंडिंग दिखाता है। अपने पसंदीदा में से एक इवेंट पर टैप करें।</string>
 </resources>

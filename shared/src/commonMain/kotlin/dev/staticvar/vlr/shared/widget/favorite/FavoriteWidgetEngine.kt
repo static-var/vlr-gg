@@ -39,7 +39,7 @@ class FavoriteWidgetEngine internal constructor(
 
       is WidgetGate.MissingClient -> WidgetProjection(
         when (gate.kind) {
-          WidgetKind.Team -> TeamWidgetText.placeholder(null, locale)
+          WidgetKind.Team -> TeamWidgetText.placeholder(null, locale, gate.entityId)
           WidgetKind.Event -> EventWidgetText.placeholder(null, locale, gate.entityId)
         },
         null,
@@ -52,7 +52,7 @@ class FavoriteWidgetEngine internal constructor(
         if (record == null) {
           WidgetProjection(
             when (gate.key.kind) {
-              WidgetKind.Team -> TeamWidgetText.placeholder(gate.key, locale)
+              WidgetKind.Team -> TeamWidgetText.placeholder(gate.key, locale, gate.key.entityId)
               WidgetKind.Event -> EventWidgetText.placeholder(gate.key, locale, gate.key.entityId)
             },
             gate.key,

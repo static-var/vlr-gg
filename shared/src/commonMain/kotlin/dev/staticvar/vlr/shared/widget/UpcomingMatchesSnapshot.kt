@@ -29,24 +29,27 @@ public data class UpcomingMatchesSnapshot(
 public data class WidgetFavoriteTeam(
   val id: String,
   val name: String,
+  val tag: String? = null,
+  val logo: String? = null,
 )
 
 internal fun DirectFavoriteSnapshot.widgetFavoriteTeams(): List<WidgetFavoriteTeam> = teams
   .filter { it.id.isNotBlank() }
   .distinctBy { it.id }
-  .map { WidgetFavoriteTeam(it.id, it.title) }
+  .map { WidgetFavoriteTeam(it.id, it.title, it.shortName?.takeIf(String::isNotBlank), it.imageUrl.takeIf(String::isNotBlank)) }
   .sortedBy { it.id }
 
 @Serializable
 public data class WidgetFavoriteEvent(
   val id: String,
   val name: String,
+  val logo: String? = null,
 )
 
 internal fun DirectFavoriteSnapshot.widgetFavoriteEvents(): List<WidgetFavoriteEvent> = events
   .filter { it.id.isNotBlank() }
   .distinctBy { it.id }
-  .map { WidgetFavoriteEvent(it.id, it.title) }
+  .map { WidgetFavoriteEvent(it.id, it.title, it.imageUrl.takeIf(String::isNotBlank)) }
   .sortedBy { it.id }
 
 @Serializable

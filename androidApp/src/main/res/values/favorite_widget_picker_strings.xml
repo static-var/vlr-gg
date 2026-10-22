@@ -2,4 +2,6 @@
 <resources>
     <string name="widget_favorite_picker_empty_teams">Add a team to your favorites in Val Esports to use this widget.</string>
     <string name="widget_favorite_picker_empty_events">Add an event to your favorites in Val Esports to use this widget.</string>
+    <string name="widget_team_picker_explanation">The widget shows this team\'s next match, live score and recent results. Tap a team from your favorites.</string>
+    <string name="widget_event_picker_explanation">The widget shows this event\'s next match, live score and standings. Tap an event from your favorites.</string>
 </resources>

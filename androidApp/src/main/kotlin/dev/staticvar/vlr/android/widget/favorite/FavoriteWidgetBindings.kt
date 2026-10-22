@@ -46,8 +46,8 @@ internal data class FavoriteWidgetInstance(
   val selection: WidgetSelection,
 )
 
-internal data class FavoriteChoice(val id: String, val name: String)
-internal data class FavoritePicker(val kind: WidgetKind, val choices: List<FavoriteChoice>)
+internal data class FavoriteChoice(val id: String, val name: String, val tag: String?, val logo: String?)
+internal data class FavoritePicker(val kind: WidgetKind, val choices: List<FavoriteChoice>, val selected: String?)
 internal enum class ConfigurationResult { Saved, FavoritesChanged, InvalidWidget }
 
 internal class FavoriteWidgetBindings(
@@ -75,13 +75,14 @@ internal class FavoriteWidgetBindings(
     return FavoriteWidgetInstance(appWidgetId, id, provider, selection(provider.widget.kind, preferences))
   }
 
-  fun picker(appWidgetId: Int, source: UpcomingMatchesSnapshot?): FavoritePicker? {
-    val kind = provider(appWidgetId)?.widget?.kind ?: return null
+  suspend fun picker(appWidgetId: Int, source: UpcomingMatchesSnapshot?): FavoritePicker? {
+    val widget = read(appWidgetId) ?: return null
+    val kind = widget.provider.widget.kind
     val collator = Collator.getInstance(context.resources.configuration.locales[0])
     val choices = source.choices(kind).sortedWith { left, right ->
       collator.compare(left.name, right.name).takeIf { it != 0 } ?: left.id.compareTo(right.id)
     }
-    return FavoritePicker(kind, choices)
+    return FavoritePicker(kind, choices, (widget.selection as? WidgetSelection.Chosen)?.entityId)
   }
 
   suspend fun choose(appWidgetId: Int, entityId: String, source: () -> UpcomingMatchesSnapshot?): ConfigurationResult {
@@ -137,6 +138,6 @@ internal class FavoriteWidgetBindings(
 }
 
 private fun UpcomingMatchesSnapshot?.choices(kind: WidgetKind): List<FavoriteChoice> = when (kind) {
-  WidgetKind.Team -> this?.favoriteTeams.orEmpty().map { FavoriteChoice(it.id, it.name) }
-  WidgetKind.Event -> this?.favoriteEvents.orEmpty().map { FavoriteChoice(it.id, it.name) }
+  WidgetKind.Team -> this?.favoriteTeams.orEmpty().map { FavoriteChoice(it.id, it.name, it.tag, it.logo) }
+  WidgetKind.Event -> this?.favoriteEvents.orEmpty().map { FavoriteChoice(it.id, it.name, null, it.logo) }
 }

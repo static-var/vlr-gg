@@ -382,6 +382,7 @@ class EventWidgetTextTest {
     assertEquals(listOf("1", "2", "1", null, "1", null, null), list.rows.map { it.rightScore })
     assertEquals(listOf(LoserSide.Right, LoserSide.Left, null, null, null, null, null), list.rows.map { it.loser })
     assertEquals(listOf(false, false, true, false, false, false, false), list.rows.map { it.live })
+    assertEquals(rows.map { WidgetTap.Match(it.fixture.id) }, list.rows.map { it.tap })
     assertEquals("Lower Round 2", list.rows.first().round)
   }
 
@@ -457,6 +458,7 @@ class EventWidgetTextTest {
     assertEquals(listOf("4–1", "1–4", "0–0"), list.rows.map { it.record })
     assertEquals(listOf("+4", "−3", "0"), list.rows.map { it.maps })
     assertEquals(listOf(false, true, false), list.rows.map { it.favorite })
+    assertEquals(listOf(WidgetTap.Team(loud.id!!), WidgetTap.Team(vitality.id!!), null), list.rows.map { it.tap })
   }
 
   @Test
@@ -478,6 +480,7 @@ class EventWidgetTextTest {
     assertEquals(listOf("2nd", "3rd–4th"), list.rows.map { it.position })
     assertEquals(listOf("Team Vitality", "G2 Esports"), list.rows.map { it.team.name })
     assertEquals(listOf("$400,000", "$200,000"), list.rows.map { it.amount })
+    assertEquals(listOf(WidgetTap.Team(vitality.id!!), WidgetTap.Team("g2")), list.rows.map { it.tap })
     assertEquals(listOf("event-logo", "loud-logo", "vitality-logo", "g2-logo"), frame.logoSources)
     val hidden = frame(HiddenEventState.Finished(EventEnded(null, null), neutralEmpty))
     assertEquals(listOf("event-logo"), hidden.logoSources)

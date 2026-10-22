@@ -42,6 +42,7 @@ import dev.staticvar.vlr.shared.widget.favorite.TeamHeroText
 import dev.staticvar.vlr.shared.widget.favorite.TeamLiveBelow
 import dev.staticvar.vlr.shared.widget.favorite.TeamPresentation
 import dev.staticvar.vlr.shared.widget.favorite.TeamRowText
+import dev.staticvar.vlr.shared.widget.favorite.WidgetTap
 
 internal fun teamPresentationFor(
   frame: FavoriteWidgetFrame,
@@ -222,6 +223,7 @@ private data class TeamHeroParts(
   val live: Boolean,
   val context: String?,
   val pills: List<PillText>?,
+  val tap: WidgetTap.Entity?,
 )
 
 private val TeamDisplayBody.formSize: Int
@@ -232,7 +234,8 @@ private val TeamDisplayBody.formSize: Int
 
 private fun teamHero(body: TeamDisplayBody): TeamHeroParts = when (body) {
   is TeamDisplayBody.Visible -> when (val hero = body.hero) {
-    is TeamHeroText.Upcoming -> TeamHeroParts(hero.lead, hero.value, hero.opponent, hero.day, false, hero.context, null)
+    is TeamHeroText.Upcoming ->
+      TeamHeroParts(hero.lead, hero.value, hero.opponent, hero.day, false, hero.context, null, hero.tap)
     is TeamHeroText.Live -> TeamHeroParts(
       hero.lead,
       hero.value,
@@ -241,17 +244,18 @@ private fun teamHero(body: TeamDisplayBody): TeamHeroParts = when (body) {
       true,
       (hero.below as? TeamLiveBelow.Context)?.text,
       (hero.below as? TeamLiveBelow.Pills)?.items,
+      hero.tap,
     )
-    is TeamHeroText.Idle -> TeamHeroParts(hero.lead, hero.value, hero.opponent, null, false, hero.context, null)
+    is TeamHeroText.Idle -> TeamHeroParts(hero.lead, hero.value, hero.opponent, null, false, hero.context, null, hero.tap)
   }
 
   is TeamDisplayBody.Hidden -> when (val hero = body.hero) {
     is NeutralTeamHeroText.Upcoming ->
-      TeamHeroParts(hero.lead, hero.value, hero.opponent, hero.day, false, hero.context, null)
+      TeamHeroParts(hero.lead, hero.value, hero.opponent, hero.day, false, hero.context, null, hero.tap)
     is NeutralTeamHeroText.Live ->
-      TeamHeroParts(hero.lead, hero.value, hero.opponent, hero.liveLabel, true, hero.context, null)
+      TeamHeroParts(hero.lead, hero.value, hero.opponent, hero.liveLabel, true, hero.context, null, hero.tap)
     is NeutralTeamHeroText.Idle ->
-      TeamHeroParts(hero.lead, hero.value, hero.opponent, null, false, hero.context, null)
+      TeamHeroParts(hero.lead, hero.value, hero.opponent, null, false, hero.context, null, hero.tap)
   }
 }
 
@@ -313,7 +317,7 @@ private fun ColumnScope.TeamGhostHistory(heading: String, presentation: Favorite
     heading,
     GlanceModifier.defaultWeight(),
     listOf(118.dp, 84.dp, 140.dp, 96.dp).take(presentation.rows).map { barWidth ->
-      @Composable {
+      FavoriteWidgetCardRow(null) {
         Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
           Box(
             GlanceModifier.size(TeamRowLogo).cornerRadius(6.dp).background(FavoriteWidgetCardOutline),
@@ -382,11 +386,13 @@ private fun ColumnScope.TeamPresentationLayout(
   }
   val hero = teamHero(value.body)
   FavoriteWidgetHeroSpacer(presentation)
-  TeamHero(hero, logos, width, presentation)
-  if (hero.pills != null && FavoriteWidgetPart.Pills in presentation) {
-    FavoriteWidgetMapPills(hero.pills)
-  } else if (hero.context != null && FavoriteWidgetPart.Context in presentation) {
-    FavoriteWidgetText(hero.context, FavoriteWidgetFont.Body, FavoriteWidgetSecondary)
+  Column(GlanceModifier.fillMaxWidth().opens(hero.tap)) {
+    TeamHero(hero, logos, width, presentation)
+    if (hero.pills != null && FavoriteWidgetPart.Pills in presentation) {
+      FavoriteWidgetMapPills(hero.pills)
+    } else if (hero.context != null && FavoriteWidgetPart.Context in presentation) {
+      FavoriteWidgetText(hero.context, FavoriteWidgetFont.Body, FavoriteWidgetSecondary)
+    }
   }
   if (presentation.rows == 0) return
   when (val body = value.body) {
@@ -486,7 +492,7 @@ private fun ColumnScope.TeamDetailCard(detail: TeamDetail, logos: WidgetBitmaps,
       detail.heading,
       GlanceModifier.defaultWeight(),
       detail.rows.take(rowCount).map { map ->
-        @Composable {
+        FavoriteWidgetCardRow(map.tap) {
           val score = teamMapScoreWidth(typography, map.score, width, step)
           Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
             Column(GlanceModifier.defaultWeight()) {
@@ -518,7 +524,7 @@ private fun ColumnScope.TeamDetailCard(detail: TeamDetail, logos: WidgetBitmaps,
       detail.heading,
       GlanceModifier.defaultWeight(),
       detail.rows.take(rowCount).map { row ->
-        @Composable {
+        FavoriteWidgetCardRow(row.tap) {
           val columns = teamHistoryColumns(typography, row, width, step)
           val win = row.tone == ResultTone.Win
           Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
@@ -565,7 +571,7 @@ private fun ColumnScope.TeamNeutralHistory(
     history.heading,
     GlanceModifier.defaultWeight(),
     history.rows.take(rowCount).map { row ->
-      @Composable {
+      FavoriteWidgetCardRow(row.tap) {
         val date = typography.column(row.date, FavoriteWidgetFont.Label - step, width, .3f)
         Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
           FavoriteWidgetLogo(row.opponent, logos, TeamRowLogo)

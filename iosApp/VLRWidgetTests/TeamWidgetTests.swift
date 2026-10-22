@@ -35,7 +35,7 @@ final class TeamWidgetTests: XCTestCase {
             return .content(value)
         }
         let cases: [(TeamWidgetEntryContent, TimeInterval?)] = [
-            (.needsTeam(.chooseTeam), nil), (.needsTeam(.noFavorites), nil), (.placeholder, 900), (.content(live), 900), (.content(live.redacted()), 900),
+            (.needsTeam(.chooseTeam), nil), (.needsTeam(.noFavorites), nil), (.placeholder(teamID: "2"), 900), (.content(live), 900), (.content(live.redacted()), 900),
             (upcoming(-1), 300), (upcoming(0), 300), (upcoming(60), 60), (upcoming(86_400), 1_800),
             (upcoming(86_401), 7_200), (upcoming(nil), 7_200), (.content(idle), 7_200), (.content(idle.redacted()), 7_200),
         ]
@@ -187,11 +187,29 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(sample.history.map(\.result.score), ["2–1", "2–0", "1–2", "2–1", "2–0"])
     }
 
+    func testTapTargetsStayOnTeamOrMatchWhenScoresAreHidden() throws {
+        var upcoming = TeamWidgetContent.sample(at: now)
+        let teamURL = VLRWidgetContract.detailsURL(kind: "team", id: "2")
+        XCTAssertEqual(upcoming.widgetURL, teamURL)
+        XCTAssertEqual(upcoming.heroURL, VLRWidgetContract.matchURL(id: "100"))
+        let live = try content(live: true)
+        XCTAssertEqual(live.heroURL, VLRWidgetContract.matchURL(id: "100"))
+        XCTAssertEqual(live.redacted().heroURL, live.heroURL)
+        let idle = try content()
+        XCTAssertEqual(idle.widgetURL, teamURL)
+        XCTAssertEqual(idle.heroURL, VLRWidgetContract.matchURL(id: "1"))
+        XCTAssertEqual(idle.redacted().heroURL, idle.heroURL)
+        upcoming.state = .idle(nil)
+        XCTAssertEqual(upcoming.heroURL, teamURL)
+        XCTAssertEqual(TeamWidgetEntryContent.placeholder(teamID: "2").widgetURL, teamURL)
+        XCTAssertEqual(TeamWidgetEntryContent.placeholder(teamID: nil).widgetURL, VLRWidgetContract.appURL)
+    }
+
     @MainActor
     func testPlaceholderRendersRedactedSampleInBothFamilies() throws {
         let directory = try renderDirectory()
         for (name, family, height) in [("medium", WidgetFamily.systemMedium, CGFloat(158)), ("large", .systemLarge, 354)] {
-            let view = TeamWidgetView(entry: .init(date: now, content: .placeholder), familyOverride: family)
+            let view = TeamWidgetView(entry: .init(date: now, content: .placeholder(teamID: nil)), familyOverride: family)
                 .frame(width: 338, height: height)
                 .background(PrismWidgetPalette.background(for: .light))
                 .environment(\.colorScheme, .light).environment(\.locale, locale).environment(\.timeZone, zone)
@@ -444,6 +462,25 @@ private actor TeamWidgetRequestRecorder {
 
 @available(iOS 17.0, *)
 final class TeamWidgetIntentTests: XCTestCase {
+    func testPickerDecodesOptionalLogoAndTagAndOmitsDuplicateSubtitles() async throws {
+        let decoder = JSONDecoder()
+        let values = try decoder.decode([WidgetFavoriteTeam].self, from: Data("""
+        [{"id":"2","name":"Sentinels","tag":"SEN","logo":"https://invalid.test/logo"},
+         {"id":"1","name":"FNATIC","tag":"FNATIC","logo":null},
+         {"id":"3","name":"Legacy"}]
+        """.utf8))
+        XCTAssertEqual(values[0].logo, "https://invalid.test/logo")
+        XCTAssertNil(values[2].tag)
+        XCTAssertNil(values[2].logo)
+        let query = FavoriteTeamQuery(loadTeams: { values })
+        let entities = try await query.entities(for: ["2", "1", "3"])
+        XCTAssertNotNil(entities[0].displayRepresentation.subtitle)
+        XCTAssertNil(entities[1].displayRepresentation.subtitle)
+        XCTAssertNil(entities[2].displayRepresentation.subtitle)
+        XCTAssertTrue(entities.allSatisfy { $0.displayRepresentation.image == nil })
+        XCTAssertNil(FavoriteTeamEntity(id: "4", name: "Team", tag: "  ").displayRepresentation.subtitle)
+    }
+
     func testPickerListsAndResolvesOnlyCurrentFavoriteTeams() async throws {
         let query = FavoriteTeamQuery(loadTeams: { [.init(id: "2", name: "Sentinels"), .init(id: "1", name: "FNATIC")] })
         let suggested = try await query.suggestedEntities()

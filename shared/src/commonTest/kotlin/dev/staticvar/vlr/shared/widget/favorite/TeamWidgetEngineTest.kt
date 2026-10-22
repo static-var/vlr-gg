@@ -134,7 +134,7 @@ class TeamWidgetEngineTest {
         assertEquals(3, paths.size)
         assertEquals(detailPath, paths.last())
         assertEquals(setOf("test-token|dev.staticvar.vlr"), headers.toSet())
-        assertEquals(WidgetTap.Match("100"), engine.project(request(), stored.record, locale).frame.tap)
+        assertEquals(WidgetTap.Match("100"), engine.project(request(), stored.record, locale).frame.heroTap())
       } finally {
         client.close()
       }
@@ -286,7 +286,7 @@ class TeamWidgetEngineTest {
         paths.toSet(),
       )
       assertEquals(3, paths.size)
-      assertEquals(WidgetTap.Match("100/part?#"), engine.project(request, result.record, locale).frame.tap)
+      assertEquals(WidgetTap.Match("100/part?#"), engine.project(request, result.record, locale).frame.heroTap())
     } finally {
       client.close()
     }
@@ -447,7 +447,7 @@ class TeamWidgetEngineTest {
         val projection = engine.project(request(), candidate, locale)
         val frame = assertIs<FavoriteWidgetFrame.Placeholder>(projection.frame)
         assertEquals(key, frame.key)
-        assertEquals(WidgetTap.App, frame.tap)
+        assertEquals(WidgetTap.Team("2"), frame.tap)
         assertEquals("Loading team…", frame.text.value)
         assertEquals(WidgetSchedule(null, now), projection.schedule)
         assertEquals(0L, projection.recordRevision)
@@ -499,7 +499,7 @@ class TeamWidgetEngineTest {
             assertIs<TeamDisplayBody.Visible>(assertIs<FavoriteWidgetFrame.Team>(projection.frame).medium.body).hero,
           )
         assertEquals("Any minute", hero.value)
-        assertEquals(WidgetTap.Match("100"), projection.frame.tap)
+        assertEquals(WidgetTap.Match("100"), projection.frame.heroTap())
       }
       val start = now + 259200.seconds
       val stored = WidgetCacheCodec.encode(record(content(TeamState.Upcoming(fixture(start)))))
@@ -546,7 +546,7 @@ class TeamWidgetEngineTest {
         val frame = assertIs<FavoriteWidgetFrame.Team>(expired.frame)
         val idle = assertIs<TeamHeroText.Idle>(assertIs<TeamDisplayBody.Visible>(frame.medium.body).hero)
         assertEquals("No matches", idle.value)
-        assertEquals(WidgetTap.App, frame.tap)
+        assertEquals(WidgetTap.Team("2"), frame.tap)
         assertNull(expired.schedule.renderAt)
         assertEquals(now + 900.seconds, expired.schedule.fetchAt)
         assertEquals(1L, expired.recordRevision)
@@ -601,7 +601,7 @@ class TeamWidgetEngineTest {
             assertIs<TeamDisplayBody.Visible>(assertIs<FavoriteWidgetFrame.Team>(expired.frame).medium.body).hero,
           ).value,
         )
-        assertEquals(WidgetTap.App, expired.frame.tap)
+        assertEquals(WidgetTap.Team("2"), expired.frame.tap)
         assertNull(expired.schedule.renderAt)
       }
     } finally {
@@ -624,7 +624,7 @@ class TeamWidgetEngineTest {
         val projection = engine.project(request, old, locale)
         val frame = assertIs<FavoriteWidgetFrame.Placeholder>(projection.frame)
         assertEquals("Loading team…", frame.text.value)
-        assertEquals(WidgetTap.App, frame.tap)
+        assertEquals(WidgetTap.Team("2"), frame.tap)
         assertNull(projection.key)
         assertEquals(0L, projection.recordRevision)
         assertEquals(WidgetSchedule(null, null), projection.schedule)
@@ -758,7 +758,7 @@ class TeamWidgetEngineTest {
       assertEquals(Instant.parse("2026-10-16T13:00:00Z"), fixture.start)
       assertEquals(setOf(rankingPath, previewsPath, "/api/v1/matches/upcoming-later"), paths.toSet())
       assertEquals(3, paths.size)
-      assertEquals(WidgetTap.Match("upcoming-later"), engine.project(request(), result.record, locale).frame.tap)
+      assertEquals(WidgetTap.Match("upcoming-later"), engine.project(request(), result.record, locale).frame.heroTap())
     } finally {
       client.close()
     }
