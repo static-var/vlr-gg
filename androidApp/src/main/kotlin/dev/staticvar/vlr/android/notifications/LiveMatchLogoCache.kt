@@ -174,8 +174,11 @@ internal class LiveMatchLogoCache(context: Context) {
     fun isAllowedLogoUrl(url: String): Boolean {
       val uri = runCatching { Uri.parse(url) }.getOrNull() ?: return false
       if (uri.scheme?.lowercase() != "https") return false
-      val host = uri.host?.lowercase() ?: return false
-      return host == "owcdn.net" || host.endsWith(".owcdn.net") || host == "www.vlr.gg" || host == "files.akhilnarang.dev"
+      return isAllowedLogoHost(uri.host ?: return false)
+    }
+
+    fun isAllowedLogoHost(host: String): Boolean = host.lowercase().let {
+      it == "owcdn.net" || it.endsWith(".owcdn.net") || it == "www.vlr.gg" || it == "files.akhilnarang.dev"
     }
 
     fun Bitmap.toSquareSoftwareBitmap(targetSize: Int): Bitmap {

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_favorite_picker_empty_teams">Füge in Val Esports ein Team zu deinen Favoriten hinzu, um dieses Widget zu nutzen.</string>
+    <string name="widget_favorite_picker_empty_events">Füge in Val Esports ein Event zu deinen Favoriten hinzu, um dieses Widget zu nutzen.</string>
+</resources>

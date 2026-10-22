@@ -5,12 +5,15 @@
 package dev.staticvar.vlr.android
 
 import android.app.Application
+import android.content.res.Configuration
 import coil3.SingletonImageLoader
 import dev.staticvar.vlr.android.notifications.AndroidMatchAlertNotifications
 import dev.staticvar.vlr.android.notifications.AndroidLiveMatchNotifications
 import dev.staticvar.vlr.android.notifications.AndroidLiveNotificationAvailability
 import dev.staticvar.vlr.android.notifications.AndroidLiveTopicSubscriptions
 import dev.staticvar.vlr.android.notifications.AndroidPushTokenProvider
+import dev.staticvar.vlr.android.widget.favorite.FavoriteWidgetRuntime
+import dev.staticvar.vlr.android.widget.favorite.requestFavoriteWidgetUpdate
 import dev.staticvar.vlr.core.di.DispatcherQualifiers
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
@@ -26,6 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 
 class VlrApplication : Application() {
   internal val pushTokenProvider by lazy { AndroidPushTokenProvider(this) }
@@ -45,7 +49,10 @@ class VlrApplication : Application() {
     initializeAppKoin(
       appDeclaration = {
         androidContext(this@VlrApplication)
-        modules(androidNetworkModule(this@VlrApplication))
+        modules(
+          androidNetworkModule(this@VlrApplication),
+          module { single { FavoriteWidgetRuntime(this@VlrApplication, get()) } },
+        )
       },
       authToken = BuildConfig.TOKEN
         .trim()
@@ -101,5 +108,10 @@ class VlrApplication : Application() {
         if (shouldRemove) liveMatchNotifications.cancelAll()
       }
     }
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    requestFavoriteWidgetUpdate(this)
   }
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_favorite_picker_empty_teams">이 위젯을 사용하려면 Val Esports에서 팀을 즐겨찾기에 추가하세요.</string>
+    <string name="widget_favorite_picker_empty_events">이 위젯을 사용하려면 Val Esports에서 이벤트를 즐겨찾기에 추가하세요.</string>
+</resources>
