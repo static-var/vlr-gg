@@ -46,12 +46,14 @@ internal class FavoriteWidgetLogoLoader(
   private val context: Context,
   private val imageLoader: ImageLoader = SingletonImageLoader.get(context),
 ) {
-  suspend fun load(frame: FavoriteWidgetFrame): WidgetBitmaps {
+  suspend fun load(frame: FavoriteWidgetFrame): WidgetBitmaps = load(frame.logoSources)
+
+  suspend fun load(sources: List<String>): WidgetBitmaps {
     val bitmaps = linkedMapOf<String, Bitmap>()
     val deadline = SystemClock.elapsedRealtime() + FrameTimeoutMillis
     withTimeoutOrNull(FrameTimeoutMillis) {
       var bytes = 0
-      for (source in frame.logoSources.distinct()) {
+      for (source in sources.distinct()) {
         currentCoroutineContext().ensureActive()
         if (SystemClock.elapsedRealtime() >= deadline || bytes >= FrameByteLimit) break
         if (!LiveMatchLogoCache.isAllowedLogoUrl(source)) continue

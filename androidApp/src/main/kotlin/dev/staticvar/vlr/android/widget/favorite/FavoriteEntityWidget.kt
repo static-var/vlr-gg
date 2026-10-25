@@ -65,7 +65,7 @@ internal abstract class FavoriteEntityWidget(val kind: WidgetKind) : GlanceAppWi
         context.createConfigurationContext(Configuration(context.applicationContext.resources.configuration))
       }
       CompositionLocalProvider(LocalContext provides renderContext) {
-        WidgetFrame(GlanceModifier.clickable(actionStartActivity(widget.frame.tap.intent(context, appWidgetId)))) {
+        FavoriteWidgetSurface(GlanceModifier.clickable(actionStartActivity(widget.frame.tap.intent(context, appWidgetId)))) {
           Content(widget.frame, widget.logos)
         }
       }
@@ -75,26 +75,27 @@ internal abstract class FavoriteEntityWidget(val kind: WidgetKind) : GlanceAppWi
   final override suspend fun providePreview(context: Context, widgetCategory: Int) {
     val frame = FavoriteWidgetRuntime.get().preview(kind)
     provideContent {
-      WidgetFrame(GlanceModifier) { Content(frame, WidgetBitmaps(emptyMap())) }
-    }
-  }
-
-  @Composable
-  private fun WidgetFrame(modifier: GlanceModifier, content: @Composable () -> Unit) {
-    GlanceTheme {
-      val background = GlanceModifier.fillMaxSize().appWidgetBackground()
-        .background(GlanceTheme.colors.widgetBackground)
-      val shape = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        background.cornerRadius(android.R.dimen.system_app_widget_background_radius)
-      } else {
-        background.cornerRadius(20.dp)
-      }
-      Box(shape.then(modifier)) { content() }
+      FavoriteWidgetSurface(GlanceModifier) { Content(frame, WidgetBitmaps(emptyMap())) }
     }
   }
 
   @Composable
   protected abstract fun Content(frame: FavoriteWidgetFrame, logos: WidgetBitmaps)
+}
+
+/** The themed, system-rounded background every favorite widget draws on. */
+@Composable
+internal fun FavoriteWidgetSurface(modifier: GlanceModifier, content: @Composable () -> Unit) {
+  GlanceTheme {
+    val background = GlanceModifier.fillMaxSize().appWidgetBackground()
+      .background(GlanceTheme.colors.widgetBackground)
+    val shape = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      background.cornerRadius(android.R.dimen.system_app_widget_background_radius)
+    } else {
+      background.cornerRadius(20.dp)
+    }
+    Box(shape.then(modifier)) { content() }
+  }
 }
 
 internal fun WidgetTap.intent(context: Context, appWidgetId: Int): Intent = when (this) {
