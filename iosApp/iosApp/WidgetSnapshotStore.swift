@@ -30,7 +30,7 @@ enum WidgetSnapshotStore {
     }
 
     private static func reloadHomeWidgets() {
-        for kind in VLRWidgetContract.homeWidgetKinds {
+        for kind in VLRWidgetContract.homeWidgetKinds + VLRWidgetContract.lockScreenWidgetKinds {
             WidgetCenter.shared.reloadTimelines(ofKind: kind)
         }
     }

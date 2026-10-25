@@ -187,6 +187,9 @@ targets:
       - path: VLRWidget/TeamWidgetIntent.swift
       - path: VLRWidget/TeamWidget.swift
       - path: VLRWidget/UpcomingMatchesWidget.swift
+      - path: VLRWidget/LockScreenMatchState.swift
+      - path: VLRWidget/LockScreenMatchText.swift
+      - path: VLRWidget/LockScreenMatchWidget.swift
       - path: VLRWidget/MatchLiveActivity.swift
       - path: VLRWidget/MatchLiveActivityStyles.swift
       - path: VLRWidget/Localizable.xcstrings

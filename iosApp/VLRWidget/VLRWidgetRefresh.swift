@@ -202,6 +202,7 @@ actor WidgetRefreshCoordinator {
 }
 
 struct WidgetRefreshService {
+    private static let resultLimit = 5
     private let api: WidgetAPIClient
 
     init(api: WidgetAPIClient = .live(authorization: GeneratedBuildConfig.authToken)) {
@@ -216,14 +217,22 @@ struct WidgetRefreshService {
             throw WidgetRefreshError.invalidResponse
         }
 
-        let matches: [RemoteMatchPreview] = try await api.get(
-            "/api/v1/favorites/\(source.clientId)/matches?include_results=false"
+        let remote: [RemoteMatchPreview] = try await api.get(
+            "/api/v1/favorites/\(source.clientId)/matches?include_results=true"
         )
         var seen = Set<String>()
-        let upcoming = matches
+        let matches = remote
             .filter { seen.insert($0.id).inserted }
             .compactMap(\.widgetMatch)
-        return source.withRefreshedMatches(upcoming, at: now)
+        let results = matches
+            .filter { $0.status == .completed }
+            .sorted { ($0.startTime ?? .distantPast) > ($1.startTime ?? .distantPast) }
+            .prefix(Self.resultLimit)
+        return source.withRefreshedMatches(
+            matches.filter { $0.status != .completed },
+            results: Array(results),
+            at: now
+        )
     }
 }
 
@@ -246,7 +255,8 @@ enum RemoteMatchStatus {
         switch self {
         case .upcoming: return .upcoming
         case .live: return .live
-        case .completed, .unknown: return nil
+        case .completed: return .completed
+        case .unknown: return nil
         }
     }
 }
@@ -290,7 +300,11 @@ struct RemoteMatchPreview: Codable {
             score1: team1.score,
             score2: team2.score,
             format: normalizedMatchFormat(series),
-            stage: ""
+            stage: "",
+            team1Id: team1.id,
+            team2Id: team2.id,
+            team1Tag: team1.tag,
+            team2Tag: team2.tag
         )
     }
 }

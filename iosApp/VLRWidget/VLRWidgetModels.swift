@@ -53,11 +53,13 @@ struct WidgetFavoriteIDs: Codable, Equatable {
 enum WidgetMatchStatus: String, Codable {
     case upcoming = "UPCOMING"
     case live = "LIVE"
+    case completed = "COMPLETED"
 
     var localizedDisplayName: String {
         switch self {
         case .upcoming: String(localized: "UPCOMING")
         case .live: String(localized: "LIVE")
+        case .completed: String(localized: "Final").uppercased()
         }
     }
 }
@@ -69,6 +71,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
     var favorites: WidgetFavoriteIDs
     var spoilersHidden: Bool
     var matches: [UpcomingMatch]
+    var results: [UpcomingMatch]
     var theme: WidgetTheme
     var favoriteTeams: [WidgetFavoriteTeam]
     var favoriteEvents: [WidgetFavoriteEvent]
@@ -92,6 +95,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         favorites: WidgetFavoriteIDs,
         spoilersHidden: Bool,
         matches: [UpcomingMatch],
+        results: [UpcomingMatch] = [],
         theme: WidgetTheme,
         favoriteTeams: [WidgetFavoriteTeam] = [],
         favoriteEvents: [WidgetFavoriteEvent] = []
@@ -102,6 +106,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         self.favorites = favorites
         self.spoilersHidden = spoilersHidden
         self.matches = matches
+        self.results = results
         self.theme = theme
         self.favoriteTeams = favoriteTeams
         self.favoriteEvents = favoriteEvents
@@ -115,15 +120,17 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         favorites = try container.decodeIfPresent(WidgetFavoriteIDs.self, forKey: .favorites) ?? .empty
         spoilersHidden = try container.decodeIfPresent(Bool.self, forKey: .spoilersHidden) ?? false
         matches = try container.decode([UpcomingMatch].self, forKey: .matches)
+        results = try container.decodeIfPresent([UpcomingMatch].self, forKey: .results) ?? []
         theme = try container.decode(WidgetTheme.self, forKey: .theme)
         favoriteTeams = try container.decodeIfPresent([WidgetFavoriteTeam].self, forKey: .favoriteTeams) ?? []
         favoriteEvents = try container.decodeIfPresent([WidgetFavoriteEvent].self, forKey: .favoriteEvents) ?? []
     }
 
-    func withRefreshedMatches(_ matches: [UpcomingMatch], at date: Date) -> UpcomingMatchesSnapshot {
+    func withRefreshedMatches(_ matches: [UpcomingMatch], results: [UpcomingMatch] = [], at date: Date) -> UpcomingMatchesSnapshot {
         var copy = self
         copy.savedAtEpochMillis = Int64(date.timeIntervalSince1970 * 1_000)
         copy.matches = spoilersHidden ? matches.map { $0.withoutScores() } : matches
+        copy.results = spoilersHidden ? results.map { $0.withoutScores() } : results
         return copy
     }
 
@@ -131,6 +138,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         var copy = source
         copy.savedAtEpochMillis = savedAtEpochMillis
         copy.matches = source.spoilersHidden ? matches.map { $0.withoutScores() } : matches
+        copy.results = source.spoilersHidden ? results.map { $0.withoutScores() } : results
         return copy
     }
 
@@ -176,6 +184,10 @@ struct UpcomingMatch: Codable, Equatable, Identifiable {
     let score2: Int?
     let format: String
     let stage: String
+    let team1Id: String?
+    let team2Id: String?
+    let team1Tag: String?
+    let team2Tag: String?
 
     var startTime: Date? {
         startTimeEpochMillis.map { Date(timeIntervalSince1970: TimeInterval($0) / 1_000) }
@@ -191,7 +203,11 @@ struct UpcomingMatch: Codable, Equatable, Identifiable {
         score1: Int?,
         score2: Int?,
         format: String,
-        stage: String
+        stage: String,
+        team1Id: String? = nil,
+        team2Id: String? = nil,
+        team1Tag: String? = nil,
+        team2Tag: String? = nil
     ) {
         self.id = id
         self.event = event
@@ -203,6 +219,10 @@ struct UpcomingMatch: Codable, Equatable, Identifiable {
         self.score2 = score2
         self.format = format
         self.stage = stage
+        self.team1Id = team1Id
+        self.team2Id = team2Id
+        self.team1Tag = team1Tag
+        self.team2Tag = team2Tag
     }
 
     init(from decoder: Decoder) throws {
@@ -217,6 +237,10 @@ struct UpcomingMatch: Codable, Equatable, Identifiable {
         score2 = try container.decodeIfPresent(Int.self, forKey: .score2)
         format = try container.decodeIfPresent(String.self, forKey: .format) ?? ""
         stage = try container.decodeIfPresent(String.self, forKey: .stage) ?? ""
+        team1Id = try container.decodeIfPresent(String.self, forKey: .team1Id)
+        team2Id = try container.decodeIfPresent(String.self, forKey: .team2Id)
+        team1Tag = try container.decodeIfPresent(String.self, forKey: .team1Tag)
+        team2Tag = try container.decodeIfPresent(String.self, forKey: .team2Tag)
     }
 
     func withoutScores() -> UpcomingMatch {
@@ -230,7 +254,11 @@ struct UpcomingMatch: Codable, Equatable, Identifiable {
             score1: nil,
             score2: nil,
             format: format,
-            stage: stage
+            stage: stage,
+            team1Id: team1Id,
+            team2Id: team2Id,
+            team1Tag: team1Tag,
+            team2Tag: team2Tag
         )
     }
 }
