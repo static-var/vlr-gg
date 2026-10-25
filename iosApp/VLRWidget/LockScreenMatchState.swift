@@ -55,7 +55,8 @@ enum LockScreenMatchState: Equatable {
         case .upcoming: "clock"
         case .completed: "flag.checkered"
         case .noFavorites: "star"
-        case .noMatches, .needsApp: "sportscourt"
+        case .noMatches: "calendar"
+        case .needsApp: "gamecontroller"
         }
     }
 }
