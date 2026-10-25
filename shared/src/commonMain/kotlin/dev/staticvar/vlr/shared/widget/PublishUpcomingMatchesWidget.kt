@@ -31,6 +31,7 @@ internal fun PublishUpcomingMatchesWidget(monospace: Boolean, onSnapshotChanged:
   val spoilerPreferences = koinInject<SpoilerPreferencesRepository>()
   val identity = koinInject<UserIdentityRepository>()
   val favoriteMatches = koinInject<FavoriteMatchesRepository>()
+  val logos = koinInject<FavoriteMatchLogos>()
   val publish by rememberUpdatedState(onSnapshotChanged)
   val colors = Prism.color
   val theme = WidgetTheme(
@@ -42,7 +43,7 @@ internal fun PublishUpcomingMatchesWidget(monospace: Boolean, onSnapshotChanged:
     border = colors.stroke.argb(),
     monospace = monospace,
   )
-  LaunchedEffect(matches, favorites, theme, spoilerPreferences, identity, favoriteMatches, widgetJson) {
+  LaunchedEffect(matches, favorites, theme, spoilerPreferences, identity, favoriteMatches, logos, widgetJson) {
     combine(
       matches.observeMatches(),
       favorites.observeDirectFavorites(),
@@ -69,7 +70,8 @@ internal fun PublishUpcomingMatchesWidget(monospace: Boolean, onSnapshotChanged:
         results = favoriteWidgetResults(remote.map { it.toWidgetMatch() }, hidden),
       )
     }.distinctUntilChanged().collect { snapshot ->
-      publish(widgetJson.encodeToString(snapshot.copy(savedAtEpochMillis = Clock.System.now().toEpochMilliseconds())))
+      val now = Clock.System.now().toEpochMilliseconds()
+      publish(widgetJson.encodeToString(logos.fill(snapshot, now).copy(savedAtEpochMillis = now)))
     }
   }
 }

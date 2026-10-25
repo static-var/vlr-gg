@@ -23,16 +23,17 @@ public suspend fun refreshFavoriteWidgetSnapshot(snapshotJson: String): String {
   val remoteMatches = koin.get<FavoriteMatchesRepository>().fetchForWidget(favorites.hasAny).map(MatchPreview::toWidgetMatch)
   val hidden = koin.get<SpoilerPreferencesRepository>().enabled.value
   val now = Clock.System.now().toEpochMilliseconds()
-  return widgetJson.encodeToString(
-    previous.copy(
-      savedAtEpochMillis = now,
-      hasFavorites = favorites.hasAny,
-      matches = favoriteWidgetMatches(remoteMatches, now, hidden),
-      results = favoriteWidgetResults(remoteMatches, hidden),
-      favorites = favorites.widgetFavorites(),
-      spoilersHidden = hidden,
-    ),
+  val logos = koin.get<FavoriteMatchLogos>()
+  logos.remember(previous.matches + previous.results)
+  val snapshot = previous.copy(
+    savedAtEpochMillis = now,
+    hasFavorites = favorites.hasAny,
+    matches = favoriteWidgetMatches(remoteMatches, now, hidden),
+    results = favoriteWidgetResults(remoteMatches, hidden),
+    favorites = favorites.widgetFavorites(),
+    spoilersHidden = hidden,
   )
+  return widgetJson.encodeToString(logos.fill(snapshot, now))
 }
 
 internal suspend fun FavoriteMatchesRepository.fetchForWidget(hasFavorites: Boolean): List<MatchPreview> =
