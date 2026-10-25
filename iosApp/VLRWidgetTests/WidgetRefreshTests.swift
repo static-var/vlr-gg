@@ -100,7 +100,7 @@ final class WidgetRefreshTests: XCTestCase {
         }
     }
 
-    func testRefreshUsesFavoriteMatchesEndpointWithoutResultsAndPreservesServerOrder() async throws {
+    func testRefreshUsesFavoriteMatchesEndpointWithResultsAndPreservesServerOrder() async throws {
         let recorder = RequestRecorder(responses: [
             favoriteMatchesPath: .ok("""
                 [
@@ -115,8 +115,10 @@ final class WidgetRefreshTests: XCTestCase {
         )
         let refreshed = try await WidgetRefreshService(api: recorder.client(authorization: "Bearer key")).refresh(source: source)
         XCTAssertEqual(refreshed.matches.map(\.id), ["100", "200"])
+        XCTAssertEqual(refreshed.results.map(\.id), ["300"])
+        XCTAssertEqual(refreshed.results.first?.status, .completed)
         XCTAssertEqual(recorder.requestPaths, [favoriteMatchesPath])
-        XCTAssertEqual(recorder.requestQueries, ["include_results=false"])
+        XCTAssertEqual(recorder.requestQueries, ["include_results=true"])
         XCTAssertEqual(recorder.authorizationValues, ["Bearer key"])
         XCTAssertEqual(recorder.appNameValues, ["dev.staticvar.vlr"])
     }

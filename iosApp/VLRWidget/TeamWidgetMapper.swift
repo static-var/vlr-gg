@@ -20,7 +20,7 @@ struct TeamWidgetRankingResponse: Codable {
 enum TeamWidgetMapper {
     static func match(for teamID: String, in matches: [RemoteMatchPreview]) -> RemoteMatchPreview? {
         matches.filter { ($0.team1.id == teamID || $0.team2.id == teamID)
-            && $0.remoteStatus.widgetStatus != nil }
+            && [.live, .upcoming].contains($0.remoteStatus) }
             .sorted { left, right in
                 let leftLive = left.remoteStatus == .live
                 let rightLive = right.remoteStatus == .live
