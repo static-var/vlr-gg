@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_match_widget_name">पसंदीदा मैच</string>
+    <string name="favorite_match_widget_description">आपका सबसे हाल का पसंदीदा मैच: लाइव स्कोर, नतीजा या शुरू होने का समय।</string>
+    <string name="widget_match_final">अंतिम</string>
+    <string name="widget_match_versus">बनाम</string>
+    <string name="widget_match_map_progress">मैप %1$d / %2$d</string>
+    <string name="widget_match_pick_favorites">पसंदीदा चुनें</string>
+    <string name="widget_match_pick_favorites_caption">उनके मैच यहाँ देखने के लिए टीमों या इवेंट को फ़ॉलो करें</string>
+    <string name="widget_match_no_matches">कोई मैच तय नहीं है</string>
+    <string name="widget_match_no_matches_caption">आपके पसंदीदा जब खेलेंगे, तो यहाँ दिखाई देंगे</string>
+</resources>

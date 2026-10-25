@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_match_widget_name">Favorite match</string>
+    <string name="favorite_match_widget_description">Your most recent favorite match: live score, result or kickoff.</string>
+    <string name="widget_match_final">Final</string>
+    <string name="widget_match_versus">VS</string>
+    <string name="widget_match_map_progress">Map %1$d of %2$d</string>
+    <string name="widget_match_pick_favorites">Pick favorites</string>
+    <string name="widget_match_pick_favorites_caption">Follow teams or events to see their matches here</string>
+    <string name="widget_match_no_matches">No matches scheduled</string>
+    <string name="widget_match_no_matches_caption">Your favorites return here when they play</string>
+</resources>

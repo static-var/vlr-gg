@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_match_widget_name">Избранный матч</string>
+    <string name="favorite_match_widget_description">Ваш последний избранный матч: счёт в прямом эфире, результат или время начала.</string>
+    <string name="widget_match_final">Итог</string>
+    <string name="widget_match_versus">против</string>
+    <string name="widget_match_map_progress">Карта %1$d из %2$d</string>
+    <string name="widget_match_pick_favorites">Выберите избранное</string>
+    <string name="widget_match_pick_favorites_caption">Подпишитесь на команды или события, чтобы видеть их матчи здесь</string>
+    <string name="widget_match_no_matches">Нет запланированных матчей</string>
+    <string name="widget_match_no_matches_caption">Ваше избранное появится здесь, когда начнутся матчи</string>
+</resources>

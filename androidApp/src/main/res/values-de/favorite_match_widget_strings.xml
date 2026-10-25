@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_match_widget_name">Favoriten-Match</string>
+    <string name="favorite_match_widget_description">Dein aktuellstes Favoriten-Match: Live-Stand, Ergebnis oder Beginn.</string>
+    <string name="widget_match_final">Endstand</string>
+    <string name="widget_match_versus">gegen</string>
+    <string name="widget_match_map_progress">Karte %1$d von %2$d</string>
+    <string name="widget_match_pick_favorites">Favoriten wählen</string>
+    <string name="widget_match_pick_favorites_caption">Folge Teams oder Events, um ihre Matches hier zu sehen</string>
+    <string name="widget_match_no_matches">Keine Matches geplant</string>
+    <string name="widget_match_no_matches_caption">Deine Favoriten erscheinen hier, sobald sie spielen</string>
+</resources>

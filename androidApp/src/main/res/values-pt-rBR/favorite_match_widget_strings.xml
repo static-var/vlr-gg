@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_match_widget_name">Partida favorita</string>
+    <string name="favorite_match_widget_description">Sua partida favorita mais recente: placar ao vivo, resultado ou horário de início.</string>
+    <string name="widget_match_final">Final</string>
+    <string name="widget_match_versus">VS</string>
+    <string name="widget_match_map_progress">Mapa %1$d de %2$d</string>
+    <string name="widget_match_pick_favorites">Escolha favoritos</string>
+    <string name="widget_match_pick_favorites_caption">Siga times ou eventos para ver as partidas deles aqui</string>
+    <string name="widget_match_no_matches">Nenhuma partida agendada</string>
+    <string name="widget_match_no_matches_caption">Seus favoritos aparecerão aqui quando jogarem</string>
+</resources>
