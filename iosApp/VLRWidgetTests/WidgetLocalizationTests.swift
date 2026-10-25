@@ -99,6 +99,12 @@ final class WidgetLocalizationTests: XCTestCase {
             "Your favorites return here when they play.",
             "You're caught up on your favorites.",
             "widget.score_format",
+
+            "Your most recent favorite match: live score, result or kickoff.",
+            "Final",
+            "Pick favorites",
+            "Map %1$lld of %2$lld",
+            "vs",
         ]
 
         for language in languages {

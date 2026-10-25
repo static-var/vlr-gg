@@ -102,6 +102,7 @@
 		D3FAD1589057032649BD28A1 /* MatchActivityAttributesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593AC05C89885B2102D4BE59 /* MatchActivityAttributesTests.swift */; };
 		D4089B642EF3E3BCBF39FC41 /* MatchActivityStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6EDA015402D627B79F54E9 /* MatchActivityStyle.swift */; };
 		D5A4F2B1ACE86B4E0396BF73 /* EventWidgetText.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF5985B98F396C6BB1704715 /* EventWidgetText.swift */; };
+		D8354A9F2C47AF710DBB5E29 /* LockScreenMatchWidgetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93E84BBD2733EF15727818 /* LockScreenMatchWidgetTests.swift */; };
 		DC8F0EA3188F118A1969FD64 /* TeamWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D1826F65E59805A547049E /* TeamWidgetRefresh.swift */; };
 		DDD2858F638D30F92F4DBBC6 /* MatchActivityStyleSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059539F3D20DAB9551E1E933 /* MatchActivityStyleSync.swift */; };
 		DE960AE631BFF2761050F3A2 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 35E37CA9801AAA27B09231B9 /* InfoPlist.xcstrings */; };
@@ -183,6 +184,7 @@
 		40212BB7FC3087ABA0CD3582 /* ICloudIdentityDeviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudIdentityDeviceTests.swift; sourceTree = "<group>"; };
 		4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetRefresh.swift; sourceTree = "<group>"; };
 		48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetContract.swift; sourceTree = "<group>"; };
+		4A93E84BBD2733EF15727818 /* LockScreenMatchWidgetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenMatchWidgetTests.swift; sourceTree = "<group>"; };
 		4C823E9D6BCD587C88AD7701 /* VLRWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VLRWidget.entitlements; sourceTree = "<group>"; };
 		512CE686A685EA1302CD1FB1 /* NativeLocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeLocalizationTests.swift; sourceTree = "<group>"; };
 		593AC05C89885B2102D4BE59 /* MatchActivityAttributesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityAttributesTests.swift; sourceTree = "<group>"; };
@@ -339,6 +341,7 @@
 			isa = PBXGroup;
 			children = (
 				03E12DAA62B7B8B98F1CC221 /* EventWidgetTests.swift */,
+				4A93E84BBD2733EF15727818 /* LockScreenMatchWidgetTests.swift */,
 				593AC05C89885B2102D4BE59 /* MatchActivityAttributesTests.swift */,
 				C737F63F604F3C29E306493A /* MatchActivityLogoTreatmentTests.swift */,
 				B9EA4590539C7AEECB5795B4 /* MatchLiveActivityRoundsTests.swift */,
@@ -697,6 +700,7 @@
 				DFD3270BDC8FFDC714FDA96C /* LockScreenMatchState.swift in Sources */,
 				2359013104F7A5827B0C3388 /* LockScreenMatchText.swift in Sources */,
 				253BB13FD920839C33BE7B97 /* LockScreenMatchWidget.swift in Sources */,
+				D8354A9F2C47AF710DBB5E29 /* LockScreenMatchWidgetTests.swift in Sources */,
 				C4F26D6615E5B84E8ABD7919 /* MatchActivityAttributes.swift in Sources */,
 				D3FAD1589057032649BD28A1 /* MatchActivityAttributesTests.swift in Sources */,
 				379F2E73E56E97FFF7205AF8 /* MatchActivityLogoCache.swift in Sources */,
