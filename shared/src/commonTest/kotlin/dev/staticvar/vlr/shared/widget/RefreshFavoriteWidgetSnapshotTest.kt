@@ -15,14 +15,14 @@ import kotlin.test.assertEquals
 
 class RefreshFavoriteWidgetSnapshotTest {
   @Test
-  fun emptyWidgetSkipsFavoriteGetAndActiveWidgetExcludesResults() = runTest {
+  fun emptyWidgetSkipsFavoriteGetAndActiveWidgetIncludesResults() = runTest {
     val repository = RecordingFavorites()
 
     assertEquals(emptyList(), repository.fetchForWidget(hasFavorites = false))
     assertEquals(emptyList(), repository.requests)
 
     assertEquals(emptyList(), repository.fetchForWidget(hasFavorites = true))
-    assertEquals(listOf(false), repository.requests)
+    assertEquals(listOf(true), repository.requests)
   }
 }
 

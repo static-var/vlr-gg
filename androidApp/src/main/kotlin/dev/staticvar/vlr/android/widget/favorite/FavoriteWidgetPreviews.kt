@@ -10,6 +10,7 @@ import androidx.core.content.edit
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import dev.staticvar.vlr.android.widget.match.FavoriteMatchWidgetReceiver
 
 // Runs apart from the runtime work, which is cancelled while no favorite widget is placed.
 internal class FavoriteWidgetPreviewWorker(context: Context, params: WorkerParameters) :
@@ -27,7 +28,7 @@ private suspend fun publishFavoriteWidgetPreviews(context: Context) {
   val stamp = "$installed|${context.resources.configuration.locales.toLanguageTags()}"
   val preferences = context.getSharedPreferences("favorite_widget_previews", Context.MODE_PRIVATE)
   val manager = GlanceAppWidgetManager(context)
-  for (receiver in listOf(FavoriteTeamWidgetReceiver::class, FavoriteEventWidgetReceiver::class)) {
+  for (receiver in listOf(FavoriteTeamWidgetReceiver::class, FavoriteEventWidgetReceiver::class, FavoriteMatchWidgetReceiver::class)) {
     val name = receiver.java.name
     if (preferences.getString(name, null) == stamp) continue
     if (manager.setWidgetPreviews(receiver) == GlanceAppWidgetManager.SET_WIDGET_PREVIEWS_RESULT_SUCCESS) {

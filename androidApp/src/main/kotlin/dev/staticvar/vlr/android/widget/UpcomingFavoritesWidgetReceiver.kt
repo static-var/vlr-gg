@@ -10,16 +10,18 @@ import android.content.Context
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.updateAll
+import dev.staticvar.vlr.android.widget.match.FavoriteMatchWidget
+import dev.staticvar.vlr.android.widget.match.FavoriteMatchWidgetReceiver
 
-internal class UpcomingFavoritesWidgetReceiver : FavoriteMatchWidgetReceiver() {
+internal class UpcomingFavoritesWidgetReceiver : FavoriteSnapshotWidgetReceiver() {
   override val glanceAppWidget: GlanceAppWidget = UpcomingFavoritesWidget()
 }
 
-internal class SmallUpcomingFavoritesWidgetReceiver : FavoriteMatchWidgetReceiver() {
+internal class SmallUpcomingFavoritesWidgetReceiver : FavoriteSnapshotWidgetReceiver() {
   override val glanceAppWidget: GlanceAppWidget = SmallUpcomingFavoritesWidget()
 }
 
-internal abstract class FavoriteMatchWidgetReceiver : GlanceAppWidgetReceiver() {
+internal abstract class FavoriteSnapshotWidgetReceiver : GlanceAppWidgetReceiver() {
 
   override fun onEnabled(context: Context) {
     super.onEnabled(context)
@@ -45,6 +47,7 @@ internal object FavoriteMatchWidgets {
   suspend fun updateAll(context: Context) {
     UpcomingFavoritesWidget().updateAll(context)
     SmallUpcomingFavoritesWidget().updateAll(context)
+    FavoriteMatchWidget().updateAll(context)
   }
 
   fun hasInstalledWidgets(context: Context): Boolean {
@@ -52,6 +55,7 @@ internal object FavoriteMatchWidgets {
     return listOf(
       UpcomingFavoritesWidgetReceiver::class.java,
       SmallUpcomingFavoritesWidgetReceiver::class.java,
+      FavoriteMatchWidgetReceiver::class.java,
     ).any { receiver -> manager.getAppWidgetIds(ComponentName(context, receiver)).isNotEmpty() }
   }
 }

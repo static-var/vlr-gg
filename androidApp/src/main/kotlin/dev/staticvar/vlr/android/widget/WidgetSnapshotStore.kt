@@ -8,6 +8,10 @@ import android.content.Context
 import android.util.AtomicFile
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -16,6 +20,10 @@ internal object WidgetSnapshotStore {
   private const val LOG_TAG = "UpcomingWidget"
   private const val FILE_NAME = "upcoming_matches_widget.json"
   private val writeLock = Any()
+  private val revisionFlow = MutableStateFlow(0L)
+
+  /** Bumps after every write, so open widget sessions know to read the snapshot again. */
+  val revisions: StateFlow<Long> = revisionFlow.asStateFlow()
 
   suspend fun writeIfChanged(context: Context, json: String): Boolean =
     withContext(Dispatchers.IO) {
@@ -29,6 +37,7 @@ internal object WidgetSnapshotStore {
           }
 
           atomicFile.write(bytes)
+          revisionFlow.update { it + 1 }
           true
         }
       } catch (error: IOException) {
@@ -51,6 +60,7 @@ internal object WidgetSnapshotStore {
           current == replacementJson -> SnapshotReplaceResult.UNCHANGED
           else -> {
             atomicFile.write(replacementJson.toByteArray(Charsets.UTF_8))
+            revisionFlow.update { it + 1 }
             SnapshotReplaceResult.WRITTEN
           }
         }

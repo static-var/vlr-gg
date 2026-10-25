@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="PrivateResource,Overdraw,HardcodedText,UseCompatTextViewDrawableXml,UseAppTint,ContentDescription,NestedWeights"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp"
+    android:background="@color/glance_colorWidgetBackground">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/favorite_widget_live"
+            android:tint="@color/glance_colorError" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:maxLines="1"
+            android:text="@string/widget_live"
+            android:textColor="@color/glance_colorError"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="end"
+            android:maxLines="1"
+            android:text="Masters London"
+            android:textColor="@color/glance_colorOnSurfaceVariant"
+            android:textSize="11sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/favorite_widget_preview_tile"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="SEN"
+            android:textColor="@color/glance_colorOnSecondaryContainer"
+            android:textSize="11sp" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="Sentinels"
+            android:textColor="@color/glance_colorOnSurface"
+            android:textSize="12sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="6dp"
+            android:fontFamily="sans-serif-condensed"
+            android:maxLines="1"
+            android:text="1 – 1"
+            android:textColor="@color/glance_colorPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="end"
+            android:maxLines="1"
+            android:text="FNATIC"
+            android:textColor="@color/glance_colorOnSurface"
+            android:textSize="12sp" />
+        <TextView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/favorite_widget_preview_tile"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="FNC"
+            android:textColor="@color/glance_colorOnSecondaryContainer"
+            android:textSize="11sp" />
+    </LinearLayout>
+</LinearLayout>

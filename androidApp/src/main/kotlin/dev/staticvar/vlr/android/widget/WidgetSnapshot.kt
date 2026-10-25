@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.android.widget
 
+import dev.staticvar.vlr.shared.widget.UpcomingMatchesSnapshot
 import dev.staticvar.vlr.shared.widget.UpcomingWidgetMatch
 import dev.staticvar.vlr.shared.widget.WidgetTheme
 import kotlinx.serialization.Serializable
@@ -61,6 +62,13 @@ internal data class WidgetColors(
 
 internal fun parseWidgetSnapshot(payload: String, json: Json): WidgetSnapshot? = try {
   json.decodeFromString<WidgetSnapshotDto>(payload).toSnapshot()
+} catch (_: SerializationException) {
+  null
+}
+
+/** The full shared snapshot, for widgets that read fields the upcoming widgets ignore. */
+internal fun parseUpcomingMatchesSnapshot(payload: String, json: Json): UpcomingMatchesSnapshot? = try {
+  json.decodeFromString<UpcomingMatchesSnapshot>(payload)
 } catch (_: SerializationException) {
   null
 }

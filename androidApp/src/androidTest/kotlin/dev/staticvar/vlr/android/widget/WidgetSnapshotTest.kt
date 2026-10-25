@@ -8,6 +8,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
+import dev.staticvar.vlr.shared.widget.UpcomingWidgetMatch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.jsonArray
@@ -59,6 +61,35 @@ class WidgetSnapshotTest {
     )
     assertEquals(WidgetColors(4278190080L, 4279308561L, 4286332928L, 4294967295L,
       4289374890L, 4281545523L, true), snapshot.theme)
+  }
+
+  @Test
+  fun fullPayloadKeepsResultsAndTeamFields() {
+    val snapshot = requireNotNull(parseUpcomingMatchesSnapshot(
+      """
+      {
+        "savedAtEpochMillis": 1000, "hasFavorites": true, "spoilersHidden": false,
+        "matches": [{"id": "102", "event": "VCT", "team1": "Sentinels", "team2": "LOUD", "team1Id": "2"}],
+        "results": [{
+          "id": "101", "event": "VCT", "team1": "Paper Rex", "team2": "Team Liquid",
+          "startTimeEpochMillis": 900, "status": "COMPLETED", "score1": 2, "score2": 1, "format": "BO3",
+          "team1Id": "624", "team2Id": "474", "team1Logo": "https://owcdn.net/prx.png", "futureField": 1
+        }],
+        "theme": {"background": 1, "surface": 2, "accent": 3, "content": 4, "secondary": 5, "border": 6, "monospace": false}
+      }
+      """.trimIndent(),
+      json,
+    ))
+    assertEquals(
+      UpcomingWidgetMatch(
+        id = "101", event = "VCT", team1 = "Paper Rex", team2 = "Team Liquid", startTimeEpochMillis = 900,
+        status = "COMPLETED", score1 = 2, score2 = 1, format = "BO3",
+        team1Id = "624", team2Id = "474", team1Logo = "https://owcdn.net/prx.png",
+      ),
+      snapshot.results.single(),
+    )
+    assertEquals(listOf("2" to null), snapshot.matches.map { it.team1Id to it.team2Logo })
+    assertNull(parseUpcomingMatchesSnapshot("""{"savedAtEpochMillis":1000,"matches":[],"theme":null}""", json))
   }
 
   @Test
@@ -142,6 +173,27 @@ class WidgetSnapshotTest {
       assertTrue(hiddenRow["score2"] == null || hiddenRow["score2"] == JsonNull)
     } finally {
       if (previous == null) file.delete() else file.writeBytes(previous)
+    }
+  }
+
+  @Test
+  fun snapshotRevisionChangesOnlyWhenContentIsWritten() = runBlocking {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val previous = WidgetSnapshotStore.read(context)
+    val file = context.getFileStreamPath("upcoming_matches_widget.json")
+    try {
+      WidgetSnapshotStore.writeIfChanged(context, "first")
+      val start = WidgetSnapshotStore.revisions.value
+
+      assertFalse(WidgetSnapshotStore.writeIfChanged(context, "first"))
+      assertEquals(SnapshotReplaceResult.STALE, WidgetSnapshotStore.replaceIfUnchanged(context, "other", "second"))
+      assertEquals(start, WidgetSnapshotStore.revisions.value)
+
+      assertTrue(WidgetSnapshotStore.writeIfChanged(context, "second"))
+      assertEquals(SnapshotReplaceResult.WRITTEN, WidgetSnapshotStore.replaceIfUnchanged(context, "second", "third"))
+      assertEquals(start + 2, WidgetSnapshotStore.revisions.value)
+    } finally {
+      if (previous == null) file.delete() else WidgetSnapshotStore.writeIfChanged(context, previous)
     }
   }
 

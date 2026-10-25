@@ -21,4 +21,5 @@ internal fun widgetModule() = module {
     }
   }
   single { FavoriteWidgetEngine(FavoriteWidgetRemote(get(), get(WidgetJson)), Clock.System, get(WidgetJson)) }
+  single { FavoriteMatchLogos(get(), get(WidgetJson)) }
 }

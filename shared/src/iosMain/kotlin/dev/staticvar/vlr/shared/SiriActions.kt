@@ -12,6 +12,7 @@ import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.iosNetworkModule
 import dev.staticvar.vlr.shared.widget.UpcomingWidgetMatch
 import dev.staticvar.vlr.shared.widget.favoriteWidgetMatches
+import dev.staticvar.vlr.shared.widget.toWidgetMatch
 import dev.staticvar.vlr.shared.widget.WidgetJson
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
@@ -52,7 +53,7 @@ public class SiriActions(authToken: String?) {
     }
     val hasFavorites = favorites.observeDirectFavorites().first().hasAny
     val schedule = koin.get<FavoriteScheduleRepository>().observeMatches().first()
-    val match = favoriteWidgetMatches(schedule, Clock.System.now().toEpochMilliseconds(), spoilersHidden = true)
+    val match = favoriteWidgetMatches(schedule.map { it.toWidgetMatch() }, Clock.System.now().toEpochMilliseconds(), spoilersHidden = true)
       .firstOrNull().takeIf { hasFavorites }
     return SiriMatchResult(match, hasFavorites, refreshed)
   }
@@ -62,7 +63,7 @@ public class SiriActions(authToken: String?) {
     val koin = KoinPlatform.getKoin()
     val hasFavorites = koin.get<FavoritesRepository>().observeDirectFavorites().first().hasAny
     val schedule = koin.get<FavoriteScheduleRepository>().observeMatches().first()
-    val matches = favoriteWidgetMatches(schedule, Clock.System.now().toEpochMilliseconds(), enabled)
+    val matches = favoriteWidgetMatches(schedule.map { it.toWidgetMatch() }, Clock.System.now().toEpochMilliseconds(), enabled)
       .takeIf { hasFavorites }.orEmpty()
     val preferences = koin.get<SpoilerPreferencesRepository>()
     if (preferences.enabled.value != enabled) preferences.toggle()

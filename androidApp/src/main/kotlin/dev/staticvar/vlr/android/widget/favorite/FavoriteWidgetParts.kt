@@ -208,6 +208,7 @@ internal enum class FavoriteWidgetWeight(family: String, style: Int) {
   Normal("sans-serif", Typeface.NORMAL),
   Medium("sans-serif-medium", Typeface.NORMAL),
   Bold("sans-serif", Typeface.BOLD),
+  CondensedBold("sans-serif-condensed", Typeface.BOLD),
   ;
 
   val typeface: Typeface = Typeface.create(family, style)

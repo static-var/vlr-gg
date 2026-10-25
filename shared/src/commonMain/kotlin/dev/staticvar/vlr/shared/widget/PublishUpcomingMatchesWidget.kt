@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import dev.staticvar.vlr.core.identity.UserIdentityRepository
+import dev.staticvar.vlr.domain.repository.FavoriteMatchesRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
 import kotlinx.coroutines.flow.combine
@@ -29,6 +30,8 @@ internal fun PublishUpcomingMatchesWidget(monospace: Boolean, onSnapshotChanged:
   val favorites = koinInject<FavoritesRepository>()
   val spoilerPreferences = koinInject<SpoilerPreferencesRepository>()
   val identity = koinInject<UserIdentityRepository>()
+  val favoriteMatches = koinInject<FavoriteMatchesRepository>()
+  val logos = koinInject<FavoriteMatchLogos>()
   val publish by rememberUpdatedState(onSnapshotChanged)
   val colors = Prism.color
   val theme = WidgetTheme(
@@ -40,21 +43,35 @@ internal fun PublishUpcomingMatchesWidget(monospace: Boolean, onSnapshotChanged:
     border = colors.stroke.argb(),
     monospace = monospace,
   )
-  LaunchedEffect(matches, favorites, theme, spoilerPreferences, identity, widgetJson) {
-    combine(matches.observeMatches(), favorites.observeDirectFavorites(), spoilerPreferences.enabled, identity.id) { previews, directFavorites, hidden, clientId ->
+  LaunchedEffect(matches, favorites, theme, spoilerPreferences, identity, favoriteMatches, logos, widgetJson) {
+    combine(
+      matches.observeMatches(),
+      favorites.observeDirectFavorites(),
+      spoilerPreferences.enabled,
+      identity.id,
+      favoriteMatches.homeMatches,
+    ) { previews, directFavorites, hidden, clientId, feed ->
+      val remote = feed?.takeIf { it.selection == directFavorites }?.matches.orEmpty()
+      val remoteById = remote.associateBy { it.id }
       UpcomingMatchesSnapshot(
         savedAtEpochMillis = 0,
         clientId = clientId.toString(),
         hasFavorites = directFavorites.hasAny,
-        matches = favoriteWidgetMatches(previews, Clock.System.now().toEpochMilliseconds(), hidden),
+        matches = favoriteWidgetMatches(
+          previews.map { it.toWidgetMatch(remoteById[it.id]) },
+          Clock.System.now().toEpochMilliseconds(),
+          hidden,
+        ),
         theme = theme,
         favorites = directFavorites.widgetFavorites(),
         spoilersHidden = hidden,
         favoriteTeams = directFavorites.widgetFavoriteTeams(),
         favoriteEvents = directFavorites.widgetFavoriteEvents(),
+        results = favoriteWidgetResults(remote.map { it.toWidgetMatch() }, hidden),
       )
     }.distinctUntilChanged().collect { snapshot ->
-      publish(widgetJson.encodeToString(snapshot.copy(savedAtEpochMillis = Clock.System.now().toEpochMilliseconds())))
+      val now = Clock.System.now().toEpochMilliseconds()
+      publish(widgetJson.encodeToString(logos.fill(snapshot, now).copy(savedAtEpochMillis = now)))
     }
   }
 }
