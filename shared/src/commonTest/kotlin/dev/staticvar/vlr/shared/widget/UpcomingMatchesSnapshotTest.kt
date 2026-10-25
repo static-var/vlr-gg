@@ -7,7 +7,9 @@ package dev.staticvar.vlr.shared.widget
 import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.model.FavoriteScheduledMatch
+import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
+import dev.staticvar.vlr.domain.model.TeamPreview
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -74,7 +76,7 @@ class UpcomingMatchesSnapshotTest {
       match("past", "2026-09-12T11:00:00Z"),
       match("started", "2026-09-12T12:00:00Z"),
     )
-    assertEquals(listOf("early", "late", "unknown"), favoriteWidgetMatches(matches, now, false).map { it.id })
+    assertEquals(listOf("early", "late", "unknown"), favoriteWidgetMatches(matches.map { it.toWidgetMatch() }, now, false).map { it.id })
   }
 
   @Test
@@ -85,12 +87,19 @@ class UpcomingMatchesSnapshotTest {
       val snapshot = UpcomingMatchesSnapshot(
         savedAtEpochMillis = now,
         hasFavorites = true,
-        matches = favoriteWidgetMatches(listOf(match("unknown", null)), now, false),
+        matches = favoriteWidgetMatches(listOf(match("unknown", null).toWidgetMatch()), now, false),
         theme = WidgetTheme(0xFFFFFFFF, 0xFFEEEEEE, 0xFF6633FF, 0xFF111111, 0xFF555555, 0xFFCCCCCC, false),
       )
       val encoded = widgetJson.encodeToString(snapshot)
       val row = Json.parseToJsonElement(encoded).jsonObject.getValue("matches").jsonArray.single().jsonObject
-      assertEquals(setOf("id", "event", "team1", "team2", "startTimeEpochMillis", "status", "score1", "score2", "format", "stage"), row.keys)
+      assertEquals(
+        setOf(
+          "id", "event", "team1", "team2", "startTimeEpochMillis", "status", "score1", "score2", "format", "stage",
+          "team1Id", "team2Id", "team1Logo", "team2Logo",
+        ),
+        row.keys,
+      )
+      assertEquals("[]", Json.parseToJsonElement(encoded).jsonObject.getValue("results").toString())
       assertEquals("null", row.getValue("startTimeEpochMillis").toString())
       assertEquals("null", row.getValue("score1").toString())
       assertEquals("null", row.getValue("score2").toString())
@@ -106,7 +115,8 @@ class UpcomingMatchesSnapshotTest {
   fun `live matches remain after start and rank before upcoming matches`() {
     val live = match("live", "2026-09-12T11:00:00Z").copy(status = MatchStatus.LIVE, score1 = 1, score2 = 2)
     val rows = favoriteWidgetMatches(
-      listOf(match("next", "2026-09-12T13:00:00Z"), live, live.copy(id = "final", status = MatchStatus.COMPLETED)),
+      listOf(match("next", "2026-09-12T13:00:00Z"), live, live.copy(id = "final", status = MatchStatus.COMPLETED))
+        .map { it.toWidgetMatch() },
       now,
       spoilersHidden = false,
     )
@@ -118,11 +128,84 @@ class UpcomingMatchesSnapshotTest {
   @Test
   fun `spoiler mode removes live score values before native publication`() {
     val live = match("live", null).copy(status = MatchStatus.LIVE, score1 = 7, score2 = 4)
-    val row = favoriteWidgetMatches(listOf(live), now, spoilersHidden = true).single()
+    val row = favoriteWidgetMatches(listOf(live.toWidgetMatch()), now, spoilersHidden = true).single()
     assertEquals("LIVE", row.status)
     assertEquals(null, row.score1)
     assertEquals(null, row.score2)
   }
+
+  @Test
+  fun `results keep completed matches newest first up to five without duplicates`() {
+    val completed = (1..7).map { day ->
+      match("final-$day", "2026-09-0${day}T12:00:00Z").copy(status = MatchStatus.COMPLETED, score1 = 2, score2 = 1)
+    }
+    val rows = favoriteWidgetResults(
+      (completed + completed.first() + match("next", "2026-09-13T12:00:00Z")).map { it.toWidgetMatch() },
+      spoilersHidden = false,
+    )
+    assertEquals(listOf("final-7", "final-6", "final-5", "final-4", "final-3"), rows.map { it.id })
+    assertEquals(listOf("COMPLETED"), rows.map { it.status }.distinct())
+    assertEquals(2 to 1, rows.first().score1 to rows.first().score2)
+  }
+
+  @Test
+  fun `spoiler mode removes result scores`() {
+    val final = match("final", "2026-09-11T12:00:00Z").copy(status = MatchStatus.COMPLETED, score1 = 2, score2 = 0)
+    val row = favoriteWidgetResults(listOf(final.toWidgetMatch()), spoilersHidden = true).single()
+    assertEquals("final", row.id)
+    assertEquals(null to null, row.score1 to row.score2)
+  }
+
+  @Test
+  fun `schedule rows take team IDs and logos from the server row by team name`() {
+    val remote = preview(
+      team1 = TeamPreview("2", "Sentinels", "NA", "https://owcdn.net/sen.png", null, null),
+      team2 = TeamPreview(" ", "Alpha", "EU", "", null, null),
+    )
+    val row = match("m1", "2026-09-12T13:00:00Z").copy(team1 = "alpha", team2 = "Sentinels").toWidgetMatch(remote)
+    assertEquals(
+      listOf(null, "2", null, "https://owcdn.net/sen.png"),
+      listOf(row.team1Id, row.team2Id, row.team1Logo, row.team2Logo),
+    )
+    assertEquals(listOf(null, null), match("m1", null).copy(team1 = "Other").toWidgetMatch(remote).let { listOf(it.team1Id, it.team1Logo) })
+  }
+
+  @Test
+  fun `server rows keep team IDs logos scores and a normalized format`() {
+    val row = preview(
+      team1 = TeamPreview("2", "Sentinels", "NA", "https://owcdn.net/sen.png", 2, true),
+      team2 = TeamPreview("5", "Paper Rex", "AP", "https://owcdn.net/prx.png", 1, false),
+    ).toWidgetMatch()
+    assertEquals(
+      UpcomingWidgetMatch(
+        id = "remote",
+        event = "Champions",
+        team1 = "Sentinels",
+        team2 = "Paper Rex",
+        startTimeEpochMillis = Instant.parse("2026-09-11T12:00:00Z").toEpochMilliseconds(),
+        status = "COMPLETED",
+        score1 = 2,
+        score2 = 1,
+        format = "BO3",
+        team1Id = "2",
+        team2Id = "5",
+        team1Logo = "https://owcdn.net/sen.png",
+        team2Logo = "https://owcdn.net/prx.png",
+      ),
+      row,
+    )
+  }
+
+  private fun preview(team1: TeamPreview, team2: TeamPreview) = MatchPreview(
+    id = "remote",
+    event = "Champions",
+    series = "Bo 3",
+    status = MatchStatus.COMPLETED,
+    team1 = team1,
+    team2 = team2,
+    time = "2026-09-11T12:00:00Z",
+    eventId = "event",
+  )
 
   private fun match(id: String, time: String?): FavoriteScheduledMatch = FavoriteScheduledMatch(
     id = id,
