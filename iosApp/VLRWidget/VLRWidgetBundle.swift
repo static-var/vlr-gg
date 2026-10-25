@@ -5,6 +5,7 @@ import WidgetKit
 struct VLRWidgetBundle: WidgetBundle {
     var body: some Widget {
         UpcomingMatchesWidget()
+        LockScreenMatchWidget()
         if #available(iOS 17.0, *) {
             TeamWidget()
             EventWidget()
