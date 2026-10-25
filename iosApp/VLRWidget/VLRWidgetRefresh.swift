@@ -290,7 +290,11 @@ struct RemoteMatchPreview: Codable {
             score1: team1.score,
             score2: team2.score,
             format: normalizedMatchFormat(series),
-            stage: ""
+            stage: "",
+            team1Id: team1.id,
+            team2Id: team2.id,
+            team1Tag: team1.tag,
+            team2Tag: team2.tag
         )
     }
 }
