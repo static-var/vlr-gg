@@ -9,6 +9,7 @@ import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.shared.widget.UpcomingWidgetMatch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.jsonArray
@@ -172,6 +173,27 @@ class WidgetSnapshotTest {
       assertTrue(hiddenRow["score2"] == null || hiddenRow["score2"] == JsonNull)
     } finally {
       if (previous == null) file.delete() else file.writeBytes(previous)
+    }
+  }
+
+  @Test
+  fun snapshotRevisionChangesOnlyWhenContentIsWritten() = runBlocking {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val previous = WidgetSnapshotStore.read(context)
+    val file = context.getFileStreamPath("upcoming_matches_widget.json")
+    try {
+      WidgetSnapshotStore.writeIfChanged(context, "first")
+      val start = WidgetSnapshotStore.revisions.value
+
+      assertFalse(WidgetSnapshotStore.writeIfChanged(context, "first"))
+      assertEquals(SnapshotReplaceResult.STALE, WidgetSnapshotStore.replaceIfUnchanged(context, "other", "second"))
+      assertEquals(start, WidgetSnapshotStore.revisions.value)
+
+      assertTrue(WidgetSnapshotStore.writeIfChanged(context, "second"))
+      assertEquals(SnapshotReplaceResult.WRITTEN, WidgetSnapshotStore.replaceIfUnchanged(context, "second", "third"))
+      assertEquals(start + 2, WidgetSnapshotStore.revisions.value)
+    } finally {
+      if (previous == null) file.delete() else WidgetSnapshotStore.writeIfChanged(context, previous)
     }
   }
 
