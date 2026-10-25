@@ -39,11 +39,11 @@ import org.koin.mp.KoinPlatform
 import java.text.SimpleDateFormat
 import java.util.Date
 
-internal class UpcomingFavoritesWidget : FavoriteMatchWidget(small = false)
+internal class UpcomingFavoritesWidget : UpcomingMatchWidget(small = false)
 
-internal class SmallUpcomingFavoritesWidget : FavoriteMatchWidget(small = true)
+internal class SmallUpcomingFavoritesWidget : UpcomingMatchWidget(small = true)
 
-internal abstract class FavoriteMatchWidget(private val small: Boolean) : GlanceAppWidget() {
+internal abstract class UpcomingMatchWidget(private val small: Boolean) : GlanceAppWidget() {
   override val sizeMode: SizeMode = SizeMode.Single
 
   override suspend fun provideGlance(context: Context, id: GlanceId) {

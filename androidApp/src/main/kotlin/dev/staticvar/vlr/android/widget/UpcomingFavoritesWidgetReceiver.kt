@@ -11,15 +11,15 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.updateAll
 
-internal class UpcomingFavoritesWidgetReceiver : FavoriteMatchWidgetReceiver() {
+internal class UpcomingFavoritesWidgetReceiver : FavoriteSnapshotWidgetReceiver() {
   override val glanceAppWidget: GlanceAppWidget = UpcomingFavoritesWidget()
 }
 
-internal class SmallUpcomingFavoritesWidgetReceiver : FavoriteMatchWidgetReceiver() {
+internal class SmallUpcomingFavoritesWidgetReceiver : FavoriteSnapshotWidgetReceiver() {
   override val glanceAppWidget: GlanceAppWidget = SmallUpcomingFavoritesWidget()
 }
 
-internal abstract class FavoriteMatchWidgetReceiver : GlanceAppWidgetReceiver() {
+internal abstract class FavoriteSnapshotWidgetReceiver : GlanceAppWidgetReceiver() {
 
   override fun onEnabled(context: Context) {
     super.onEnabled(context)
