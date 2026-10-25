@@ -5,8 +5,6 @@
 package dev.staticvar.vlr.shared.widget
 
 import dev.staticvar.vlr.remotesource.common.ApiPaths
-import dev.staticvar.vlr.shared.widget.favorite.MatchDetails
-import dev.staticvar.vlr.shared.widget.favorite.RemoteTeam
 import dev.staticvar.vlr.shared.widget.favorite.WidgetWireDecoders
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -19,17 +17,18 @@ import kotlinx.serialization.json.Json
 
 /**
  * Adds team logos to the matches the one-match widget shows. The favorites feed carries team ids but no
- * logo, so each shown match is looked up once in match details and remembered by id.
+ * logo, so each shown match is looked up once in match details and its logos are remembered by match id,
+ * keyed by team identity rather than side, because the schedule and the feed can order the sides differently.
  */
 internal class FavoriteMatchLogos(private val client: HttpClient, private val json: Json) {
   private val lock = Mutex()
-  private val known = mutableMapOf<String, TeamLogos>()
+  private val known = mutableMapOf<String, LogoIndex>()
 
   suspend fun remember(matches: List<UpcomingWidgetMatch>) {
     lock.withLock {
       matches.forEach { match ->
-        val logos = TeamLogos(match.team1Logo, match.team2Logo)
-        if (logos.any) known[match.id] = logos
+        val index = match.index()
+        if (index.isNotEmpty()) known[match.id] = known[match.id].orEmpty() + index
       }
     }
   }
@@ -43,7 +42,7 @@ internal class FavoriteMatchLogos(private val client: HttpClient, private val js
     return snapshot.copy(matches = snapshot.matches.filled(), results = snapshot.results.filled())
   }
 
-  private suspend fun lookup(match: UpcomingWidgetMatch): TeamLogos? {
+  private suspend fun lookup(match: UpcomingWidgetMatch): LogoIndex? {
     lock.withLock { known[match.id] }?.let { return it }
     val details = try {
       WidgetWireDecoders.details(json.parseToJsonElement(client.get(ApiPaths.match(match.id.encodeURLPathPart())).bodyAsText()))
@@ -52,19 +51,33 @@ internal class FavoriteMatchLogos(private val client: HttpClient, private val js
     } catch (_: Exception) {
       return null
     }
-    val logos = TeamLogos(details.logo(match.team1Id, match.team1), details.logo(match.team2Id, match.team2))
-    if (!logos.any) return null
-    lock.withLock { known[match.id] = logos }
-    return logos
+    val index = buildMap {
+      details.teams.forEach { team ->
+        val logo = team.logo?.takeIf(String::isNotBlank) ?: return@forEach
+        teamKeys(team.id, team.name).forEach { put(it, logo) }
+      }
+    }
+    if (index.isEmpty()) return null
+    lock.withLock { known[match.id] = index }
+    return index
   }
 }
 
-private data class TeamLogos(val team1: String?, val team2: String?) {
-  val any: Boolean get() = team1 != null || team2 != null
+/** Logo URL by team key, where a team has an id key when the feed gave one and always a name key. */
+private typealias LogoIndex = Map<String, String>
+
+private fun teamKeys(id: String?, name: String): List<String> =
+  listOfNotNull(id?.takeIf(String::isNotBlank)?.let { "id:$it" }, "name:${name.trim().lowercase()}")
+
+private fun LogoIndex.logo(id: String?, name: String): String? = teamKeys(id, name).firstNotNullOfOrNull(::get)
+
+private fun UpcomingWidgetMatch.index(): LogoIndex = buildMap {
+  team1Logo?.let { logo -> teamKeys(team1Id, team1).forEach { put(it, logo) } }
+  team2Logo?.let { logo -> teamKeys(team2Id, team2).forEach { put(it, logo) } }
 }
 
-private fun UpcomingWidgetMatch.with(logos: TeamLogos) =
-  copy(team1Logo = logos.team1 ?: team1Logo, team2Logo = logos.team2 ?: team2Logo)
+private fun UpcomingWidgetMatch.with(index: LogoIndex) =
+  copy(team1Logo = index.logo(team1Id, team1) ?: team1Logo, team2Logo = index.logo(team2Id, team2) ?: team2Logo)
 
 private fun shown(state: FavoriteMatchState): List<UpcomingWidgetMatch> = when (state) {
   is FavoriteMatchState.Live -> listOf(state.match)
@@ -72,12 +85,3 @@ private fun shown(state: FavoriteMatchState): List<UpcomingWidgetMatch> = when (
   is FavoriteMatchState.Completed -> listOfNotNull(state.match, state.next)
   FavoriteMatchState.NoMatches, FavoriteMatchState.NoFavorites, FavoriteMatchState.NeedsApp -> emptyList()
 }
-
-/** The team's logo, matched by id when the feed gave one and by name otherwise. */
-private fun MatchDetails.logo(id: String?, name: String): String? {
-  val team = teams.firstOrNull { it.matches(id, name) } ?: return null
-  return team.logo?.takeIf(String::isNotBlank)
-}
-
-private fun RemoteTeam.matches(id: String?, name: String): Boolean =
-  if (id != null && this.id != null) this.id == id else this.name.trim().equals(name.trim(), ignoreCase = true)

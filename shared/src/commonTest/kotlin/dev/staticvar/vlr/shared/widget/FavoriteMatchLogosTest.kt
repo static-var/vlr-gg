@@ -80,6 +80,19 @@ class FavoriteMatchLogosTest {
     assertEquals(emptyList(), requests)
   }
 
+  @Test
+  fun `remembered logos follow the team when the sides are swapped`() = runTest {
+    val scheduled = match("swap", "LIVE", now - hour)
+      .copy(team1Logo = "https://owcdn.net/img/sen.png", team2Logo = "https://owcdn.net/img/prx.png")
+    logos.remember(listOf(scheduled))
+    val fromFeed = match("swap", "LIVE", now - hour).copy(team1 = "Paper Rex", team2 = "Sentinels", team1Id = "624")
+
+    val filled = logos.fill(snapshot(matches = listOf(fromFeed)), now)
+
+    assertEquals("https://owcdn.net/img/prx.png" to "https://owcdn.net/img/sen.png", filled.matches.single().logos)
+    assertEquals(emptyList(), requests)
+  }
+
   private val UpcomingWidgetMatch.logos get() = team1Logo to team2Logo
 
   private fun teams(vararg teams: String) = WidgetTestResponse("""{"teams":[${teams.joinToString(",")}]}""")
